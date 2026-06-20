@@ -78,7 +78,7 @@ export default function CoverFlowView({ records, onSelect }) {
     }
   }, [apply])
 
-  const current = records[active]
+  const current = records[Math.min(active, records.length - 1)] // clamp when the list shrinks under filter
 
   const onItemClick = (i, record) => {
     if (i === active) onSelect(record)
@@ -108,7 +108,7 @@ export default function CoverFlowView({ records, onSelect }) {
       </button>
       {current && (
         <div className="cf-caption" key={current.id}>
-          <span className="cf-album">{current.album}</span>
+          <span className="cf-album">{current.album || 'Untitled'}</span>
           <span className="cf-artist">{current.artist}{current.year ? ` · ${current.year}` : ''}</span>
           <button className="btn btn-ghost cf-details" onClick={() => onSelect(current)}>View details</button>
         </div>

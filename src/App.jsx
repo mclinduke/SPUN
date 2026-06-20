@@ -61,6 +61,12 @@ export default function App() {
     [records],
   )
 
+  // If the active genre filter no longer exists (last record of it deleted/edited,
+  // or collection cleared/imported), reset it so the grid doesn't dead-end on "no records".
+  useEffect(() => {
+    if (genreFilter && !genres.includes(genreFilter)) setGenreFilter('')
+  }, [genres, genreFilter])
+
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase()
     const list = records.filter((r) => {
@@ -70,10 +76,11 @@ export default function App() {
         .filter(Boolean)
         .some((v) => String(v).toLowerCase().includes(q))
     })
+    const cmp = (x, y) => (x || '').localeCompare(y || '', undefined, { numeric: true, sensitivity: 'base' })
     const by = {
       recent: (a, b) => b.createdAt - a.createdAt,
-      artist: (a, b) => a.artist.localeCompare(b.artist) || a.album.localeCompare(b.album),
-      album: (a, b) => a.album.localeCompare(b.album),
+      artist: (a, b) => cmp(a.artist, b.artist) || cmp(a.album, b.album),
+      album: (a, b) => cmp(a.album, b.album),
       'year-desc': (a, b) => (b.year || 0) - (a.year || 0),
       'year-asc': (a, b) => (a.year || 9999) - (b.year || 9999),
     }
@@ -84,50 +91,69 @@ export default function App() {
   const openEdit = (rec) => { setSelected(null); setEditing(rec); setFormOpen(true) }
 
   const handleSave = async (data, pendingPhoto) => {
-    let rec
-    if (editing?.id) rec = await update(editing.id, data)
-    else rec = await add(data)
-    if (pendingPhoto instanceof File) {
-      await setPhoto(rec.id, pendingPhoto)
-      bustCover(rec.id)
-    } else if (pendingPhoto === null && rec.hasPhoto) {
-      await removePhoto(rec.id)
-      bustCover(rec.id)
+    try {
+      let rec
+      if (editing?.id) rec = await update(editing.id, data)
+      else rec = await add(data)
+      if (pendingPhoto instanceof File) {
+        await setPhoto(rec.id, pendingPhoto)
+        bustCover(rec.id)
+      } else if (pendingPhoto === null && rec.hasPhoto) {
+        await removePhoto(rec.id)
+        bustCover(rec.id)
+      }
+      setFormOpen(false)
+      setEditing(null)
+    } catch (err) {
+      // Keep the sheet open so the user can retry; never silently lose a write.
+      alert(`Couldn't save this record: ${err.message || err}`)
     }
-    setFormOpen(false)
-    setEditing(null)
   }
 
   // "Save & add another": persist, attach an optional photo, and leave the sheet
   // open so the next record can be typed straight away.
   const handleSaveAndNext = async (data, pendingPhoto) => {
-    const rec = await add(data)
-    if (pendingPhoto instanceof File) {
-      await setPhoto(rec.id, pendingPhoto)
-      bustCover(rec.id)
+    try {
+      const rec = await add(data)
+      if (pendingPhoto instanceof File) {
+        await setPhoto(rec.id, pendingPhoto)
+        bustCover(rec.id)
+      }
+      setAddedThisSession((n) => n + 1)
+      return true
+    } catch (err) {
+      alert(`Couldn't save this record: ${err.message || err}`)
+      return false
     }
-    setAddedThisSession((n) => n + 1)
   }
 
   const handleDelete = async (rec) => {
-    await remove(rec.id)
-    bustCover(rec.id)
-    setSelected(null)
+    try {
+      await remove(rec.id)
+      bustCover(rec.id)
+      setSelected(null)
+    } catch (err) {
+      alert(`Couldn't delete this record: ${err.message || err}`)
+    }
   }
 
   const handleBulkCommit = async (recs) => {
-    await bulkAdd(recs)
-    setBulkOpen(false)
-    setSettingsOpen(false)
+    try {
+      await bulkAdd(recs)
+      setBulkOpen(false)
+      setSettingsOpen(false)
+    } catch (err) {
+      alert(`Couldn't add these records: ${err.message || err}`)
+    }
   }
 
   return (
     <div className="app">
       <header className="app-header">
-        <div className="brand">
+        <h1 className="brand">
           <Icon name="disc" size={26} />
           <span>Crate</span>
-        </div>
+        </h1>
         <div className="header-actions">
           <button className="icon-btn" onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))} aria-label="Toggle theme">
             <Icon name={theme === 'dark' ? 'sun' : 'moon'} />

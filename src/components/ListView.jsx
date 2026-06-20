@@ -7,7 +7,7 @@ export default function ListView({ records, onSelect }) {
         <button key={r.id} className="list-item" onClick={() => onSelect(r)}>
           <Cover record={r} className="list-thumb" />
           <div className="list-text">
-            <span className="list-album">{r.album}</span>
+            <span className="list-album">{r.album || 'Untitled'}</span>
             <span className="list-artist">{r.artist}</span>
           </div>
           <div className="list-side">

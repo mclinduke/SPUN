@@ -96,10 +96,10 @@ export default function RecordForm({ initial, genres = [], onSave, onSaveAndNext
     onSave(payload(), pendingPhoto)
   }
 
-  const addAnother = () => {
+  const addAnother = async () => {
     if (!form.album.trim()) return // an album is required in the loop so a sticky artist can't save a blank
-    onSaveAndNext(payload(), pendingPhoto)
-    resetForNext()
+    const ok = await onSaveAndNext(payload(), pendingPhoto)
+    if (ok !== false) resetForNext() // keep the entry if the save failed, so it can be retried
   }
 
   // Primary submit: loop in add mode, save+close when editing.
