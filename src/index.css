@@ -768,3 +768,18 @@ button { font-family: inherit; cursor: pointer; }
 .crash { min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; padding: 32px; }
 .crash h2 { font-size: 1.3rem; }
 .crash p { color: var(--muted); max-width: 320px; line-height: 1.5; }
+
+/* liner notes (tracklist + credits + studio) */
+.liner-block { margin-top: 16px; }
+.liner-block h5 { font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; }
+.liner-studios { font-size: .9rem; }
+.tracklist { margin: 0; padding: 0; list-style: none; }
+.tracklist li { display: flex; align-items: baseline; gap: 10px; padding: 6px 0; border-top: 1px solid var(--border); font-size: .9rem; }
+.tracklist li:first-child { border-top: none; }
+.tk-pos { color: var(--muted); font-size: .75rem; min-width: 22px; font-variant-numeric: tabular-nums; }
+.tk-title { flex: 1; }
+.tk-dur { color: var(--muted); font-size: .8rem; font-variant-numeric: tabular-nums; }
+.credits { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 5px; }
+.credits li { display: flex; gap: 10px; font-size: .85rem; align-items: baseline; }
+.cr-role { color: var(--muted); flex: 0 0 44%; }
+.cr-name { flex: 1; }

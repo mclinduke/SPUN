@@ -58,6 +58,10 @@ export async function lookupRecord(record, { force = false } = {}) {
     want: rel.community?.want ?? null,
     numForSale: rel.num_for_sale ?? null,
     lowestPrice: rel.lowest_price ?? null,
+    // liner notes (stable data, safe to cache long-term)
+    tracklist: (rel.tracklist || []).filter((t) => t.title && (!t.type_ || t.type_ === 'track')).map((t) => ({ pos: t.position || '', title: t.title, dur: t.duration || '' })),
+    credits: (rel.extraartists || []).map((a) => ({ name: cleanArtist(a.name), role: a.role || '' })).filter((c) => c.name && c.role),
+    recordedAt: (rel.companies || []).filter((c) => /(recorded|mixed|mastered|engineered)\s+at/i.test(c.entity_type_name || '')).map((c) => ({ kind: c.entity_type_name || '', name: c.name || '' })).filter((c) => c.name),
   }
   await repo.cacheSet(cacheKey(record.id), data)
   return { ...data, fetchedAt: Date.now(), cached: false }

@@ -28,7 +28,7 @@ export default function PressingInfo({ record }) {
 
   return (
     <section className="pressing">
-      <h4 className="pressing-head"><Icon name="sparkle" size={16} /> Pressing &amp; rarity</h4>
+      <h4 className="pressing-head"><Icon name="sparkle" size={16} /> Tracklist, credits &amp; pressing</h4>
 
       {!data && status === 'idle' && (
         <button className="btn btn-ghost pressing-cta" onClick={() => load(false)}>
@@ -74,6 +74,39 @@ export default function PressingInfo({ record }) {
               <p className="hint">No community rarity data for this pressing.</p>
             )}
           </div>
+
+          {data.recordedAt?.length > 0 && (
+            <div className="liner-block">
+              <h5>Recorded at</h5>
+              <p className="liner-studios">{data.recordedAt.map((r) => r.kind && !/^recorded at$/i.test(r.kind) ? `${r.name} (${r.kind})` : r.name).join(' · ')}</p>
+            </div>
+          )}
+
+          {data.tracklist?.length > 0 && (
+            <div className="liner-block">
+              <h5>Tracklist</h5>
+              <ol className="tracklist">
+                {data.tracklist.map((t, i) => (
+                  <li key={i}><span className="tk-pos">{t.pos || i + 1}</span><span className="tk-title">{t.title}</span>{t.dur && <span className="tk-dur">{t.dur}</span>}</li>
+                ))}
+              </ol>
+            </div>
+          )}
+
+          {data.credits?.length > 0 && (
+            <div className="liner-block">
+              <h5>Credits</h5>
+              <ul className="credits">
+                {data.credits.map((c, i) => (
+                  <li key={i}><span className="cr-role">{c.role}</span><span className="cr-name">{c.name}</span></li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {!data.tracklist?.length && !data.credits?.length && !data.recordedAt?.length && (
+            <p className="hint">Discogs has this release, but no tracklist, credits, or studio are listed for this pressing.</p>
+          )}
 
           <a className="discogs-link" href={data.url} target="_blank" rel="noreferrer">
             View on Discogs <Icon name="chevronRight" size={14} />
