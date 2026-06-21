@@ -15,7 +15,7 @@ function discogsDevProxy() {
         try {
           if (!token) { res.statusCode = 503; res.end(JSON.stringify({ error: 'DISCOGS_TOKEN not set in .dev.vars' })); return }
           const path = (req.url || '').replace(/^\/+/, '').split('?')[0]
-          if (!/^(database\/search|releases\/\d+|users\/[^/]+\/collection\/folders\/\d+\/releases)$/.test(path)) { res.statusCode = 403; res.end(JSON.stringify({ error: 'path not allowed' })); return }
+          if (!/^(database\/search|releases\/\d+|masters\/\d+|users\/[^/]+\/collection\/folders\/\d+\/releases)$/.test(path)) { res.statusCode = 403; res.end(JSON.stringify({ error: 'path not allowed' })); return }
           const upstream = await fetch(`https://api.discogs.com${req.url}`, {
             headers: { 'User-Agent': 'SPUN/1.0 +https://mclinduke.com', Authorization: `Discogs token=${token}`, Accept: 'application/json' },
           })

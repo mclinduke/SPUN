@@ -31,10 +31,12 @@ const VIEWS = [
 
 const SORTS = [
   { id: 'recent', label: 'Recently added' },
-  { id: 'artist', label: 'Artist' },
-  { id: 'album', label: 'Album' },
+  { id: 'artist', label: 'Artist (A–Z)' },
+  { id: 'album', label: 'Album (A–Z)' },
   { id: 'year-desc', label: 'Year (newest)' },
   { id: 'year-asc', label: 'Year (oldest)' },
+  { id: 'played-most', label: 'Most played' },
+  { id: 'played-recent', label: 'Recently played' },
 ]
 
 function getInitialTheme() {
@@ -57,7 +59,7 @@ export default function App() {
   const deferredQuery = useDeferredValue(query) // keep typing snappy on big collections
   const [genreFilter, setGenreFilter] = useState('')
   const [tagFilter, setTagFilter] = useState('')
-  const [sort, setSort] = useState('recent')
+  const [sort, setSort] = useState(() => localStorage.getItem('vinyl-sort') || 'recent')
 
   const [selected, setSelected] = useState(null)
   const [formOpen, setFormOpen] = useState(false)
@@ -81,6 +83,7 @@ export default function App() {
   }, [theme])
 
   useEffect(() => { localStorage.setItem('vinyl-view', view) }, [view])
+  useEffect(() => { localStorage.setItem('vinyl-sort', sort) }, [sort])
 
   const genres = useMemo(
     () => [...new Set(records.map((r) => r.genre).filter(Boolean))].sort(),
@@ -129,9 +132,11 @@ export default function App() {
       album: (a, b) => cmp(a.album, b.album),
       'year-desc': (a, b) => (b.year || 0) - (a.year || 0),
       'year-asc': (a, b) => (a.year || 9999) - (b.year || 9999),
+      'played-most': (a, b) => (counts.get(b.id) || 0) - (counts.get(a.id) || 0) || b.createdAt - a.createdAt,
+      'played-recent': (a, b) => (lastPlayed.get(b.id) || 0) - (lastPlayed.get(a.id) || 0) || b.createdAt - a.createdAt,
     }
     return [...list].sort(by[sort] || by.recent)
-  }, [records, deferredQuery, genreFilter, tagFilter, sort])
+  }, [records, deferredQuery, genreFilter, tagFilter, sort, counts, lastPlayed])
 
   const openAdd = () => { setEditing(null); setAddedThisSession(0); setFormOpen(true) }
   const openEdit = (rec) => { setSelected(null); setEditing(rec); setFormOpen(true) }
@@ -279,13 +284,19 @@ export default function App() {
               </button>
             ))}
           </div>
-          <select className="select" value={genreFilter} onChange={(e) => setGenreFilter(e.target.value)} aria-label="Filter genre">
-            <option value="">All genres</option>
-            {genres.map((g) => <option key={g} value={g}>{g}</option>)}
-          </select>
-          <select className="select" value={sort} onChange={(e) => setSort(e.target.value)} aria-label="Sort">
-            {SORTS.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
-          </select>
+          <label className="select-wrap" title="Filter by genre">
+            <Icon name="filter" size={15} />
+            <select className="select" value={genreFilter} onChange={(e) => setGenreFilter(e.target.value)} aria-label="Filter genre">
+              <option value="">All genres</option>
+              {genres.map((g) => <option key={g} value={g}>{g}</option>)}
+            </select>
+          </label>
+          <label className="select-wrap" title="Sort records">
+            <Icon name="sort" size={15} />
+            <select className="select" value={sort} onChange={(e) => setSort(e.target.value)} aria-label="Sort">
+              {SORTS.map((s) => <option key={s.id} value={s.id}>{s.id === sort ? `Sort: ${s.label}` : s.label}</option>)}
+            </select>
+          </label>
           <button className="icon-btn dice-btn" onClick={() => setRandomOpen(true)} aria-label="Pick a random record" title="What do I play tonight?">
             <Icon name="dice" size={20} />
           </button>

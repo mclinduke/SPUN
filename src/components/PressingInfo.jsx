@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { lookupRecord, cachedRecord, rarityStale, rarityLabel } from '../services/discogs.js'
+import { lookupRecord, cachedRecord, rarityStale, rarityLabel, pressingVerdict } from '../services/discogs.js'
 import Icon from './Icon.jsx'
 
 /** Pressing details + an honest rarity signal from Discogs. Lazy (no network on
@@ -25,6 +25,8 @@ export default function PressingInfo({ record }) {
 
   const stale = data?.found && rarityStale(data.fetchedAt)
   const label = data?.found ? rarityLabel(data.have, data.want) : null
+  const verdict = data?.found ? pressingVerdict(data) : null
+  const catno = data?.labels?.[0]?.catno
 
   return (
     <section className="pressing">
@@ -74,6 +76,33 @@ export default function PressingInfo({ record }) {
               <p className="hint">No community rarity data for this pressing.</p>
             )}
           </div>
+
+          {verdict && (
+            <div className="liner-block pressing-verdict">
+              <h5>Original pressing?</h5>
+              {verdict.kind === 'original' && (
+                <p className="verdict-line"><span className="verdict-badge is-original">Matches original year</span>
+                  Dated {verdict.year} — the album’s original release year, so this is consistent with a first pressing.</p>
+              )}
+              {verdict.kind === 'reissue' && (
+                <p className="verdict-line"><span className="verdict-badge is-reissue">Later pressing</span>
+                  This album first came out in {verdict.originalYear}; this release is a {verdict.pressingYear} repress.</p>
+              )}
+              {verdict.kind === 'unknown' && (
+                <p className="verdict-line"><span className="verdict-badge is-unknown">Can’t tell from data</span>
+                  Discogs doesn’t list enough to date this against the original — the deadwax is the way to know.</p>
+              )}
+              <p className="hint">Based on the closest Discogs match — to be sure which pressing you own, check the record itself:</p>
+              <details className="verdict-how">
+                <summary>How to confirm on the record</summary>
+                <ul>
+                  <li><strong>Deadwax / runout</strong> — the etching in the smooth ring near the label{data.matrix?.length ? <> should read <code>{data.matrix.join(' · ')}</code></> : ' (the most definitive marker)'}.</li>
+                  {catno && <li><strong>Catalog #</strong> — should be <code>{catno}</code> on the spine/label.</li>}
+                  <li><strong>Barcode</strong> — {data.hasBarcode ? 'this pressing has one, so it’s 1980s or later.' : 'none listed, which is consistent with a pre-1980s original.'}</li>
+                </ul>
+              </details>
+            </div>
+          )}
 
           {data.recordedAt?.length > 0 && (
             <div className="liner-block">

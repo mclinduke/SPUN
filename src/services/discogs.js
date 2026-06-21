@@ -44,6 +44,12 @@ export async function lookupRecord(record, { force = false } = {}) {
     return { ...data, fetchedAt: Date.now() }
   }
   const rel = await api(`releases/${top.id}`)
+  // The "master" groups every pressing of an album; its year is the original
+  // release year. Comparing it to this release's year is our first-pressing read.
+  let masterYear = null
+  if (rel.master_id) {
+    try { const m = await api(`masters/${rel.master_id}`); masterYear = m.year || null } catch { /* master is optional */ }
+  }
   const data = {
     found: true,
     discogsId: top.id,
@@ -62,6 +68,10 @@ export async function lookupRecord(record, { force = false } = {}) {
     tracklist: (rel.tracklist || []).filter((t) => t.title && (!t.type_ || t.type_ === 'track')).map((t) => ({ pos: t.position || '', title: t.title, dur: t.duration || '' })),
     credits: (rel.extraartists || []).map((a) => ({ name: cleanArtist(a.name), role: a.role || '' })).filter((c) => c.name && c.role),
     recordedAt: (rel.companies || []).filter((c) => /(recorded|mixed|mastered|engineered)\s+at/i.test(c.entity_type_name || '')).map((c) => ({ kind: c.entity_type_name || '', name: c.name || '' })).filter((c) => c.name),
+    // first-pressing evidence
+    masterYear,
+    matrix: (rel.identifiers || []).filter((i) => /matrix|runout/i.test(i.type || '')).map((i) => i.value).filter(Boolean),
+    hasBarcode: (rel.identifiers || []).some((i) => /barcode/i.test(i.type || '')),
   }
   await repo.cacheSet(cacheKey(record.id), data)
   return { ...data, fetchedAt: Date.now(), cached: false }
@@ -128,6 +138,17 @@ export async function cachedRecord(id) {
 
 export function rarityStale(fetchedAt) {
   return !fetchedAt || Date.now() - fetchedAt > RARITY_TTL
+}
+
+/**
+ * Honest first-pressing read: compares this release's pressing year to the
+ * album's original (master) year. Never claims certainty — only the deadwax
+ * etchings on the physical record confirm a true first pressing.
+ */
+export function pressingVerdict({ year, masterYear } = {}) {
+  if (!year || !masterYear) return { kind: 'unknown' }
+  if (year <= masterYear) return { kind: 'original', year: masterYear }
+  return { kind: 'reissue', pressingYear: year, originalYear: masterYear }
 }
 
 /** Honest rarity read from community counts — a signal, never a stored "score". */

@@ -189,6 +189,26 @@ button { font-family: inherit; cursor: pointer; }
   outline: none;
 }
 
+/* Icon-prefixed select: makes Filter + Sort obviously controls, not just text. */
+.select-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1 1 calc(50% - 4px);
+  min-width: 0;
+}
+.select-wrap > svg {
+  position: absolute;
+  left: 11px;
+  color: var(--muted);
+  pointer-events: none;
+}
+.select-wrap .select {
+  flex: 1 1 auto;
+  width: 100%;
+  padding-left: 34px;
+}
+
 /* ============ Content ============ */
 .content { flex: 1; padding: 8px 0 96px; }
 
@@ -783,3 +803,14 @@ button { font-family: inherit; cursor: pointer; }
 .credits li { display: flex; gap: 10px; font-size: .85rem; align-items: baseline; }
 .cr-role { color: var(--muted); flex: 0 0 44%; }
 .cr-name { flex: 1; }
+
+/* Original-pressing verdict */
+.pressing-verdict .verdict-line { margin: 0 0 6px; line-height: 1.45; font-size: .9rem; }
+.verdict-badge { display: inline-block; font-size: .66rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; margin-right: 8px; vertical-align: 1px; }
+.verdict-badge.is-original { background: color-mix(in srgb, var(--accent) 20%, transparent); color: var(--accent-strong); }
+.verdict-badge.is-reissue { background: rgba(201, 138, 58, .2); color: #b9762a; }
+.verdict-badge.is-unknown { background: rgba(127, 127, 127, .16); color: var(--muted); }
+.verdict-how { margin-top: 4px; font-size: .85rem; color: var(--muted); }
+.verdict-how summary { cursor: pointer; color: var(--accent-strong); }
+.verdict-how ul { margin: 8px 0 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
+.verdict-how code { background: var(--surface); padding: 1px 5px; border-radius: 4px; font-size: .85em; }
