@@ -668,3 +668,18 @@ button { font-family: inherit; cursor: pointer; }
 .random-pick h3 { margin: 8px 0 0; }
 .random-cover { width: min(62%, 240px); }
 .random-actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; justify-content: center; }
+
+/* ============ Pressing & rarity (Discogs) ============ */
+.pressing { width: 100%; text-align: left; margin-top: 18px; border-top: 1px solid var(--border); padding-top: 16px; }
+.pressing-head { display: flex; align-items: center; gap: 6px; margin: 0 0 10px; font-size: 0.95rem; }
+.pressing-head .icon { color: var(--accent-strong); }
+.pressing-cta { width: 100%; }
+.pressing-grid { display: grid; grid-template-columns: 92px 1fr; gap: 5px 12px; margin: 0; font-size: 0.88rem; }
+.pressing-grid dt { color: var(--muted); }
+.pressing-grid dd { margin: 0; }
+.rarity { margin-top: 14px; }
+.rarity-badge { display: inline-block; background: color-mix(in srgb, var(--accent) 22%, transparent); color: var(--accent-strong); font-weight: 700; font-size: 0.78rem; padding: 3px 10px; border-radius: 999px; margin-bottom: 6px; }
+.rarity-line { margin: 4px 0; font-size: 0.9rem; }
+.discogs-link { display: inline-flex; align-items: center; gap: 2px; margin-top: 12px; color: var(--accent-strong); text-decoration: none; font-size: 0.88rem; font-weight: 600; }
+.linkish { border: none; background: none; color: var(--accent-strong); font: inherit; font-weight: 600; cursor: pointer; padding: 0; text-decoration: underline; }
+.value { display: flex; flex-direction: column; gap: 14px; }

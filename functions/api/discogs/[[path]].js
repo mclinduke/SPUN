@@ -1,0 +1,34 @@
+// Cloudflare Pages Function: server-side Discogs proxy.
+// The Discogs token lives ONLY here (env var, never in the client bundle), and
+// this also sidesteps Discogs' lack of browser CORS. Any /api/discogs/* request
+// is forwarded to api.discogs.com with the token + a descriptive User-Agent.
+//
+// Set the secret once:  npx wrangler pages secret put DISCOGS_TOKEN
+export async function onRequest(context) {
+  const { request, env, params } = context
+  const path = Array.isArray(params.path) ? params.path.join('/') : (params.path || '')
+  const search = new URL(request.url).search
+  const target = `https://api.discogs.com/${path}${search}`
+
+  if (!env.DISCOGS_TOKEN) {
+    return new Response(JSON.stringify({ error: 'DISCOGS_TOKEN not configured' }), {
+      status: 503, headers: { 'content-type': 'application/json' },
+    })
+  }
+
+  const upstream = await fetch(target, {
+    headers: {
+      'User-Agent': 'Crate/1.0 +https://mclinduke.com',
+      Authorization: `Discogs token=${env.DISCOGS_TOKEN}`,
+      Accept: 'application/json',
+    },
+  })
+  const body = await upstream.text()
+  return new Response(body, {
+    status: upstream.status,
+    headers: {
+      'content-type': upstream.headers.get('content-type') || 'application/json',
+      'cache-control': 'no-store',
+    },
+  })
+}

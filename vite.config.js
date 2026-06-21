@@ -1,10 +1,38 @@
+import { readFileSync } from 'node:fs'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
+// Dev-only mirror of the Cloudflare Pages Discogs proxy so /api/discogs/* works
+// with `npm run dev` too. Token comes from .dev.vars (gitignored) — never bundled.
+function discogsDevProxy() {
+  let token = process.env.DISCOGS_TOKEN
+  if (!token) { try { token = readFileSync('.dev.vars', 'utf8').match(/DISCOGS_TOKEN=(\S+)/)?.[1] } catch { /* none */ } }
+  return {
+    name: 'discogs-dev-proxy',
+    configureServer(server) {
+      server.middlewares.use('/api/discogs', async (req, res) => {
+        try {
+          if (!token) { res.statusCode = 503; res.end(JSON.stringify({ error: 'DISCOGS_TOKEN not set in .dev.vars' })); return }
+          const upstream = await fetch(`https://api.discogs.com${req.url}`, {
+            headers: { 'User-Agent': 'Crate/1.0 +https://mclinduke.com', Authorization: `Discogs token=${token}`, Accept: 'application/json' },
+          })
+          const body = await upstream.text()
+          res.statusCode = upstream.status
+          res.setHeader('content-type', upstream.headers.get('content-type') || 'application/json')
+          res.end(body)
+        } catch (e) {
+          res.statusCode = 502; res.end(JSON.stringify({ error: String(e) }))
+        }
+      })
+    },
+  }
+}
+
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
+    discogsDevProxy(),
     react(),
     VitePWA({
       registerType: 'autoUpdate',

@@ -13,6 +13,8 @@ import BulkAdd from './components/BulkAdd.jsx'
 import Stats from './components/Stats.jsx'
 import ListeningStats from './components/ListeningStats.jsx'
 import RandomPicker from './components/RandomPicker.jsx'
+import PressingInfo from './components/PressingInfo.jsx'
+import CollectionValue from './components/CollectionValue.jsx'
 import SettingsSheet from './components/SettingsSheet.jsx'
 
 const VIEWS = [
@@ -52,6 +54,7 @@ export default function App() {
   const [statsOpen, setStatsOpen] = useState(false)
   const [listeningOpen, setListeningOpen] = useState(false)
   const [randomOpen, setRandomOpen] = useState(false)
+  const [valueOpen, setValueOpen] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [addedThisSession, setAddedThisSession] = useState(0)
 
@@ -254,7 +257,9 @@ export default function App() {
             onPlay={logPlay}
             playCount={counts.get(selected.id) || 0}
             lastPlayed={lastPlayed.get(selected.id)}
-          />
+          >
+            <PressingInfo record={selected} />
+          </RecordDetail>
         </Sheet>
       )}
 
@@ -297,6 +302,12 @@ export default function App() {
         </Sheet>
       )}
 
+      {valueOpen && (
+        <Sheet title="Collection value" onClose={() => setValueOpen(false)}>
+          <CollectionValue records={records} />
+        </Sheet>
+      )}
+
       {settingsOpen && (
         <Sheet title="Menu" onClose={() => setSettingsOpen(false)}>
           <SettingsSheet
@@ -307,6 +318,7 @@ export default function App() {
             onShowStats={() => { setSettingsOpen(false); setStatsOpen(true) }}
             onShowListening={() => { setSettingsOpen(false); setListeningOpen(true) }}
             onShowRandom={() => { setSettingsOpen(false); setRandomOpen(true) }}
+            onShowValue={() => { setSettingsOpen(false); setValueOpen(true) }}
             onChanged={reload}
           />
         </Sheet>

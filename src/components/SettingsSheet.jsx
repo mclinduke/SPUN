@@ -8,7 +8,7 @@ function todayStamp() {
   return new Date().toISOString().slice(0, 10)
 }
 
-export default function SettingsSheet({ count, dark, onToggleDark, onBulkAdd, onShowStats, onShowListening, onShowRandom, onChanged }) {
+export default function SettingsSheet({ count, dark, onToggleDark, onBulkAdd, onShowStats, onShowListening, onShowRandom, onShowValue, onChanged }) {
   const fileRef = useRef(null)
   const [busy, setBusy] = useState('')
   const [confirmClear, setConfirmClear] = useState(false)
@@ -68,6 +68,9 @@ export default function SettingsSheet({ count, dark, onToggleDark, onBulkAdd, on
       </button>
       <button className="menu-item" onClick={onShowStats}>
         <Icon name="stats" /> <span><strong>Collection stats</strong><small>{count} records</small></span>
+      </button>
+      <button className="menu-item" onClick={onShowValue} disabled={!count}>
+        <Icon name="sparkle" /> <span><strong>Collection value</strong><small>Rough estimate via Discogs</small></span>
       </button>
 
       <div className="menu-section">Backup &amp; share</div>
