@@ -620,3 +620,39 @@ button { font-family: inherit; cursor: pointer; }
   .sheet-wide { max-width: 720px; }
   .content { padding-bottom: 40px; }
 }
+
+/* ============ Play button + detail extras ============ */
+.spin-btn { width: 100%; margin-top: 6px; }
+.spin-btn.spun { background: var(--accent); }
+.play-stat { text-align: center; color: var(--muted); font-size: 0.85rem; margin: 8px 0 0; }
+.detail-pressing { color: var(--muted); font-size: 0.85rem; margin: 10px 0 0; font-variant-numeric: tabular-nums; }
+
+/* ============ Listening (Wrapped) ============ */
+.listening { display: flex; flex-direction: column; gap: 24px; }
+.listen-headline { display: flex; justify-content: space-around; gap: 8px; text-align: center; }
+.listen-headline > div { display: flex; flex-direction: column; gap: 2px; color: var(--muted); font-size: 0.8rem; }
+.listen-headline .big-number { font-size: 2rem; }
+.spark { display: flex; align-items: flex-end; gap: 6px; height: 80px; }
+.spark-bar { flex: 1; background: var(--accent); border-radius: 4px 4px 0 0; min-height: 3px; }
+.top-records { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.top-records li { display: flex; align-items: center; gap: 12px; }
+.rank { font-weight: 800; color: var(--accent); width: 16px; text-align: center; font-variant-numeric: tabular-nums; }
+.top-rec-btn { flex: 1; display: flex; align-items: center; gap: 12px; border: none; background: transparent; color: inherit; text-align: left; padding: 0; min-width: 0; }
+.top-thumb { width: 48px; height: 48px; flex: 0 0 48px; box-shadow: none; }
+.top-meta { display: flex; flex-direction: column; min-width: 0; }
+.top-meta strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.top-meta small { color: var(--muted); }
+.top-count { color: var(--muted); font-variant-numeric: tabular-nums; }
+
+/* ============ Random picker ============ */
+.random { display: flex; flex-direction: column; gap: 16px; }
+.random-constraints { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.random-constraints .select { flex: 1 1 130px; }
+.toggle { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; color: var(--text); }
+.toggle input { width: 18px; height: 18px; accent-color: var(--accent); }
+.random-count { text-align: center; margin: 0; }
+.random-roll { align-self: center; padding: 14px 28px; }
+.random-pick { display: flex; flex-direction: column; align-items: center; gap: 4px; text-align: center; }
+.random-pick h3 { margin: 8px 0 0; }
+.random-cover { width: min(62%, 240px); }
+.random-actions { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; justify-content: center; }

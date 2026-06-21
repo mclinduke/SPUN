@@ -8,7 +8,7 @@ function todayStamp() {
   return new Date().toISOString().slice(0, 10)
 }
 
-export default function SettingsSheet({ count, dark, onToggleDark, onBulkAdd, onShowStats, onChanged }) {
+export default function SettingsSheet({ count, dark, onToggleDark, onBulkAdd, onShowStats, onShowListening, onShowRandom, onChanged }) {
   const fileRef = useRef(null)
   const [busy, setBusy] = useState('')
   const [confirmClear, setConfirmClear] = useState(false)
@@ -59,6 +59,12 @@ export default function SettingsSheet({ count, dark, onToggleDark, onBulkAdd, on
     <div className="settings">
       <button className="menu-item" onClick={onBulkAdd}>
         <Icon name="plus" /> <span><strong>Bulk add records</strong><small>Paste or type a whole list at once</small></span>
+      </button>
+      <button className="menu-item" onClick={onShowRandom} disabled={!count}>
+        <Icon name="dice" /> <span><strong>What do I play tonight?</strong><small>Random pick, with filters</small></span>
+      </button>
+      <button className="menu-item" onClick={onShowListening}>
+        <Icon name="headphones" /> <span><strong>Your listening</strong><small>Spins, streaks, most-played</small></span>
       </button>
       <button className="menu-item" onClick={onShowStats}>
         <Icon name="stats" /> <span><strong>Collection stats</strong><small>{count} records</small></span>

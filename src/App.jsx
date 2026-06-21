@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useRecords } from './hooks/useRecords.js'
+import { usePlays } from './hooks/usePlays.js'
 import { bustCover } from './hooks/useCoverSrc.js'
 import Icon from './components/Icon.jsx'
 import Sheet from './components/Sheet.jsx'
@@ -10,6 +11,8 @@ import RecordForm from './components/RecordForm.jsx'
 import RecordDetail from './components/RecordDetail.jsx'
 import BulkAdd from './components/BulkAdd.jsx'
 import Stats from './components/Stats.jsx'
+import ListeningStats from './components/ListeningStats.jsx'
+import RandomPicker from './components/RandomPicker.jsx'
 import SettingsSheet from './components/SettingsSheet.jsx'
 
 const VIEWS = [
@@ -34,6 +37,7 @@ function getInitialTheme() {
 
 export default function App() {
   const { records, loading, add, bulkAdd, update, remove, setPhoto, removePhoto, reload } = useRecords()
+  const { plays, counts, lastPlayed, logPlay } = usePlays()
 
   const [view, setView] = useState(() => localStorage.getItem('vinyl-view') || 'coverflow')
   const [theme, setTheme] = useState(getInitialTheme)
@@ -46,6 +50,8 @@ export default function App() {
   const [editing, setEditing] = useState(null)
   const [bulkOpen, setBulkOpen] = useState(false)
   const [statsOpen, setStatsOpen] = useState(false)
+  const [listeningOpen, setListeningOpen] = useState(false)
+  const [randomOpen, setRandomOpen] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [addedThisSession, setAddedThisSession] = useState(0)
 
@@ -195,6 +201,9 @@ export default function App() {
           <select className="select" value={sort} onChange={(e) => setSort(e.target.value)} aria-label="Sort">
             {SORTS.map((s) => <option key={s.id} value={s.id}>{s.label}</option>)}
           </select>
+          <button className="icon-btn dice-btn" onClick={() => setRandomOpen(true)} aria-label="Pick a random record" title="What do I play tonight?">
+            <Icon name="dice" size={20} />
+          </button>
         </div>
       </div>
 
@@ -230,7 +239,14 @@ export default function App() {
 
       {selected && (
         <Sheet title="Record" onClose={() => setSelected(null)}>
-          <RecordDetail record={selected} onEdit={openEdit} onDelete={handleDelete} />
+          <RecordDetail
+            record={selected}
+            onEdit={openEdit}
+            onDelete={handleDelete}
+            onPlay={logPlay}
+            playCount={counts.get(selected.id) || 0}
+            lastPlayed={lastPlayed.get(selected.id)}
+          />
         </Sheet>
       )}
 
@@ -259,6 +275,18 @@ export default function App() {
         </Sheet>
       )}
 
+      {listeningOpen && (
+        <Sheet title="Your listening" onClose={() => setListeningOpen(false)}>
+          <ListeningStats records={records} plays={plays} onSelect={(r) => { setListeningOpen(false); setSelected(r) }} />
+        </Sheet>
+      )}
+
+      {randomOpen && (
+        <Sheet title="What do I play tonight?" onClose={() => setRandomOpen(false)}>
+          <RandomPicker records={records} counts={counts} genres={genres} onSelect={(r) => { setRandomOpen(false); setSelected(r) }} />
+        </Sheet>
+      )}
+
       {settingsOpen && (
         <Sheet title="Menu" onClose={() => setSettingsOpen(false)}>
           <SettingsSheet
@@ -267,6 +295,8 @@ export default function App() {
             onToggleDark={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
             onBulkAdd={() => { setSettingsOpen(false); setBulkOpen(true) }}
             onShowStats={() => { setSettingsOpen(false); setStatsOpen(true) }}
+            onShowListening={() => { setSettingsOpen(false); setListeningOpen(true) }}
+            onShowRandom={() => { setSettingsOpen(false); setRandomOpen(true) }}
             onChanged={reload}
           />
         </Sheet>
