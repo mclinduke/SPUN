@@ -179,8 +179,13 @@ function createIndexedDbRepository() {
 
 let repo = null
 
-/** Returns the singleton repository. Swap the implementation here to change backends. */
+/** Returns the active repository (IndexedDB by default). */
 export function getRepository() {
   if (!repo) repo = createIndexedDbRepository()
   return repo
+}
+
+/** Swap the active backend (e.g. to the Supabase repo after sign-in). */
+export function setRepository(impl) {
+  repo = impl
 }

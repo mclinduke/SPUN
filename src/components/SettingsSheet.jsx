@@ -2,6 +2,7 @@ import { useRef, useState } from 'react'
 import { exportJSON, exportCSV, importJSON, importCSV, downloadFile } from '../services/importExport.js'
 import { getRepository } from '../data/repository.js'
 import { bustAllCovers } from '../hooks/useCoverSrc.js'
+import { supabase, isCloud } from '../data/supabaseClient.js'
 import Icon from './Icon.jsx'
 
 function todayStamp() {
@@ -92,6 +93,15 @@ export default function SettingsSheet({ count, dark, onToggleDark, onBulkAdd, on
       <button className="menu-item" onClick={onToggleDark}>
         <Icon name={dark ? 'sun' : 'moon'} /> <span><strong>{dark ? 'Light mode' : 'Dark mode'}</strong></span>
       </button>
+
+      {isCloud() && (
+        <>
+          <div className="menu-section">Account</div>
+          <button className="menu-item" onClick={() => supabase.auth.signOut()}>
+            <Icon name="upload" /> <span><strong>Sign out</strong><small>Your collection syncs to your account</small></span>
+          </button>
+        </>
+      )}
 
       <div className="menu-section danger-section">Danger zone</div>
       {confirmClear ? (

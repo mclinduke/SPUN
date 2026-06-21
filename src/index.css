@@ -696,3 +696,18 @@ button { font-family: inherit; cursor: pointer; }
 .want-text small { color: var(--muted); }
 .want-actions { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
 .want-actions .btn { padding: 7px 11px; font-size: 0.85rem; }
+
+/* ============ Auth (cloud mode) ============ */
+.auth-loading { min-height: 100dvh; display: grid; place-items: center; color: var(--muted); }
+.auth-screen { min-height: 100dvh; display: grid; place-items: center; padding: 24px; }
+.auth-card { width: 100%; max-width: 360px; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 28px 24px; box-shadow: var(--shadow); text-align: center; }
+.auth-brand { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 1.5rem; font-weight: 800; letter-spacing: -0.02em; }
+.auth-brand .icon { color: var(--accent); }
+.auth-tag { color: var(--muted); margin: 4px 0 20px; }
+.auth-form { display: flex; flex-direction: column; gap: 10px; }
+.auth-form input { width: 100%; padding: 12px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 12px; color: var(--text); font-size: 1rem; outline: none; }
+.auth-form input:focus { border-color: var(--accent); }
+.auth-form .btn { margin-top: 4px; }
+.auth-err { color: var(--danger); font-size: 0.85rem; margin: 12px 0 0; }
+.auth-msg { color: var(--accent-strong); font-size: 0.85rem; margin: 12px 0 0; }
+.auth-card .linkish { margin-top: 16px; display: inline-block; }
