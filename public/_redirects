@@ -1,0 +1,3 @@
+# SPA fallback. Cloudflare Pages Functions (/api/discogs/*) and real static
+# files are matched first; everything else serves the app shell.
+/*    /index.html   200
