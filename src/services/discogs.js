@@ -61,6 +61,49 @@ export async function lookupRecord(record, { force = false } = {}) {
   return { ...data, fetchedAt: Date.now(), cached: false }
 }
 
+// Discogs appends "(2)" style disambiguators to artist names — strip them.
+const cleanArtist = (name) => (name || '').replace(/\s*\(\d+\)$/, '').trim()
+
+/**
+ * Pull a user's PUBLIC Discogs collection (folder 0 = "All") into record drafts.
+ * Paginates 100/page; reports progress. Maps cover art, year, genre, label, catno.
+ */
+export async function fetchDiscogsCollection(username, { onProgress } = {}) {
+  const u = encodeURIComponent((username || '').trim())
+  if (!u) throw new Error('Enter your Discogs username')
+  const drafts = []
+  let page = 1
+  let pages = 1
+  do {
+    const q = new URLSearchParams({ per_page: '100', page: String(page), sort: 'added', sort_order: 'desc' })
+    let data
+    try {
+      data = await api(`users/${u}/collection/folders/0/releases?${q}`)
+    } catch (e) {
+      if (/40[34]/.test(e.message)) throw new Error(`Couldn't read "${username}". Check the username, and make sure your Discogs collection is set to public (Settings → Privacy).`)
+      throw e
+    }
+    pages = data.pagination?.pages || 1
+    for (const item of data.releases || []) {
+      const bi = item.basic_information || {}
+      const labels = bi.labels || []
+      drafts.push({
+        album: bi.title || '',
+        artist: (bi.artists || []).map((a) => cleanArtist(a.name)).filter(Boolean).join(', '),
+        year: bi.year && bi.year > 0 ? bi.year : null,
+        genre: (bi.genres || [])[0] || (bi.styles || [])[0] || '',
+        label: labels[0]?.name || '',
+        catalogNo: labels[0]?.catno || '',
+        coverUrl: bi.cover_image || null,
+        notes: (bi.formats || []).flatMap((f) => [f.name, ...(f.descriptions || [])]).filter(Boolean).join(', '),
+      })
+    }
+    onProgress?.({ page, pages, count: drafts.length })
+    page += 1
+  } while (page <= pages)
+  return drafts
+}
+
 /** Cached payload for a record without hitting the network (or null). */
 export async function cachedRecord(id) {
   const c = await getRepository().cacheGet(cacheKey(id))

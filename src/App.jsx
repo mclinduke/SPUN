@@ -19,6 +19,7 @@ import PressingInfo from './components/PressingInfo.jsx'
 import CollectionValue from './components/CollectionValue.jsx'
 import Wishlist from './components/Wishlist.jsx'
 import SettingsSheet from './components/SettingsSheet.jsx'
+import DiscogsImport from './components/DiscogsImport.jsx'
 
 const VIEWS = [
   { id: 'coverflow', icon: 'coverflow', label: 'Cover Flow' },
@@ -56,6 +57,7 @@ export default function App() {
   const [formOpen, setFormOpen] = useState(false)
   const [editing, setEditing] = useState(null)
   const [bulkOpen, setBulkOpen] = useState(false)
+  const [discogsOpen, setDiscogsOpen] = useState(false)
   const [statsOpen, setStatsOpen] = useState(false)
   const [listeningOpen, setListeningOpen] = useState(false)
   const [randomOpen, setRandomOpen] = useState(false)
@@ -188,6 +190,16 @@ export default function App() {
       setSettingsOpen(false)
     } catch (err) {
       alert(`Couldn't add these records: ${err.message || err}`)
+    }
+  }
+
+  const handleDiscogsCommit = async (recs) => {
+    try {
+      await bulkAdd(recs)
+      setDiscogsOpen(false)
+      setSettingsOpen(false)
+    } catch (err) {
+      alert(`Couldn't import: ${err.message || err}`)
     }
   }
 
@@ -355,6 +367,12 @@ export default function App() {
         </Sheet>
       )}
 
+      {discogsOpen && (
+        <Sheet title="Import from Discogs" onClose={() => setDiscogsOpen(false)}>
+          <DiscogsImport onCommit={handleDiscogsCommit} onCancel={() => setDiscogsOpen(false)} findDuplicate={findDuplicate} />
+        </Sheet>
+      )}
+
       {statsOpen && (
         <Sheet title="Collection stats" onClose={() => setStatsOpen(false)}>
           <Stats records={records} />
@@ -392,6 +410,7 @@ export default function App() {
             dark={theme === 'dark'}
             onToggleDark={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
             onBulkAdd={() => { setSettingsOpen(false); setBulkOpen(true) }}
+            onImportDiscogs={() => { setSettingsOpen(false); setDiscogsOpen(true) }}
             onShowStats={() => { setSettingsOpen(false); setStatsOpen(true) }}
             onShowListening={() => { setSettingsOpen(false); setListeningOpen(true) }}
             onShowRandom={() => { setSettingsOpen(false); setRandomOpen(true) }}

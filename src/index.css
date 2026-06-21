@@ -731,3 +731,10 @@ button { font-family: inherit; cursor: pointer; }
 .ce-option img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .ce-option:hover, .ce-option:focus-visible { border-color: var(--accent); outline: none; }
 .ce-photo { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* ============ Discogs import ============ */
+.discogs-import { display: flex; flex-direction: column; gap: 16px; }
+.dg-progress { display: flex; flex-direction: column; align-items: center; gap: 14px; padding: 32px 12px; text-align: center; color: var(--muted); }
+.dg-summary { text-align: center; padding: 8px 0 4px; }
+.dg-summary .big-number { display: block; font-size: 2.6rem; font-weight: 700; color: var(--accent); line-height: 1.1; }
+.dg-summary p { margin: 2px 0; }
