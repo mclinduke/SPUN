@@ -6,8 +6,8 @@
   --text: #1f1d1a;
   --muted: #645f58; /* AA-contrast secondary text on light bg/surfaces */
   --border: #e2ddd2;
-  --accent: #6b8f71;        /* sage */
-  --accent-strong: #557a5c;
+  --accent: #7e5bd6;        /* violet */
+  --accent-strong: #5b3fb5;
   --on-accent: #ffffff;
   --danger: #c0584a;
   --shadow: 0 10px 30px rgba(40, 36, 30, 0.12);
@@ -24,9 +24,9 @@
   --text: #f0ece1;
   --muted: #a39d8f;
   --border: #34322a;
-  --accent: #8ab592;
-  --accent-strong: #6b8f71;
-  --on-accent: #16170f;
+  --accent: #b8a1f0;
+  --accent-strong: #7e5bd6;
+  --on-accent: #15101f;
   --danger: #e0796b;
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.6);

@@ -13,29 +13,37 @@ export default function CoverFlowView({ records, onSelect }) {
   const frame = useRef(0)
   const snapTimer = useRef(0)
   const [active, setActive] = useState(0)
+  const geom = useRef([]) // cached {center,width} per item so apply() never forces reflow
+
+  // Read layout ONCE (items are fixed-width, so geometry is stable until resize/record-set change).
+  const measure = useCallback(() => {
+    geom.current = itemsRef.current.map((el) => (el ? { center: el.offsetLeft + el.offsetWidth / 2, width: el.offsetWidth } : null))
+  }, [])
 
   const apply = useCallback(() => {
     const track = trackRef.current
     if (!track) return
     const center = track.scrollLeft + track.clientWidth / 2
+    const g = geom.current
     let nearest = 0
     let nearestDist = Infinity
-    itemsRef.current.forEach((el, i) => {
-      if (!el) return
-      const itemCenter = el.offsetLeft + el.offsetWidth / 2
-      const delta = (itemCenter - center) / el.offsetWidth // in item-widths
+    for (let i = 0; i < g.length; i++) {
+      const o = g[i]
+      const el = itemsRef.current[i]
+      if (!o || !el) continue
+      const delta = (o.center - center) / o.width // pure math from cached geometry — no per-frame layout read
       const clamped = Math.max(-3, Math.min(3, delta))
       const rotateY = Math.max(-58, Math.min(58, -clamped * 50))
       const scale = Math.max(0.62, 1 - Math.abs(clamped) * 0.16)
       const translateZ = -Math.abs(clamped) * 110
-      const translateX = -clamped * el.offsetWidth * 0.42
+      const translateX = -clamped * o.width * 0.42
       const opacity = Math.max(0.32, 1 - Math.abs(clamped) * 0.28)
       el.style.transform = `translateX(${translateX}px) translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`
       el.style.opacity = String(opacity)
       el.style.zIndex = String(100 - Math.round(Math.abs(delta) * 10))
-      const dist = Math.abs(itemCenter - center)
+      const dist = Math.abs(o.center - center)
       if (dist < nearestDist) { nearestDist = dist; nearest = i }
-    })
+    }
     setActive(nearest)
   }, [])
 
@@ -65,18 +73,18 @@ export default function CoverFlowView({ records, onSelect }) {
   // Center the first item on mount / when the set changes, then paint.
   useLayoutEffect(() => {
     itemsRef.current = itemsRef.current.slice(0, records.length)
-    const id = requestAnimationFrame(() => { scrollToIndex(0, 'auto'); apply() })
+    const id = requestAnimationFrame(() => { scrollToIndex(0, 'auto'); measure(); apply() })
     return () => cancelAnimationFrame(id)
-  }, [records, apply, scrollToIndex])
+  }, [records, apply, scrollToIndex, measure])
 
   useEffect(() => {
-    const onResize = () => apply()
+    const onResize = () => { measure(); apply() }
     window.addEventListener('resize', onResize)
     return () => {
       window.removeEventListener('resize', onResize)
       clearTimeout(snapTimer.current)
     }
-  }, [apply])
+  }, [apply, measure])
 
   const current = records[Math.min(active, records.length - 1)] // clamp when the list shrinks under filter
 
