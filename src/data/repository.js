@@ -38,6 +38,9 @@ function normalize(input) {
     notes: (input.notes || '').trim(),
     coverUrl: input.coverUrl || null,
     hasPhoto: Boolean(input.hasPhoto),
+    // 'official' = prefer coverUrl even when a personal photo exists (kept as a
+    // non-destructive fallback); 'photo'/null = personal photo wins when present.
+    coverSource: input.coverSource || null,
     createdAt: input.createdAt || now,
     updatedAt: now,
   }

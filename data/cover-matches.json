@@ -1,0 +1,977 @@
+{
+  "generatedAt": "2026-06-20T21:21:21.030Z",
+  "total": 50,
+  "matched": [
+    {
+      "id": "bf68b6bb-9b3f-4540-9586-03cc24ed65bd",
+      "artist": "Beach House",
+      "album": "Once Twice Melody",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "d0575df5-8acc-4a8c-88a5-687aad327fe4",
+      "mbTitle": "Once Twice Melody",
+      "coverUrl": "https://coverartarchive.org/release-group/d0575df5-8acc-4a8c-88a5-687aad327fe4/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "07eba6ca-c9e3-4503-ae56-134316f84d29",
+      "artist": "Fred again..",
+      "album": "Actual Life (April 14 - December 17 2020)",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "f55cf7f5-d4b9-4621-a797-52ad168a9252",
+      "mbTitle": "Actual Life (April 14 - December 17 2020)",
+      "coverUrl": "https://coverartarchive.org/release-group/f55cf7f5-d4b9-4621-a797-52ad168a9252/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "148a8e64-9755-4c21-996e-f94600d8b55e",
+      "artist": "Fred again..",
+      "album": "Actual Life 2 (February 2 - October 15 2021)",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "45ea3afe-4f89-4958-bf67-14926d10e7bb",
+      "mbTitle": "Actual Life 2 (February 2 - October 15 2021)",
+      "coverUrl": "https://coverartarchive.org/release-group/45ea3afe-4f89-4958-bf67-14926d10e7bb/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "6e524511-38ea-45a7-b9f5-03b88f3919a9",
+      "artist": "Green Day",
+      "album": "American Idiot",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "04ee747f-ab6e-3963-bcd0-caba5b8a9c31",
+      "mbTitle": "American Idiot",
+      "coverUrl": "https://coverartarchive.org/release-group/04ee747f-ab6e-3963-bcd0-caba5b8a9c31/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "38b10f53-db3c-4193-b629-b236bab86fb1",
+      "artist": "Green Day",
+      "album": "Greatest Hits: God's Favorite Band",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "036b6fa3-f73d-4742-b224-595ca5880433",
+      "mbTitle": "Greatest Hits: God’s Favorite Band",
+      "coverUrl": "https://coverartarchive.org/release-group/036b6fa3-f73d-4742-b224-595ca5880433/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "57ea9ce0-51c8-4f3e-93c3-3e64514df160",
+      "artist": "Nirvana",
+      "album": "Nevermind",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "1b022e01-4da6-387b-8658-8678046e4cef",
+      "mbTitle": "Nevermind",
+      "coverUrl": "https://coverartarchive.org/release-group/1b022e01-4da6-387b-8658-8678046e4cef/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "e643921c-a6fd-4035-856b-ddaa351014ee",
+      "artist": "Alice in Chains",
+      "album": "Dirt",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "92d8f0c4-8c64-3bee-bee1-812a70e77efa",
+      "mbTitle": "Dirt",
+      "coverUrl": "https://coverartarchive.org/release-group/92d8f0c4-8c64-3bee-bee1-812a70e77efa/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "4e389aaf-4acc-4950-b4e4-a38e6f5c24ad",
+      "artist": "The Lumineers",
+      "album": "Cleopatra",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "3afcf111-fc5d-4b7c-9712-55d225f4b2eb",
+      "mbTitle": "Cleopatra",
+      "coverUrl": "https://coverartarchive.org/release-group/3afcf111-fc5d-4b7c-9712-55d225f4b2eb/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "5328179c-ddaf-49d1-bc4a-1bc58bc8556a",
+      "artist": "Sturgill Simpson",
+      "album": "Cuttin' Grass, Vol. 1 (The Butcher Shoppe Sessions)",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "945eea4e-c42e-4b86-976b-df4604b15d35",
+      "mbTitle": "Cuttin’ Grass Vol. 1: The Butcher Shoppe Sessions",
+      "coverUrl": "https://coverartarchive.org/release-group/945eea4e-c42e-4b86-976b-df4604b15d35/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "064d7498-80d8-4f68-9a96-04570d22a9da",
+      "artist": "Johnny Blue Skies",
+      "album": "Mutiny After Midnight",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "cddab6fa-4c6a-404e-a78f-2e996fe53d40",
+      "mbTitle": "Mutiny After Midnight",
+      "coverUrl": "https://coverartarchive.org/release-group/cddab6fa-4c6a-404e-a78f-2e996fe53d40/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "1874734e-1d33-41df-822b-99e0e451b642",
+      "artist": "Billy Strings",
+      "album": "Renewal",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "b0fe869f-ffaf-453a-908d-499aac467293",
+      "mbTitle": "Renewal",
+      "coverUrl": "https://coverartarchive.org/release-group/b0fe869f-ffaf-453a-908d-499aac467293/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "d2da7ecc-78d4-4ef8-9243-fec8c614a5f7",
+      "artist": "Billy Strings",
+      "album": "Live at the Legion",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "4f840350-837a-409d-8370-f6f8693923c7",
+      "mbTitle": "Live at the Legion",
+      "coverUrl": "https://coverartarchive.org/release-group/4f840350-837a-409d-8370-f6f8693923c7/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "6e4c35bc-9f3c-400e-bee3-2a04836f40e7",
+      "artist": "Widespread Panic",
+      "album": "Live from Austin, TX",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "47d4d446-9a89-3c79-ade1-b5ddd027b550",
+      "mbTitle": "Live from Austin, TX",
+      "coverUrl": "https://coverartarchive.org/release-group/47d4d446-9a89-3c79-ade1-b5ddd027b550/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "ba8d46e2-5df6-4e66-84d0-ff176dc7d818",
+      "artist": "The Beatles",
+      "album": "The Esher Demos",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "cb7af48f-1242-3801-a98c-638a06dfee44",
+      "mbTitle": "Acoustic Masterpieces: The Esher Demos",
+      "coverUrl": "https://coverartarchive.org/release-group/cb7af48f-1242-3801-a98c-638a06dfee44/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "6c6aa6da-3427-4da4-9552-66917817e098",
+      "artist": "The Beatles",
+      "album": "Rarities",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "4b5f36c7-4f10-3565-ad2b-53a06d898084",
+      "mbTitle": "Rarities",
+      "coverUrl": "https://coverartarchive.org/release-group/4b5f36c7-4f10-3565-ad2b-53a06d898084/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "e8adc9da-ac01-44c0-b8e4-3ce0787862f7",
+      "artist": "Ringo Starr",
+      "album": "Blast from Your Past",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "94adc055-6741-3dca-8599-b505e563fa85",
+      "mbTitle": "Blast From Your Past",
+      "coverUrl": "https://coverartarchive.org/release-group/94adc055-6741-3dca-8599-b505e563fa85/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "b9e2bf38-af9d-4f88-872b-6124388c548c",
+      "artist": "Led Zeppelin",
+      "album": "Presence",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "42f8acce-90fc-3471-a4cd-ace1ab816276",
+      "mbTitle": "Presence",
+      "coverUrl": "https://coverartarchive.org/release-group/42f8acce-90fc-3471-a4cd-ace1ab816276/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "f222b2b2-c153-4586-919b-baedaaafce82",
+      "artist": "The Rolling Stones",
+      "album": "Goats Head Soup",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "e82ba8db-3712-3de0-bbe5-0311b89db7e2",
+      "mbTitle": "Goats Head Soup",
+      "coverUrl": "https://coverartarchive.org/release-group/e82ba8db-3712-3de0-bbe5-0311b89db7e2/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "b2fd6fbf-b0a6-41ae-8f36-777ae9baed8c",
+      "artist": "Grateful Dead",
+      "album": "Europe '72: The Complete Recordings",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "c5562a09-5413-470a-8a9f-fe8b39b245af",
+      "mbTitle": "Europe ’72: The Complete Recordings",
+      "coverUrl": "https://coverartarchive.org/release-group/c5562a09-5413-470a-8a9f-fe8b39b245af/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "0b3b1a05-be8e-471f-a15e-7a07c92e7e60",
+      "artist": "The Allman Brothers Band",
+      "album": "Reach for the Sky",
+      "oldCover": "your-photo",
+      "status": "matched",
+      "mbid": "42a9877a-c423-3c61-8b0e-9bf0d79961d1",
+      "mbTitle": "Reach for the Sky",
+      "coverUrl": "https://coverartarchive.org/release-group/42a9877a-c423-3c61-8b0e-9bf0d79961d1/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "63bd88e7-dd62-4244-a44f-3ef11c2a0766",
+      "artist": "The Allman Brothers Band",
+      "album": "Beginnings",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "fcbee4c6-70fb-3347-9497-0c67a39885fd",
+      "mbTitle": "Beginnings",
+      "coverUrl": "https://coverartarchive.org/release-group/fcbee4c6-70fb-3347-9497-0c67a39885fd/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "9d9720d3-0686-4835-9af8-ae0ac5b08135",
+      "artist": "Pink Floyd",
+      "album": "The Dark Side of the Moon",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "f5093c06-23e3-404f-aeaa-40f72885ee3a",
+      "mbTitle": "The Dark Side of the Moon",
+      "coverUrl": "https://coverartarchive.org/release-group/f5093c06-23e3-404f-aeaa-40f72885ee3a/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "6ced97f8-7451-45d9-acbf-ffd4eaabaf77",
+      "artist": "John Prine",
+      "album": "Prime Prine: The Best of John Prine",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "a00cf3b3-80f8-3b53-958d-3529be6d2f95",
+      "mbTitle": "Prime Prine: The Best of John Prine",
+      "coverUrl": "https://coverartarchive.org/release-group/a00cf3b3-80f8-3b53-958d-3529be6d2f95/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "3f189cdf-af0a-443e-a365-debcf5637eea",
+      "artist": "Bill Harrell and the Virginians",
+      "album": "Ballads and Bluegrass",
+      "oldCover": "your-photo",
+      "status": "matched",
+      "mbid": "de73d8b2-a7f6-48d3-8aa0-c4b8a8671cdf",
+      "mbTitle": "Ballads and Bluegrass featuring the Dobro of Mike Auldridge",
+      "coverUrl": "https://coverartarchive.org/release-group/de73d8b2-a7f6-48d3-8aa0-c4b8a8671cdf/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "cb735623-50d9-4101-a38b-bbff8592b6de",
+      "artist": "Jack and Mike Theobald",
+      "album": "Jack and Mike Theobald with Bluegrass Country",
+      "oldCover": "your-photo",
+      "status": "matched",
+      "mbid": "08c14158-8121-44b9-9100-679eb8c4858b",
+      "mbTitle": "Jack & Mike Theobald with Bluegrass Country",
+      "coverUrl": "https://coverartarchive.org/release-group/08c14158-8121-44b9-9100-679eb8c4858b/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "320f4c76-a1c2-4285-80a2-2e2d6711b89e",
+      "artist": "Mac Wiseman",
+      "album": "Golden Classics",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "effbf883-52d1-4aac-990a-7da22fb362f0",
+      "mbTitle": "Golden Classics",
+      "coverUrl": "https://coverartarchive.org/release-group/effbf883-52d1-4aac-990a-7da22fb362f0/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "29e64cff-3815-4dc2-a9f8-955a5d73713e",
+      "artist": "Jimmy Murphy",
+      "album": "Electricity",
+      "oldCover": "your-photo",
+      "status": "matched",
+      "mbid": "0a24fd1a-e795-4c64-9466-6b26ca998f67",
+      "mbTitle": "Electricity",
+      "coverUrl": "https://coverartarchive.org/release-group/0a24fd1a-e795-4c64-9466-6b26ca998f67/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "2b8b0c5f-5677-4cd7-9880-2619ebcdbca7",
+      "artist": "Metallica",
+      "album": "...And Justice for All",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "bd14f98a-8c45-4a0d-b148-17cbc96740aa",
+      "mbTitle": "…And Justice for All",
+      "coverUrl": "https://coverartarchive.org/release-group/bd14f98a-8c45-4a0d-b148-17cbc96740aa/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "8a468eb5-d12b-4dd6-b9f9-cb7dc35ed468",
+      "artist": "Prince",
+      "album": "1999",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "e3717997-768a-3c3f-9d9d-add8cb139625",
+      "mbTitle": "1999",
+      "coverUrl": "https://coverartarchive.org/release-group/e3717997-768a-3c3f-9d9d-add8cb139625/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "c22242da-e5fe-4db6-a308-8a789ac83a35",
+      "artist": "Various Artists",
+      "album": "Urban Cowboy",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "7fce47fa-4818-37c7-a215-8697ee5abfc3",
+      "mbTitle": "Urban Cowboy: Original Motion Picture Soundtrack",
+      "coverUrl": "https://coverartarchive.org/release-group/7fce47fa-4818-37c7-a215-8697ee5abfc3/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "f29672db-5862-4114-8f2a-27919a455501",
+      "artist": "Various Artists",
+      "album": "The Guitars That Destroyed the World",
+      "oldCover": "your-photo",
+      "status": "matched",
+      "mbid": "682831c3-f68a-41ab-81e2-1b81c6edd183",
+      "mbTitle": "The Guitars That Destroyed the World",
+      "coverUrl": "https://coverartarchive.org/release-group/682831c3-f68a-41ab-81e2-1b81c6edd183/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "1f44e538-86f7-4135-9983-e0f6740d0f00",
+      "artist": "Roy Orbison",
+      "album": "Roy Orbison's Greatest Hits",
+      "oldCover": "your-photo",
+      "status": "matched",
+      "mbid": "8d4dd759-6dc1-427f-a50a-8b862d9cfb64",
+      "mbTitle": "Roy Orbison’s Greatest Hits",
+      "coverUrl": "https://coverartarchive.org/release-group/8d4dd759-6dc1-427f-a50a-8b862d9cfb64/front-500",
+      "confidence": "1.00"
+    }
+  ],
+  "flaggedNoCover": [
+    {
+      "id": "8967e255-a13e-437c-bb8b-70141d212218",
+      "artist": "Marty Robbins",
+      "album": "Singing the Blues",
+      "oldCover": "placeholder",
+      "status": "no-cover",
+      "mbid": "5e42ba1e-7749-4a0e-91fe-7eaeb97bb07d",
+      "mbTitle": "Singing the Blues"
+    },
+    {
+      "id": "bc41f2c9-f247-41d8-838d-957971306d25",
+      "artist": "The Dillards",
+      "album": "Roots and Branches",
+      "oldCover": "your-photo",
+      "status": "no-cover",
+      "mbid": "6421a4db-ace6-4807-98d3-f2fe5ab7bd72",
+      "mbTitle": "Roots and Branches"
+    }
+  ],
+  "noMatch": [
+    {
+      "id": "b2e5093f-a31f-4b3e-9009-299cac476de5",
+      "artist": "Various Artists",
+      "album": "2001: A Space Odyssey (Music from the Motion Picture Soundtrack)",
+      "oldCover": "placeholder",
+      "status": "no-match"
+    },
+    {
+      "id": "688db744-252c-4727-ab3e-f3d8b36224c8",
+      "artist": "Nirvana",
+      "album": "Live in Rome 1994",
+      "oldCover": "placeholder",
+      "status": "no-match"
+    },
+    {
+      "id": "079fb87c-e860-4f40-a7ef-42148ce45931",
+      "artist": "Sierra Ferrell",
+      "album": "Live at Third Man Records",
+      "oldCover": "placeholder",
+      "status": "no-match"
+    },
+    {
+      "id": "16f23034-03f5-4a73-8575-24a9d88f71ae",
+      "artist": "The Beatles",
+      "album": "Psychedelic Beatles",
+      "oldCover": "placeholder",
+      "status": "no-match"
+    },
+    {
+      "id": "609731a9-c5b0-4357-b575-28151436159c",
+      "artist": "Pink Floyd",
+      "album": "Masters of Rock",
+      "oldCover": "placeholder",
+      "status": "no-match"
+    },
+    {
+      "id": "f4a21551-8711-4a41-bc59-dde2eecfc00e",
+      "artist": "Hank Williams",
+      "album": "I'm Blue Inside",
+      "oldCover": "placeholder",
+      "status": "no-match"
+    },
+    {
+      "id": "9c44e9f1-9765-4f31-ba59-0310be761950",
+      "artist": "Johnny Cash",
+      "album": "Mean as Hell!",
+      "oldCover": "placeholder",
+      "status": "no-match"
+    },
+    {
+      "id": "57925687-4720-4eaf-88c3-56fdb2a8b8b2",
+      "artist": "The Stonemans",
+      "album": "Cuttin' the Grass",
+      "oldCover": "your-photo",
+      "status": "no-match"
+    },
+    {
+      "id": "70b81e58-b7dc-4e41-b0dc-be82277da82c",
+      "artist": "Buck Owens and his Buckaroos",
+      "album": "Ruby (And Other Bluegrass Specials)",
+      "oldCover": "your-photo",
+      "status": "no-match"
+    },
+    {
+      "id": "12b937f2-d2df-4b1e-b51d-7bbde32ac72c",
+      "artist": "Earl Scruggs",
+      "album": "Earl Scruggs: His Family and Friends",
+      "oldCover": "your-photo",
+      "status": "no-match"
+    },
+    {
+      "id": "6a156a39-0ff3-490e-ab31-14f0f5ad069f",
+      "artist": "The Shenandoah Cut-Ups",
+      "album": "Shenandoah Cut-Ups",
+      "oldCover": "your-photo",
+      "status": "no-match"
+    },
+    {
+      "id": "9644db87-723a-4fa0-8566-dab08efb066a",
+      "artist": "Jeff Beck, Eric Clapton & Jimmy Page",
+      "album": "Guitar Boogie",
+      "oldCover": "your-photo",
+      "status": "no-match"
+    },
+    {
+      "id": "e0cf159b-b7c5-42a7-ba3c-98fbb4f2bac9",
+      "artist": "John F. Kennedy",
+      "album": "John Fitzgerald Kennedy - A Memorial Album",
+      "oldCover": "your-photo",
+      "status": "no-match"
+    },
+    {
+      "id": "99f78f26-f273-4aa7-b8e1-501e5ddf6fc3",
+      "artist": "Glen Campbell",
+      "album": "Mr. 12 String Guitar",
+      "oldCover": "your-photo",
+      "status": "no-match"
+    },
+    {
+      "id": "9497307d-41b1-4cc8-b716-2bb8593a5ac1",
+      "artist": "Ludwig van Beethoven",
+      "album": "Piano Concerto No. 5 in E♭ \"Emperor\", Op. 73",
+      "oldCover": "your-photo",
+      "status": "no-match"
+    },
+    {
+      "id": "51c1ac6e-c54f-4b16-9680-a1fe9a7dde5b",
+      "artist": "The Mello-Kings",
+      "album": "Greatest Hits",
+      "oldCover": "your-photo",
+      "status": "no-match"
+    }
+  ],
+  "errors": [],
+  "all": [
+    {
+      "id": "bf68b6bb-9b3f-4540-9586-03cc24ed65bd",
+      "artist": "Beach House",
+      "album": "Once Twice Melody",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "d0575df5-8acc-4a8c-88a5-687aad327fe4",
+      "mbTitle": "Once Twice Melody",
+      "coverUrl": "https://coverartarchive.org/release-group/d0575df5-8acc-4a8c-88a5-687aad327fe4/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "07eba6ca-c9e3-4503-ae56-134316f84d29",
+      "artist": "Fred again..",
+      "album": "Actual Life (April 14 - December 17 2020)",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "f55cf7f5-d4b9-4621-a797-52ad168a9252",
+      "mbTitle": "Actual Life (April 14 - December 17 2020)",
+      "coverUrl": "https://coverartarchive.org/release-group/f55cf7f5-d4b9-4621-a797-52ad168a9252/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "148a8e64-9755-4c21-996e-f94600d8b55e",
+      "artist": "Fred again..",
+      "album": "Actual Life 2 (February 2 - October 15 2021)",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "45ea3afe-4f89-4958-bf67-14926d10e7bb",
+      "mbTitle": "Actual Life 2 (February 2 - October 15 2021)",
+      "coverUrl": "https://coverartarchive.org/release-group/45ea3afe-4f89-4958-bf67-14926d10e7bb/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "b2e5093f-a31f-4b3e-9009-299cac476de5",
+      "artist": "Various Artists",
+      "album": "2001: A Space Odyssey (Music from the Motion Picture Soundtrack)",
+      "oldCover": "placeholder",
+      "status": "no-match"
+    },
+    {
+      "id": "6e524511-38ea-45a7-b9f5-03b88f3919a9",
+      "artist": "Green Day",
+      "album": "American Idiot",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "04ee747f-ab6e-3963-bcd0-caba5b8a9c31",
+      "mbTitle": "American Idiot",
+      "coverUrl": "https://coverartarchive.org/release-group/04ee747f-ab6e-3963-bcd0-caba5b8a9c31/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "38b10f53-db3c-4193-b629-b236bab86fb1",
+      "artist": "Green Day",
+      "album": "Greatest Hits: God's Favorite Band",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "036b6fa3-f73d-4742-b224-595ca5880433",
+      "mbTitle": "Greatest Hits: God’s Favorite Band",
+      "coverUrl": "https://coverartarchive.org/release-group/036b6fa3-f73d-4742-b224-595ca5880433/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "688db744-252c-4727-ab3e-f3d8b36224c8",
+      "artist": "Nirvana",
+      "album": "Live in Rome 1994",
+      "oldCover": "placeholder",
+      "status": "no-match"
+    },
+    {
+      "id": "57ea9ce0-51c8-4f3e-93c3-3e64514df160",
+      "artist": "Nirvana",
+      "album": "Nevermind",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "1b022e01-4da6-387b-8658-8678046e4cef",
+      "mbTitle": "Nevermind",
+      "coverUrl": "https://coverartarchive.org/release-group/1b022e01-4da6-387b-8658-8678046e4cef/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "e643921c-a6fd-4035-856b-ddaa351014ee",
+      "artist": "Alice in Chains",
+      "album": "Dirt",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "92d8f0c4-8c64-3bee-bee1-812a70e77efa",
+      "mbTitle": "Dirt",
+      "coverUrl": "https://coverartarchive.org/release-group/92d8f0c4-8c64-3bee-bee1-812a70e77efa/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "4e389aaf-4acc-4950-b4e4-a38e6f5c24ad",
+      "artist": "The Lumineers",
+      "album": "Cleopatra",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "3afcf111-fc5d-4b7c-9712-55d225f4b2eb",
+      "mbTitle": "Cleopatra",
+      "coverUrl": "https://coverartarchive.org/release-group/3afcf111-fc5d-4b7c-9712-55d225f4b2eb/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "079fb87c-e860-4f40-a7ef-42148ce45931",
+      "artist": "Sierra Ferrell",
+      "album": "Live at Third Man Records",
+      "oldCover": "placeholder",
+      "status": "no-match"
+    },
+    {
+      "id": "5328179c-ddaf-49d1-bc4a-1bc58bc8556a",
+      "artist": "Sturgill Simpson",
+      "album": "Cuttin' Grass, Vol. 1 (The Butcher Shoppe Sessions)",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "945eea4e-c42e-4b86-976b-df4604b15d35",
+      "mbTitle": "Cuttin’ Grass Vol. 1: The Butcher Shoppe Sessions",
+      "coverUrl": "https://coverartarchive.org/release-group/945eea4e-c42e-4b86-976b-df4604b15d35/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "064d7498-80d8-4f68-9a96-04570d22a9da",
+      "artist": "Johnny Blue Skies",
+      "album": "Mutiny After Midnight",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "cddab6fa-4c6a-404e-a78f-2e996fe53d40",
+      "mbTitle": "Mutiny After Midnight",
+      "coverUrl": "https://coverartarchive.org/release-group/cddab6fa-4c6a-404e-a78f-2e996fe53d40/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "1874734e-1d33-41df-822b-99e0e451b642",
+      "artist": "Billy Strings",
+      "album": "Renewal",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "b0fe869f-ffaf-453a-908d-499aac467293",
+      "mbTitle": "Renewal",
+      "coverUrl": "https://coverartarchive.org/release-group/b0fe869f-ffaf-453a-908d-499aac467293/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "d2da7ecc-78d4-4ef8-9243-fec8c614a5f7",
+      "artist": "Billy Strings",
+      "album": "Live at the Legion",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "4f840350-837a-409d-8370-f6f8693923c7",
+      "mbTitle": "Live at the Legion",
+      "coverUrl": "https://coverartarchive.org/release-group/4f840350-837a-409d-8370-f6f8693923c7/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "6e4c35bc-9f3c-400e-bee3-2a04836f40e7",
+      "artist": "Widespread Panic",
+      "album": "Live from Austin, TX",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "47d4d446-9a89-3c79-ade1-b5ddd027b550",
+      "mbTitle": "Live from Austin, TX",
+      "coverUrl": "https://coverartarchive.org/release-group/47d4d446-9a89-3c79-ade1-b5ddd027b550/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "ba8d46e2-5df6-4e66-84d0-ff176dc7d818",
+      "artist": "The Beatles",
+      "album": "The Esher Demos",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "cb7af48f-1242-3801-a98c-638a06dfee44",
+      "mbTitle": "Acoustic Masterpieces: The Esher Demos",
+      "coverUrl": "https://coverartarchive.org/release-group/cb7af48f-1242-3801-a98c-638a06dfee44/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "6c6aa6da-3427-4da4-9552-66917817e098",
+      "artist": "The Beatles",
+      "album": "Rarities",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "4b5f36c7-4f10-3565-ad2b-53a06d898084",
+      "mbTitle": "Rarities",
+      "coverUrl": "https://coverartarchive.org/release-group/4b5f36c7-4f10-3565-ad2b-53a06d898084/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "e8adc9da-ac01-44c0-b8e4-3ce0787862f7",
+      "artist": "Ringo Starr",
+      "album": "Blast from Your Past",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "94adc055-6741-3dca-8599-b505e563fa85",
+      "mbTitle": "Blast From Your Past",
+      "coverUrl": "https://coverartarchive.org/release-group/94adc055-6741-3dca-8599-b505e563fa85/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "16f23034-03f5-4a73-8575-24a9d88f71ae",
+      "artist": "The Beatles",
+      "album": "Psychedelic Beatles",
+      "oldCover": "placeholder",
+      "status": "no-match"
+    },
+    {
+      "id": "b9e2bf38-af9d-4f88-872b-6124388c548c",
+      "artist": "Led Zeppelin",
+      "album": "Presence",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "42f8acce-90fc-3471-a4cd-ace1ab816276",
+      "mbTitle": "Presence",
+      "coverUrl": "https://coverartarchive.org/release-group/42f8acce-90fc-3471-a4cd-ace1ab816276/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "f222b2b2-c153-4586-919b-baedaaafce82",
+      "artist": "The Rolling Stones",
+      "album": "Goats Head Soup",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "e82ba8db-3712-3de0-bbe5-0311b89db7e2",
+      "mbTitle": "Goats Head Soup",
+      "coverUrl": "https://coverartarchive.org/release-group/e82ba8db-3712-3de0-bbe5-0311b89db7e2/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "b2fd6fbf-b0a6-41ae-8f36-777ae9baed8c",
+      "artist": "Grateful Dead",
+      "album": "Europe '72: The Complete Recordings",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "c5562a09-5413-470a-8a9f-fe8b39b245af",
+      "mbTitle": "Europe ’72: The Complete Recordings",
+      "coverUrl": "https://coverartarchive.org/release-group/c5562a09-5413-470a-8a9f-fe8b39b245af/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "0b3b1a05-be8e-471f-a15e-7a07c92e7e60",
+      "artist": "The Allman Brothers Band",
+      "album": "Reach for the Sky",
+      "oldCover": "your-photo",
+      "status": "matched",
+      "mbid": "42a9877a-c423-3c61-8b0e-9bf0d79961d1",
+      "mbTitle": "Reach for the Sky",
+      "coverUrl": "https://coverartarchive.org/release-group/42a9877a-c423-3c61-8b0e-9bf0d79961d1/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "63bd88e7-dd62-4244-a44f-3ef11c2a0766",
+      "artist": "The Allman Brothers Band",
+      "album": "Beginnings",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "fcbee4c6-70fb-3347-9497-0c67a39885fd",
+      "mbTitle": "Beginnings",
+      "coverUrl": "https://coverartarchive.org/release-group/fcbee4c6-70fb-3347-9497-0c67a39885fd/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "609731a9-c5b0-4357-b575-28151436159c",
+      "artist": "Pink Floyd",
+      "album": "Masters of Rock",
+      "oldCover": "placeholder",
+      "status": "no-match"
+    },
+    {
+      "id": "9d9720d3-0686-4835-9af8-ae0ac5b08135",
+      "artist": "Pink Floyd",
+      "album": "The Dark Side of the Moon",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "f5093c06-23e3-404f-aeaa-40f72885ee3a",
+      "mbTitle": "The Dark Side of the Moon",
+      "coverUrl": "https://coverartarchive.org/release-group/f5093c06-23e3-404f-aeaa-40f72885ee3a/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "8967e255-a13e-437c-bb8b-70141d212218",
+      "artist": "Marty Robbins",
+      "album": "Singing the Blues",
+      "oldCover": "placeholder",
+      "status": "no-cover",
+      "mbid": "5e42ba1e-7749-4a0e-91fe-7eaeb97bb07d",
+      "mbTitle": "Singing the Blues"
+    },
+    {
+      "id": "f4a21551-8711-4a41-bc59-dde2eecfc00e",
+      "artist": "Hank Williams",
+      "album": "I'm Blue Inside",
+      "oldCover": "placeholder",
+      "status": "no-match"
+    },
+    {
+      "id": "9c44e9f1-9765-4f31-ba59-0310be761950",
+      "artist": "Johnny Cash",
+      "album": "Mean as Hell!",
+      "oldCover": "placeholder",
+      "status": "no-match"
+    },
+    {
+      "id": "6ced97f8-7451-45d9-acbf-ffd4eaabaf77",
+      "artist": "John Prine",
+      "album": "Prime Prine: The Best of John Prine",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "a00cf3b3-80f8-3b53-958d-3529be6d2f95",
+      "mbTitle": "Prime Prine: The Best of John Prine",
+      "coverUrl": "https://coverartarchive.org/release-group/a00cf3b3-80f8-3b53-958d-3529be6d2f95/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "bc41f2c9-f247-41d8-838d-957971306d25",
+      "artist": "The Dillards",
+      "album": "Roots and Branches",
+      "oldCover": "your-photo",
+      "status": "no-cover",
+      "mbid": "6421a4db-ace6-4807-98d3-f2fe5ab7bd72",
+      "mbTitle": "Roots and Branches"
+    },
+    {
+      "id": "3f189cdf-af0a-443e-a365-debcf5637eea",
+      "artist": "Bill Harrell and the Virginians",
+      "album": "Ballads and Bluegrass",
+      "oldCover": "your-photo",
+      "status": "matched",
+      "mbid": "de73d8b2-a7f6-48d3-8aa0-c4b8a8671cdf",
+      "mbTitle": "Ballads and Bluegrass featuring the Dobro of Mike Auldridge",
+      "coverUrl": "https://coverartarchive.org/release-group/de73d8b2-a7f6-48d3-8aa0-c4b8a8671cdf/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "57925687-4720-4eaf-88c3-56fdb2a8b8b2",
+      "artist": "The Stonemans",
+      "album": "Cuttin' the Grass",
+      "oldCover": "your-photo",
+      "status": "no-match"
+    },
+    {
+      "id": "cb735623-50d9-4101-a38b-bbff8592b6de",
+      "artist": "Jack and Mike Theobald",
+      "album": "Jack and Mike Theobald with Bluegrass Country",
+      "oldCover": "your-photo",
+      "status": "matched",
+      "mbid": "08c14158-8121-44b9-9100-679eb8c4858b",
+      "mbTitle": "Jack & Mike Theobald with Bluegrass Country",
+      "coverUrl": "https://coverartarchive.org/release-group/08c14158-8121-44b9-9100-679eb8c4858b/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "70b81e58-b7dc-4e41-b0dc-be82277da82c",
+      "artist": "Buck Owens and his Buckaroos",
+      "album": "Ruby (And Other Bluegrass Specials)",
+      "oldCover": "your-photo",
+      "status": "no-match"
+    },
+    {
+      "id": "12b937f2-d2df-4b1e-b51d-7bbde32ac72c",
+      "artist": "Earl Scruggs",
+      "album": "Earl Scruggs: His Family and Friends",
+      "oldCover": "your-photo",
+      "status": "no-match"
+    },
+    {
+      "id": "320f4c76-a1c2-4285-80a2-2e2d6711b89e",
+      "artist": "Mac Wiseman",
+      "album": "Golden Classics",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "effbf883-52d1-4aac-990a-7da22fb362f0",
+      "mbTitle": "Golden Classics",
+      "coverUrl": "https://coverartarchive.org/release-group/effbf883-52d1-4aac-990a-7da22fb362f0/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "29e64cff-3815-4dc2-a9f8-955a5d73713e",
+      "artist": "Jimmy Murphy",
+      "album": "Electricity",
+      "oldCover": "your-photo",
+      "status": "matched",
+      "mbid": "0a24fd1a-e795-4c64-9466-6b26ca998f67",
+      "mbTitle": "Electricity",
+      "coverUrl": "https://coverartarchive.org/release-group/0a24fd1a-e795-4c64-9466-6b26ca998f67/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "6a156a39-0ff3-490e-ab31-14f0f5ad069f",
+      "artist": "The Shenandoah Cut-Ups",
+      "album": "Shenandoah Cut-Ups",
+      "oldCover": "your-photo",
+      "status": "no-match"
+    },
+    {
+      "id": "9644db87-723a-4fa0-8566-dab08efb066a",
+      "artist": "Jeff Beck, Eric Clapton & Jimmy Page",
+      "album": "Guitar Boogie",
+      "oldCover": "your-photo",
+      "status": "no-match"
+    },
+    {
+      "id": "e0cf159b-b7c5-42a7-ba3c-98fbb4f2bac9",
+      "artist": "John F. Kennedy",
+      "album": "John Fitzgerald Kennedy - A Memorial Album",
+      "oldCover": "your-photo",
+      "status": "no-match"
+    },
+    {
+      "id": "2b8b0c5f-5677-4cd7-9880-2619ebcdbca7",
+      "artist": "Metallica",
+      "album": "...And Justice for All",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "bd14f98a-8c45-4a0d-b148-17cbc96740aa",
+      "mbTitle": "…And Justice for All",
+      "coverUrl": "https://coverartarchive.org/release-group/bd14f98a-8c45-4a0d-b148-17cbc96740aa/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "8a468eb5-d12b-4dd6-b9f9-cb7dc35ed468",
+      "artist": "Prince",
+      "album": "1999",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "e3717997-768a-3c3f-9d9d-add8cb139625",
+      "mbTitle": "1999",
+      "coverUrl": "https://coverartarchive.org/release-group/e3717997-768a-3c3f-9d9d-add8cb139625/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "c22242da-e5fe-4db6-a308-8a789ac83a35",
+      "artist": "Various Artists",
+      "album": "Urban Cowboy",
+      "oldCover": "placeholder",
+      "status": "matched",
+      "mbid": "7fce47fa-4818-37c7-a215-8697ee5abfc3",
+      "mbTitle": "Urban Cowboy: Original Motion Picture Soundtrack",
+      "coverUrl": "https://coverartarchive.org/release-group/7fce47fa-4818-37c7-a215-8697ee5abfc3/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "99f78f26-f273-4aa7-b8e1-501e5ddf6fc3",
+      "artist": "Glen Campbell",
+      "album": "Mr. 12 String Guitar",
+      "oldCover": "your-photo",
+      "status": "no-match"
+    },
+    {
+      "id": "9497307d-41b1-4cc8-b716-2bb8593a5ac1",
+      "artist": "Ludwig van Beethoven",
+      "album": "Piano Concerto No. 5 in E♭ \"Emperor\", Op. 73",
+      "oldCover": "your-photo",
+      "status": "no-match"
+    },
+    {
+      "id": "f29672db-5862-4114-8f2a-27919a455501",
+      "artist": "Various Artists",
+      "album": "The Guitars That Destroyed the World",
+      "oldCover": "your-photo",
+      "status": "matched",
+      "mbid": "682831c3-f68a-41ab-81e2-1b81c6edd183",
+      "mbTitle": "The Guitars That Destroyed the World",
+      "coverUrl": "https://coverartarchive.org/release-group/682831c3-f68a-41ab-81e2-1b81c6edd183/front-500",
+      "confidence": "1.00"
+    },
+    {
+      "id": "51c1ac6e-c54f-4b16-9680-a1fe9a7dde5b",
+      "artist": "The Mello-Kings",
+      "album": "Greatest Hits",
+      "oldCover": "your-photo",
+      "status": "no-match"
+    },
+    {
+      "id": "1f44e538-86f7-4135-9983-e0f6740d0f00",
+      "artist": "Roy Orbison",
+      "album": "Roy Orbison's Greatest Hits",
+      "oldCover": "your-photo",
+      "status": "matched",
+      "mbid": "8d4dd759-6dc1-427f-a50a-8b862d9cfb64",
+      "mbTitle": "Roy Orbison’s Greatest Hits",
+      "coverUrl": "https://coverartarchive.org/release-group/8d4dd759-6dc1-427f-a50a-8b862d9cfb64/front-500",
+      "confidence": "1.00"
+    }
+  ]
+}

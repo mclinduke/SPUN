@@ -1,0 +1,48 @@
+{
+  "appliedMatches": 32,
+  "photosKeptAsFallback": 6,
+  "deepFilled": [
+    {
+      "artist": "Pink Floyd",
+      "album": "Masters of Rock",
+      "source": "musicbrainz-release",
+      "via": "Masters of Rock"
+    },
+    {
+      "artist": "Marty Robbins",
+      "album": "Singing the Blues",
+      "source": "musicbrainz-rg",
+      "via": "Big Iron / Singing the Blues"
+    },
+    {
+      "artist": "Johnny Cash",
+      "album": "Mean as Hell!",
+      "source": "musicbrainz-release",
+      "via": "Mean as Hell!"
+    }
+  ],
+  "stillMissing": [
+    {
+      "artist": "Various Artists",
+      "album": "2001: A Space Odyssey (Music from the Motion Picture Soundtrack)"
+    },
+    {
+      "artist": "Nirvana",
+      "album": "Live in Rome 1994"
+    },
+    {
+      "artist": "Sierra Ferrell",
+      "album": "Live at Third Man Records"
+    },
+    {
+      "artist": "The Beatles",
+      "album": "Psychedelic Beatles"
+    },
+    {
+      "artist": "Hank Williams",
+      "album": "I'm Blue Inside"
+    }
+  ],
+  "totalWithCover": 176,
+  "total": 181
+}
