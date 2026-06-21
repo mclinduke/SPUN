@@ -21,6 +21,14 @@ const PATHS = {
   chevronRight: <><path d="M9 6l6 6-6 6" /></>,
   disc: <><circle cx="12" cy="12" r="9" /><circle cx="12" cy="12" r="2.5" /></>,
   check: <><path d="M4 12l5 5L20 6" /></>,
+  dice: <><rect x="3" y="3" width="18" height="18" rx="4" /><circle cx="8.5" cy="8.5" r="1.3" fill="currentColor" stroke="none" /><circle cx="15.5" cy="8.5" r="1.3" fill="currentColor" stroke="none" /><circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none" /><circle cx="8.5" cy="15.5" r="1.3" fill="currentColor" stroke="none" /><circle cx="15.5" cy="15.5" r="1.3" fill="currentColor" stroke="none" /></>,
+  play: <><path d="M7 5v14l11-7z" fill="currentColor" stroke="none" /></>,
+  headphones: <><path d="M4 14v-2a8 8 0 0 1 16 0v2" /><rect x="3" y="13.5" width="4.5" height="6.5" rx="1.6" /><rect x="16.5" y="13.5" width="4.5" height="6.5" rx="1.6" /></>,
+  heart: <><path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.5A4 4 0 0 1 19 10c0 5.6-7 10-7 10z" /></>,
+  tag: <><path d="M4 4h7l9 9-7 7-9-9z" /><circle cx="8" cy="8" r="1.3" fill="currentColor" stroke="none" /></>,
+  refresh: <><path d="M21 12a9 9 0 1 1-2.64-6.36M21 4v5h-5" /></>,
+  sparkle: <><path d="M12 3l2.2 6.3 6.3 2.2-6.3 2.2L12 20l-2.2-6.3L3.5 11.5l6.3-2.2z" /></>,
+  flame: <><path d="M12 3c1.2 3.6 5 5 5 9a5 5 0 0 1-10 0c0-2 .8-3.2 2-4.2.2 1.2 1 2.2 2 2.2.2-3 0-5 1-7z" /></>,
 }
 
 export default function Icon({ name, size = 22, className = '' }) {
