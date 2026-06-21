@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { searchAll } from '../services/metadata.js'
 import Cover from './Cover.jsx'
 import Icon from './Icon.jsx'
@@ -9,7 +9,9 @@ export default function CoverEditor({ record, onSetOfficial, onPickPhoto, onUseP
   const [query, setQuery] = useState(`${record.artist} ${record.album}`.trim())
   const [results, setResults] = useState([])
   const [searching, setSearching] = useState(false)
+  const [errored, setErrored] = useState(() => new Set()) // cover URLs that failed to load
   const fileRef = useRef(null)
+  const uid = useId()
 
   useEffect(() => {
     const q = query.trim()
@@ -44,10 +46,10 @@ export default function CoverEditor({ record, onSetOfficial, onPickPhoto, onUseP
       </div>
 
       <div className="field">
-        <label htmlFor="ce-search">Find the right cover</label>
+        <label htmlFor={`${uid}-search`}>Find the right cover</label>
         <div className="search-inline">
           <Icon name="search" size={18} />
-          <input id="ce-search" type="text" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search album art…" />
+          <input id={`${uid}-search`} type="text" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search album art…" />
           {searching && <span className="spinner" aria-hidden />}
         </div>
         <p className="hint">Tap a cover to use it as the official art (your photo is kept as a fallback).</p>
@@ -55,7 +57,7 @@ export default function CoverEditor({ record, onSetOfficial, onPickPhoto, onUseP
 
       {results.length > 0 && (
         <div className="ce-grid">
-          {results.map((r, i) => (
+          {results.filter((r) => !errored.has(r.coverUrl)).map((r, i) => (
             <button
               key={`${r._source}-${r._sourceId}-${i}`}
               type="button"
@@ -63,7 +65,7 @@ export default function CoverEditor({ record, onSetOfficial, onPickPhoto, onUseP
               onClick={() => onSetOfficial(r.coverUrl)}
               title={`${r.album} — ${r.artist}`}
             >
-              <img src={r.coverUrl} alt={`${r.album} — ${r.artist}`} loading="lazy" onError={(e) => { const b = e.currentTarget.closest('.ce-option'); if (b) b.style.display = 'none' }} />
+              <img src={r.coverUrl} alt={`${r.album} — ${r.artist}`} loading="lazy" referrerPolicy="no-referrer" onError={() => setErrored((prev) => new Set(prev).add(r.coverUrl))} />
             </button>
           ))}
         </div>

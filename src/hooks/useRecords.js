@@ -10,20 +10,21 @@ export function useRecords() {
   const repo = getRepository()
   const [records, setRecords] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   const reload = useCallback(async () => {
+    setError(null)
     const all = await repo.list()
     setRecords(all)
   }, [repo])
 
   useEffect(() => {
     let active = true
-    repo.list().then((all) => {
-      if (active) {
-        setRecords(all)
-        setLoading(false)
-      }
-    })
+    repo.list()
+      .then((all) => { if (active) { setRecords(all); setLoading(false) } })
+      // Without this, a failed cloud fetch (offline / Supabase down) leaves the
+      // app stuck on "Loading…" forever. Surface it so the UI can offer Retry.
+      .catch((e) => { if (active) { setError(e?.message || 'Could not load your collection'); setLoading(false) } })
     return () => { active = false }
   }, [repo])
 
@@ -60,5 +61,5 @@ export function useRecords() {
     setRecords((prev) => prev.map((r) => (r.id === id ? { ...r, hasPhoto: false } : r)))
   }, [repo])
 
-  return { records, loading, reload, add, bulkAdd, update, remove, setPhoto, removePhoto }
+  return { records, loading, error, reload, add, bulkAdd, update, remove, setPhoto, removePhoto }
 }

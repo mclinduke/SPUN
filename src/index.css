@@ -25,7 +25,7 @@
   --muted: #a39d8f;
   --border: #34322a;
   --accent: #b8a1f0;
-  --accent-strong: #7e5bd6;
+  --accent-strong: #a78bf0; /* light enough that dark on-accent text + accent-as-text both clear AA */
   --on-accent: #15101f;
   --danger: #e0796b;
   --shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
@@ -164,7 +164,7 @@ button { font-family: inherit; cursor: pointer; }
   display: grid;
   place-items: center;
   width: 44px;
-  height: 40px;
+  height: 44px;
   border: none;
   border-radius: 7px;
   background: transparent;
@@ -177,9 +177,10 @@ button { font-family: inherit; cursor: pointer; }
 }
 
 .select {
-  flex: 1 1 140px;
+  flex: 1 1 calc(50% - 4px); /* two filters share the second row evenly instead of wrapping raggedly */
   min-width: 0;
-  padding: 12px;
+  min-height: 44px;
+  padding: 11px 12px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);

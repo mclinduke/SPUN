@@ -6,6 +6,8 @@ import { getRepository } from '../data/repository.js'
 // they cross this TTL and offer a refresh.
 export const RARITY_TTL = 6 * 60 * 60 * 1000
 
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
+
 async function api(path) {
   let res
   try {
@@ -73,15 +75,18 @@ export async function fetchDiscogsCollection(username, { onProgress } = {}) {
   if (!u) throw new Error('Enter your Discogs username')
   const drafts = []
   let page = 1
-  let pages = 1
+  let pages = 1 // overwritten from pagination on the first page; guards the do/while if it's missing
   do {
     const q = new URLSearchParams({ per_page: '100', page: String(page), sort: 'added', sort_order: 'desc' })
     let data
-    try {
-      data = await api(`users/${u}/collection/folders/0/releases?${q}`)
-    } catch (e) {
-      if (/40[34]/.test(e.message)) throw new Error(`Couldn't read "${username}". Check the username, and make sure your Discogs collection is set to public (Settings → Privacy).`)
-      throw e
+    for (let attempt = 0; ; attempt++) {
+      try { data = await api(`users/${u}/collection/folders/0/releases?${q}`); break }
+      catch (e) {
+        if (/40[34]/.test(e.message)) throw new Error(`Couldn't read "${username}". Check the username, and make sure your Discogs collection is set to public (Settings → Privacy).`, { cause: e })
+        // Transient rate-limit: wait and retry the SAME page so we don't lose the import.
+        if (/rate limit/i.test(e.message) && attempt < 4) { await sleep(2000 * (attempt + 1)); continue }
+        throw e
+      }
     }
     pages = data.pagination?.pages || 1
     for (const item of data.releases || []) {
@@ -100,8 +105,15 @@ export async function fetchDiscogsCollection(username, { onProgress } = {}) {
     }
     onProgress?.({ page, pages, count: drafts.length })
     page += 1
+    if (page <= pages) await sleep(700) // stay under the Discogs rate limit on big collections
   } while (page <= pages)
-  return drafts
+  // de-dupe within the batch (a release can sit in multiple Discogs folders)
+  const seen = new Set()
+  return drafts.filter((d) => {
+    const k = `${d.artist}|${d.album}`.toLowerCase()
+    if (seen.has(k)) return false
+    seen.add(k); return true
+  })
 }
 
 /** Cached payload for a record without hitting the network (or null). */

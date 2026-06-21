@@ -7,9 +7,11 @@ export function useWants() {
   const [wants, setWants] = useState([])
   const [loading, setLoading] = useState(true)
 
+  const reload = useCallback(async () => { setWants(await repo.listWants()) }, [repo])
+
   useEffect(() => {
     let active = true
-    repo.listWants().then((w) => { if (active) { setWants(w); setLoading(false) } })
+    repo.listWants().then((w) => { if (active) { setWants(w); setLoading(false) } }).catch(() => { if (active) { setWants([]); setLoading(false) } })
     return () => { active = false }
   }, [repo])
 
@@ -30,5 +32,5 @@ export function useWants() {
     setWants((prev) => prev.filter((w) => w.id !== id))
   }, [repo])
 
-  return { wants, loading, addWant, updateWant, removeWant }
+  return { wants, loading, addWant, updateWant, removeWant, reload }
 }

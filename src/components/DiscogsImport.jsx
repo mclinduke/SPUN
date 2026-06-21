@@ -28,7 +28,7 @@ export default function DiscogsImport({ onCommit, onCancel, findDuplicate }) {
 
   if (status === 'fetching') {
     return (
-      <div className="dg-progress">
+      <div className="dg-progress" role="status" aria-live="polite">
         <span className="spinner" aria-hidden />
         <p>Fetching your collection…{progress ? ` page ${progress.page} of ${progress.pages} · ${progress.count} found` : ''}</p>
       </div>
@@ -68,7 +68,7 @@ export default function DiscogsImport({ onCommit, onCancel, findDuplicate }) {
           placeholder="your Discogs username" autoCapitalize="off" autoCorrect="off" spellCheck="false"
         />
       </div>
-      {error && <p className="auth-err">{error}</p>}
+      {error && <p className="auth-err" role="alert">{error}</p>}
       <div className="form-actions">
         <button className="btn btn-ghost" onClick={onCancel}>Cancel</button>
         <button className="btn btn-primary" onClick={run} disabled={!username.trim()}>

@@ -27,8 +27,8 @@ export function newId() {
 }
 
 // Only accept image-bearing schemes for <img src> — blocks tracking-pixel / beacon
-// URLs sneaked in via a hand-crafted backup file.
-function validCover(u) {
+// URLs sneaked in via a hand-crafted backup file. Shared with the cloud repo.
+export function validCover(u) {
   if (typeof u !== 'string') return null
   const s = u.trim()
   return /^(https?:|data:image\/|blob:)/i.test(s) ? s : null

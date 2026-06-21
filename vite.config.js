@@ -57,6 +57,7 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
+        navigateFallbackDenylist: [/^\/api\//], // never serve the SPA shell for the Discogs proxy
         runtimeCaching: [
           {
             // Cover art (iTunes + Cover Art Archive/Discogs) — cache so the collection looks complete offline.

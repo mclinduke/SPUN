@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useDeferredValue, useEffect, useMemo, useState } from 'react'
 import { useRecords } from './hooks/useRecords.js'
 import { usePlays } from './hooks/usePlays.js'
 import { useWants } from './hooks/useWants.js'
@@ -44,13 +44,17 @@ function getInitialTheme() {
 }
 
 export default function App() {
-  const { records, loading, add, bulkAdd, update, remove, setPhoto, removePhoto, reload } = useRecords()
-  const { plays, counts, lastPlayed, logPlay } = usePlays()
-  const { wants, addWant, removeWant } = useWants()
+  const { records, loading, error, add, bulkAdd, update, remove, setPhoto, removePhoto, reload } = useRecords()
+  const { plays, counts, lastPlayed, logPlay, reload: reloadPlays } = usePlays()
+  const { wants, addWant, removeWant, reload: reloadWants } = useWants()
+
+  // Reload everything after Clear / Import so plays + wishlist can't show ghosts.
+  const reloadAll = useCallback(async () => { await Promise.all([reload(), reloadPlays(), reloadWants()]) }, [reload, reloadPlays, reloadWants])
 
   const [view, setView] = useState(() => localStorage.getItem('vinyl-view') || 'coverflow')
   const [theme, setTheme] = useState(getInitialTheme)
   const [query, setQuery] = useState('')
+  const deferredQuery = useDeferredValue(query) // keep typing snappy on big collections
   const [genreFilter, setGenreFilter] = useState('')
   const [tagFilter, setTagFilter] = useState('')
   const [sort, setSort] = useState('recent')
@@ -109,7 +113,7 @@ export default function App() {
   }, [records, selected, editing])
 
   const visible = useMemo(() => {
-    const q = query.trim().toLowerCase()
+    const q = deferredQuery.trim().toLowerCase()
     const list = records.filter((r) => {
       if (genreFilter && r.genre !== genreFilter) return false
       if (tagFilter && !(r.tags || []).includes(tagFilter)) return false
@@ -127,7 +131,7 @@ export default function App() {
       'year-asc': (a, b) => (a.year || 9999) - (b.year || 9999),
     }
     return [...list].sort(by[sort] || by.recent)
-  }, [records, query, genreFilter, tagFilter, sort])
+  }, [records, deferredQuery, genreFilter, tagFilter, sort])
 
   const openAdd = () => { setEditing(null); setAddedThisSession(0); setFormOpen(true) }
   const openEdit = (rec) => { setSelected(null); setEditing(rec); setFormOpen(true) }
@@ -209,12 +213,18 @@ export default function App() {
 
   // Per-record cover fixes (from the Change-cover editor). selected reconciles
   // automatically after each write, so the editor re-renders with the new state.
+  const runCover = async (fn, label) => {
+    const id = selected?.id
+    if (!id) return
+    try { await fn(id); bustCover(id) }
+    catch (e) { if (!/not found/i.test(e?.message || '')) alert(`${label}: ${e.message || e}`) } // record gone mid-edit = silent no-op
+  }
   const cover = {
-    setOfficial: async (url) => { try { await update(selected.id, { coverUrl: url, coverSource: 'official' }); bustCover(selected.id) } catch (e) { alert(`Couldn't set cover: ${e.message || e}`) } },
-    pickPhoto: async (file) => { try { await setPhoto(selected.id, file); await update(selected.id, { coverSource: null }); bustCover(selected.id) } catch (e) { alert(`Couldn't set photo: ${e.message || e}`) } },
-    usePhoto: async () => { try { await update(selected.id, { coverSource: null }); bustCover(selected.id) } catch (e) { alert(e.message || e) } },
-    useOfficial: async () => { try { await update(selected.id, { coverSource: 'official' }); bustCover(selected.id) } catch (e) { alert(e.message || e) } },
-    removePhoto: async () => { try { await removePhoto(selected.id); bustCover(selected.id) } catch (e) { alert(e.message || e) } },
+    setOfficial: (url) => runCover((id) => update(id, { coverUrl: url, coverSource: 'official' }), "Couldn't set cover"),
+    pickPhoto: (file) => runCover(async (id) => { await setPhoto(id, file); await update(id, { coverSource: null }) }, "Couldn't set photo"),
+    usePhoto: () => runCover((id) => update(id, { coverSource: null }), "Couldn't update cover"),
+    useOfficial: () => runCover((id) => update(id, { coverSource: 'official' }), "Couldn't update cover"),
+    removePhoto: () => runCover((id) => removePhoto(id), "Couldn't remove photo"),
   }
 
   // "Got it!" — move a wishlist record into the owned collection.
@@ -262,6 +272,7 @@ export default function App() {
                 className={view === v.id ? 'active' : ''}
                 onClick={() => setView(v.id)}
                 aria-label={v.label}
+                aria-pressed={view === v.id}
                 title={v.label}
               >
                 <Icon name={v.icon} size={18} />
@@ -296,6 +307,15 @@ export default function App() {
       <main className="content">
         {loading ? (
           <p className="empty-note">Loading your collection…</p>
+        ) : error ? (
+          <div className="empty-state">
+            <Icon name="disc" size={56} />
+            <h2>Couldn't load your collection</h2>
+            <p>{navigator.onLine ? 'Something went wrong reaching your data.' : "You're offline — reconnect and retry."}</p>
+            <div className="empty-cta">
+              <button className="btn btn-primary" onClick={reload}>Retry</button>
+            </div>
+          </div>
         ) : records.length === 0 ? (
           <div className="empty-state">
             <Icon name="disc" size={56} />
@@ -424,7 +444,7 @@ export default function App() {
             onShowWishlist={() => { setSettingsOpen(false); setWishlistOpen(true) }}
             onShowTour={() => { setSettingsOpen(false); setShowTour(true) }}
             wantCount={wants.length}
-            onChanged={reload}
+            onChanged={reloadAll}
           />
         </Sheet>
       )}

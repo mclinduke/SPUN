@@ -12,7 +12,7 @@ export default function Cover({ record, className = '' }) {
   return (
     <div className={`cover ${className}`}>
       {src && !failed ? (
-        <img src={src} alt={`${record.album || 'Untitled'} cover`} loading="lazy" draggable="false" onError={() => setFailed(true)} />
+        <img src={src} alt={`${record.album || 'Untitled'} cover`} loading="lazy" draggable="false" referrerPolicy="no-referrer" onError={() => setFailed(true)} />
       ) : (
         <div className="cover-fallback">
           <Icon name="disc" size={28} />

@@ -1,5 +1,5 @@
 import { getDB, STORE_CACHE } from './db.js'
-import { newId } from './repository.js'
+import { newId, validCover } from './repository.js'
 
 // Cloud implementation of the repository seam (same shape as the IndexedDB one),
 // backed by Supabase + row-level security. Photos ride along as base64 in a
@@ -34,7 +34,7 @@ function recordToRow(rec, userId) {
     year: rec.year ? Number(rec.year) : null,
     genre: (rec.genre || '').trim(),
     notes: (rec.notes || '').trim(),
-    cover_url: rec.coverUrl || null,
+    cover_url: validCover(rec.coverUrl),
     cover_source: rec.coverSource || null,
     has_photo: Boolean(rec.hasPhoto),
     label: (rec.label || '').trim(),
@@ -60,6 +60,7 @@ function patchToRow(patch) {
   if ('year' in patch) row.year = patch.year ? Number(patch.year) : null
   if ('hasPhoto' in patch) row.has_photo = Boolean(patch.hasPhoto)
   if ('tags' in patch) row.tags = Array.isArray(patch.tags) ? patch.tags.filter(Boolean) : []
+  if ('coverUrl' in patch) row.cover_url = validCover(patch.coverUrl)
   return row
 }
 
@@ -108,6 +109,8 @@ export function createSupabaseRepository(supabase, userId) {
       try { return await (await fetch(data.photo)).blob() } catch { return undefined }
     },
     async setPhoto(id, blob) {
+      // Photos ride in a DB column; cap size so a huge image can't bloat the row / fail the write.
+      if (blob.size > 3 * 1024 * 1024) throw new Error('That photo is too large (max ~3 MB). Try a smaller image.')
       const dataUrl = await blobToDataURL(blob)
       must(await supabase.from('records').update({ photo: dataUrl, has_photo: true, updated_at: Date.now() }).eq('id', id))
     },
@@ -132,12 +135,19 @@ export function createSupabaseRepository(supabase, userId) {
       return data.map((w) => ({ id: w.id, album: w.album || '', artist: w.artist || '', year: w.year ?? null, genre: w.genre || '', notes: w.notes || '', coverUrl: w.cover_url || null, createdAt: w.created_at }))
     },
     async addWant(want) {
-      const row = { id: want.id || newId(), user_id: userId, album: (want.album || '').trim(), artist: (want.artist || '').trim(), year: want.year ? Number(want.year) : null, genre: (want.genre || '').trim(), notes: (want.notes || '').trim(), cover_url: want.coverUrl || null, created_at: want.createdAt || Date.now() }
+      const row = { id: want.id || newId(), user_id: userId, album: (want.album || '').trim(), artist: (want.artist || '').trim(), year: want.year ? Number(want.year) : null, genre: (want.genre || '').trim(), notes: (want.notes || '').trim(), cover_url: validCover(want.coverUrl), created_at: want.createdAt || Date.now() }
       const data = must(await supabase.from('wants').insert(row).select('*').single())
       return { id: data.id, album: data.album, artist: data.artist, year: data.year, genre: data.genre, notes: data.notes, coverUrl: data.cover_url, createdAt: data.created_at }
     },
     async updateWant(id, patch) {
-      const data = must(await supabase.from('wants').update({ album: patch.album, artist: patch.artist, year: patch.year ? Number(patch.year) : null, genre: patch.genre, notes: patch.notes, cover_url: patch.coverUrl }).eq('id', id).select('*').single())
+      const row = {}
+      if ('album' in patch) row.album = (patch.album || '').trim()
+      if ('artist' in patch) row.artist = (patch.artist || '').trim()
+      if ('year' in patch) row.year = patch.year ? Number(patch.year) : null
+      if ('genre' in patch) row.genre = (patch.genre || '').trim()
+      if ('notes' in patch) row.notes = (patch.notes || '').trim()
+      if ('coverUrl' in patch) row.cover_url = validCover(patch.coverUrl)
+      const data = must(await supabase.from('wants').update(row).eq('id', id).select('*').single())
       return { id: data.id, album: data.album, artist: data.artist, year: data.year, genre: data.genre, notes: data.notes, coverUrl: data.cover_url, createdAt: data.created_at }
     },
     async removeWant(id) { must(await supabase.from('wants').delete().eq('id', id)) },

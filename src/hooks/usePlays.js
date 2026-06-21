@@ -6,9 +6,11 @@ export function usePlays() {
   const repo = getRepository()
   const [plays, setPlays] = useState([])
 
+  const reload = useCallback(async () => { setPlays(await repo.listPlays()) }, [repo])
+
   useEffect(() => {
     let active = true
-    repo.listPlays().then((p) => { if (active) setPlays(p) })
+    repo.listPlays().then((p) => { if (active) setPlays(p) }).catch(() => { if (active) setPlays([]) })
     return () => { active = false }
   }, [repo])
 
@@ -33,5 +35,5 @@ export function usePlays() {
     return { counts, lastPlayed }
   }, [plays])
 
-  return { plays, totalPlays: plays.length, counts, lastPlayed, logPlay, undoPlay }
+  return { plays, totalPlays: plays.length, counts, lastPlayed, logPlay, undoPlay, reload }
 }
