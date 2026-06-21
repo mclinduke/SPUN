@@ -29,12 +29,14 @@ function BarList({ title, data, max }) {
 }
 
 export default function Stats({ records }) {
-  const { decades, genres, artists, total } = useMemo(() => {
-    const decades = tally(records, (r) => (r.year ? `${Math.floor(r.year / 10) * 10}s` : null))
-      .sort((a, b) => parseInt(a[0]) - parseInt(b[0]))
+  const { decades, genres, artists, artistCount, total } = useMemo(() => {
+    const decades = tally(records, (r) => {
+      const y = Number(r.year)
+      return Number.isFinite(y) && y >= 1900 && y <= 2100 ? `${Math.floor(y / 10) * 10}s` : null
+    }).sort((a, b) => parseInt(a[0]) - parseInt(b[0]))
     const genres = tally(records, (r) => r.genre)
-    const artists = tally(records, (r) => r.artist).slice(0, 10)
-    return { decades, genres, artists, total: records.length }
+    const allArtists = tally(records, (r) => r.artist)
+    return { decades, genres, artists: allArtists.slice(0, 10), artistCount: allArtists.length, total: records.length }
   }, [records])
 
   if (!total) return <p className="empty-note">Add some records to see stats.</p>
@@ -43,7 +45,7 @@ export default function Stats({ records }) {
     <div className="stats">
       <div className="stat-headline">
         <span className="big-number">{total}</span>
-        <span>record{total === 1 ? '' : 's'} · {genres.length} genres · {tally(records, (r) => r.artist).length} artists</span>
+        <span>record{total === 1 ? '' : 's'} · {genres.length} genres · {artistCount} artists</span>
       </div>
       <BarList title="By decade" data={decades} max={Math.max(...decades.map((d) => d[1]), 1)} />
       <BarList title="Top genres" data={genres.slice(0, 8)} max={Math.max(...genres.map((d) => d[1]), 1)} />

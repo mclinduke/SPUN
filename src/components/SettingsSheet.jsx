@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { exportJSON, exportCSV, importJSON, importCSV, downloadFile } from '../services/importExport.js'
 import { getRepository } from '../data/repository.js'
+import { bustAllCovers } from '../hooks/useCoverSrc.js'
 import Icon from './Icon.jsx'
 
 function todayStamp() {
@@ -37,6 +38,7 @@ export default function SettingsSheet({ count, dark, onToggleDark, onBulkAdd, on
       } else {
         await importJSON(JSON.parse(text), { merge: true })
       }
+      bustAllCovers() // imported photos may reuse ids — drop stale object URLs
       await onChanged()
     } catch (err) {
       alert(`Import failed: ${err.message}`)
@@ -48,6 +50,7 @@ export default function SettingsSheet({ count, dark, onToggleDark, onBulkAdd, on
 
   const doClear = async () => {
     await getRepository().clear()
+    bustAllCovers()
     await onChanged()
     setConfirmClear(false)
   }

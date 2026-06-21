@@ -36,7 +36,7 @@ function parseLine(line) {
   else if (rest.length === 2) { [artist, album] = rest }
   else { artist = rest[0]; album = rest[1]; genre = rest.slice(2).join(' - ') }
 
-  return { artist, album, genre, year, notes, coverUrl: null, line, status: 'manual', include: true }
+  return { id: crypto.randomUUID(), artist, album, genre, year, notes, coverUrl: null, line, status: 'manual', include: true }
 }
 
 export default function BulkAdd({ onCommit, onCancel }) {
@@ -129,7 +129,7 @@ export default function BulkAdd({ onCommit, onCancel }) {
           )}
           <ul className="bulk-list">
             {drafts.map((d, i) => (
-              <li key={i} className={`bulk-row ${d.include ? '' : 'excluded'}`}>
+              <li key={d.id || i} className={`bulk-row ${d.include ? '' : 'excluded'}`}>
                 <button className={`check ${d.include ? 'on' : ''}`} onClick={() => toggle(i)} aria-label="Include">
                   {d.include && <Icon name="check" size={14} />}
                 </button>
