@@ -96,6 +96,14 @@ export default function App() {
   const openAdd = () => { setEditing(null); setAddedThisSession(0); setFormOpen(true) }
   const openEdit = (rec) => { setSelected(null); setEditing(rec); setFormOpen(true) }
 
+  // Duplicate check for the add flow: same album + artist (case-insensitive).
+  const findDuplicate = (album, artist) => {
+    const a = (album || '').trim().toLowerCase()
+    const ar = (artist || '').trim().toLowerCase()
+    if (!a) return null
+    return records.find((r) => r.album.toLowerCase() === a && r.artist.toLowerCase() === ar) || null
+  }
+
   const handleSave = async (data, pendingPhoto) => {
     try {
       let rec
@@ -258,6 +266,8 @@ export default function App() {
             onSave={handleSave}
             onSaveAndNext={editing ? undefined : handleSaveAndNext}
             sessionCount={addedThisSession}
+            findDuplicate={editing ? undefined : findDuplicate}
+            onViewExisting={(rec) => { setFormOpen(false); setEditing(null); setSelected(rec) }}
             onCancel={() => { setFormOpen(false); setEditing(null) }}
           />
         </Sheet>

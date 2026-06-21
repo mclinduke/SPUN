@@ -1,19 +1,32 @@
-import { useEffect, useRef, useState } from 'react'
-import { searchAlbums } from '../services/metadata.js'
+import { useEffect, useId, useMemo, useRef, useState } from 'react'
+import { searchAll } from '../services/metadata.js'
 import { getRepository } from '../data/repository.js'
 import Icon from './Icon.jsx'
 
-const empty = { album: '', artist: '', year: '', genre: '', notes: '', coverUrl: null }
+const empty = { album: '', artist: '', year: '', genre: '', label: '', catalogNo: '', tagsInput: '', notes: '', coverUrl: null, coverSource: null }
 
-export default function RecordForm({ initial, genres = [], onSave, onSaveAndNext, sessionCount = 0, onCancel }) {
+function fromInitial(initial) {
+  return {
+    ...empty,
+    ...initial,
+    year: initial?.year || '',
+    label: initial?.label || '',
+    catalogNo: initial?.catalogNo || '',
+    tagsInput: (initial?.tags || []).join(', '),
+  }
+}
+
+export default function RecordForm({ initial, genres = [], onSave, onSaveAndNext, sessionCount = 0, onCancel, findDuplicate, onViewExisting }) {
   const editing = Boolean(initial?.id)
   const loopMode = !editing && typeof onSaveAndNext === 'function'
-  const [form, setForm] = useState(() => ({ ...empty, ...initial, year: initial?.year || '' }))
+  const uid = useId()
+  const [form, setForm] = useState(() => fromInitial(initial))
   const [query, setQuery] = useState('')
   const [results, setResults] = useState([])
   const [searching, setSearching] = useState(false)
-  const [photoPreview, setPhotoPreview] = useState(null) // object URL of pending/existing photo
+  const [photoPreview, setPhotoPreview] = useState(null)
   const [pendingPhoto, setPendingPhoto] = useState(undefined) // File = new, null = remove, undefined = unchanged
+  const [allowDup, setAllowDup] = useState(false)
   const fileRef = useRef(null)
   const albumRef = useRef(null)
   const artistRef = useRef(null)
@@ -22,31 +35,37 @@ export default function RecordForm({ initial, genres = [], onSave, onSaveAndNext
 
   // Load an existing personal photo into the preview when editing.
   useEffect(() => {
+    let active = true
     let url
     if (editing && initial.hasPhoto) {
       getRepository().getPhoto(initial.id).then((blob) => {
-        if (blob) { url = URL.createObjectURL(blob); setPhotoPreview(url) }
+        if (active && blob) { url = URL.createObjectURL(blob); setPhotoPreview(url) }
       })
     }
-    return () => { if (url) URL.revokeObjectURL(url) }
+    return () => { active = false; if (url) URL.revokeObjectURL(url) }
   }, [editing, initial])
 
-  // Debounced album search.
+  // Debounced combined (MusicBrainz + iTunes) search.
   useEffect(() => {
     const q = query.trim()
     if (q.length < 2) { setResults([]); return }
     const ctrl = new AbortController()
     setSearching(true)
     const t = setTimeout(() => {
-      searchAlbums(q, { signal: ctrl.signal })
+      searchAll(q, { signal: ctrl.signal })
         .then((r) => setResults(r))
         .catch(() => {})
         .finally(() => setSearching(false))
-    }, 350)
+    }, 400)
     return () => { clearTimeout(t); ctrl.abort() }
   }, [query])
 
   const set = (key) => (e) => setForm((f) => ({ ...f, [key]: e.target.value }))
+
+  const duplicate = useMemo(
+    () => (!editing && findDuplicate ? findDuplicate(form.album, form.artist) : null),
+    [editing, findDuplicate, form.album, form.artist],
+  )
 
   const applyResult = (r) => {
     setForm((f) => ({
@@ -55,10 +74,14 @@ export default function RecordForm({ initial, genres = [], onSave, onSaveAndNext
       artist: r.artist || f.artist,
       year: r.year || f.year,
       genre: r.genre || f.genre,
+      label: r.label || f.label,
+      catalogNo: r.catalogNo || f.catalogNo,
       coverUrl: r.coverUrl || f.coverUrl,
+      coverSource: r.coverUrl ? 'official' : f.coverSource,
     }))
     setQuery('')
     setResults([])
+    setAllowDup(false)
   }
 
   const onPickPhoto = (e) => {
@@ -67,6 +90,7 @@ export default function RecordForm({ initial, genres = [], onSave, onSaveAndNext
     if (photoPreview) URL.revokeObjectURL(photoPreview)
     setPendingPhoto(file)
     setPhotoPreview(URL.createObjectURL(file))
+    setForm((f) => ({ ...f, coverSource: null })) // photo should win once added
   }
 
   const clearPhoto = () => {
@@ -76,10 +100,12 @@ export default function RecordForm({ initial, genres = [], onSave, onSaveAndNext
     if (fileRef.current) fileRef.current.value = ''
   }
 
-  const payload = () => ({ ...form, year: form.year ? Number(form.year) : null })
+  const payload = () => ({
+    ...form,
+    year: form.year ? Number(form.year) : null,
+    tags: form.tagsInput.split(',').map((t) => t.trim()).filter(Boolean),
+  })
 
-  // After "Save & add another": keep artist + genre (records cluster by these),
-  // clear everything else, drop any pending photo, and refocus Album.
   const resetForNext = () => {
     if (photoPreview) URL.revokeObjectURL(photoPreview)
     setForm((f) => ({ ...empty, artist: f.artist, genre: f.genre }))
@@ -87,30 +113,32 @@ export default function RecordForm({ initial, genres = [], onSave, onSaveAndNext
     setPendingPhoto(undefined)
     setQuery('')
     setResults([])
+    setAllowDup(false)
     if (fileRef.current) fileRef.current.value = ''
     requestAnimationFrame(() => albumRef.current?.focus())
   }
 
+  const blockedByDup = () => duplicate && !allowDup
+
   const saveAndClose = () => {
     if (!form.album.trim() && !form.artist.trim()) return
+    if (blockedByDup()) return
     onSave(payload(), pendingPhoto)
   }
 
   const addAnother = async () => {
-    if (!form.album.trim()) return // an album is required in the loop so a sticky artist can't save a blank
+    if (!form.album.trim()) return
+    if (blockedByDup()) return
     const ok = await onSaveAndNext(payload(), pendingPhoto)
-    if (ok !== false) resetForNext() // keep the entry if the save failed, so it can be retried
+    if (ok !== false) resetForNext()
   }
 
-  // Primary submit: loop in add mode, save+close when editing.
   const submit = (e) => {
     e.preventDefault()
     if (loopMode) addAnother()
     else saveAndClose()
   }
 
-  // Enter moves to the next field instead of submitting mid-record; on the last
-  // field it commits. Notes (textarea) and the search box are excluded.
   const fieldRefs = [albumRef, artistRef, yearRef, genreRef]
   const onFieldKey = (idx) => (e) => {
     if (e.key !== 'Enter') return
@@ -125,12 +153,12 @@ export default function RecordForm({ initial, genres = [], onSave, onSaveAndNext
 
   return (
     <form className="record-form" onSubmit={submit}>
-      {/* Search-and-autofill (handy for mainstream records; manual fields below are the main path) */}
       <div className="field">
-        <label>Search to auto-fill (optional)</label>
+        <label htmlFor={`${uid}-q`}>Search to auto-fill (optional)</label>
         <div className="search-inline">
           <Icon name="search" size={18} />
           <input
+            id={`${uid}-q`}
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -142,19 +170,36 @@ export default function RecordForm({ initial, genres = [], onSave, onSaveAndNext
         {results.length > 0 && (
           <ul className="search-results">
             {results.map((r, i) => (
-              <li key={`${r._sourceId}-${i}`}>
+              <li key={`${r._source}-${r._sourceId}-${i}`}>
                 <button type="button" onClick={() => applyResult(r)}>
-                  {r.coverUrl ? <img src={r.coverUrl} alt="" /> : <div className="result-noart"><Icon name="disc" size={18} /></div>}
+                  {r.coverUrl
+                    ? <img src={r.coverUrl} alt="" onError={(e) => { e.currentTarget.style.display = 'none' }} />
+                    : <div className="result-noart"><Icon name="disc" size={18} /></div>}
                   <span className="result-text">
                     <strong>{r.album}</strong>
-                    <small>{r.artist}{r.year ? ` · ${r.year}` : ''}</small>
+                    <small>{r.artist}{r.year ? ` · ${r.year}` : ''}{r.catalogNo ? ` · ${r.catalogNo}` : ''}</small>
                   </span>
+                  <span className={`src-badge ${r._source}`}>{r._source === 'musicbrainz' ? 'MB' : 'iTunes'}</span>
                 </button>
               </li>
             ))}
           </ul>
         )}
       </div>
+
+      {duplicate && (
+        <div className="dup-warning">
+          <Icon name="disc" size={18} />
+          <div>
+            <strong>Already in your collection</strong>
+            <small>{duplicate.album} — {duplicate.artist}</small>
+          </div>
+          <div className="dup-actions">
+            <button type="button" className="btn btn-ghost" onClick={() => onViewExisting?.(duplicate)}>View</button>
+            {!allowDup && <button type="button" className="btn btn-ghost" onClick={() => setAllowDup(true)}>Add anyway</button>}
+          </div>
+        </div>
+      )}
 
       <div className="form-cover-row">
         <div className="cover form-cover">
@@ -173,22 +218,22 @@ export default function RecordForm({ initial, genres = [], onSave, onSaveAndNext
       </div>
 
       <div className="field">
-        <label>Album</label>
-        <input ref={albumRef} type="text" value={form.album} onChange={set('album')} onKeyDown={onFieldKey(0)} placeholder="Album name" autoFocus={!editing} />
+        <label htmlFor={`${uid}-album`}>Album</label>
+        <input id={`${uid}-album`} ref={albumRef} type="text" value={form.album} onChange={set('album')} onKeyDown={onFieldKey(0)} placeholder="Album name" autoFocus={!editing} />
       </div>
       <div className="field">
-        <label>Artist</label>
-        <input ref={artistRef} type="text" value={form.artist} onChange={set('artist')} onKeyDown={onFieldKey(1)} placeholder="Artist" />
+        <label htmlFor={`${uid}-artist`}>Artist</label>
+        <input id={`${uid}-artist`} ref={artistRef} type="text" value={form.artist} onChange={set('artist')} onKeyDown={onFieldKey(1)} placeholder="Artist" />
       </div>
       <div className="field-row">
         <div className="field">
-          <label>Year</label>
-          <input ref={yearRef} type="number" inputMode="numeric" value={form.year} onChange={set('year')} onKeyDown={onFieldKey(2)} placeholder="1959" />
+          <label htmlFor={`${uid}-year`}>Year</label>
+          <input id={`${uid}-year`} ref={yearRef} type="number" inputMode="numeric" value={form.year} onChange={set('year')} onKeyDown={onFieldKey(2)} placeholder="1959" />
         </div>
         <div className="field">
-          <label>Genre</label>
-          <input ref={genreRef} type="text" list="genre-list" value={form.genre} onChange={set('genre')} onKeyDown={onFieldKey(3)} placeholder="Jazz" />
-          <datalist id="genre-list">
+          <label htmlFor={`${uid}-genre`}>Genre</label>
+          <input id={`${uid}-genre`} ref={genreRef} type="text" list={`${uid}-genres`} value={form.genre} onChange={set('genre')} onKeyDown={onFieldKey(3)} placeholder="Jazz" />
+          <datalist id={`${uid}-genres`}>
             {genres.map((g) => <option key={g} value={g} />)}
           </datalist>
         </div>
@@ -196,20 +241,27 @@ export default function RecordForm({ initial, genres = [], onSave, onSaveAndNext
       {genreChips.length > 0 && (
         <div className="genre-chips">
           {genreChips.map((g) => (
-            <button
-              type="button"
-              key={g}
-              className={`chip ${form.genre === g ? 'on' : ''}`}
-              onClick={() => setForm((f) => ({ ...f, genre: g }))}
-            >
-              {g}
-            </button>
+            <button type="button" key={g} className={`chip ${form.genre === g ? 'on' : ''}`} onClick={() => setForm((f) => ({ ...f, genre: g }))}>{g}</button>
           ))}
         </div>
       )}
+      <div className="field-row">
+        <div className="field">
+          <label htmlFor={`${uid}-label`}>Label</label>
+          <input id={`${uid}-label`} type="text" value={form.label} onChange={set('label')} placeholder="Columbia" />
+        </div>
+        <div className="field">
+          <label htmlFor={`${uid}-catno`}>Catalog #</label>
+          <input id={`${uid}-catno`} type="text" value={form.catalogNo} onChange={set('catalogNo')} placeholder="PC 34074" />
+        </div>
+      </div>
       <div className="field">
-        <label>Notes</label>
-        <textarea value={form.notes} onChange={set('notes')} rows={3} placeholder="Pressing, condition, where you got it..." />
+        <label htmlFor={`${uid}-tags`}>Crates / tags <span className="hint-inline">comma-separated</span></label>
+        <input id={`${uid}-tags`} type="text" value={form.tagsInput} onChange={set('tagsInput')} placeholder="Sunday morning, Heavy rotation" />
+      </div>
+      <div className="field">
+        <label htmlFor={`${uid}-notes`}>Notes</label>
+        <textarea id={`${uid}-notes`} value={form.notes} onChange={set('notes')} rows={3} placeholder="Pressing, condition, where you got it..." />
       </div>
 
       {loopMode && sessionCount > 0 && (
@@ -218,16 +270,16 @@ export default function RecordForm({ initial, genres = [], onSave, onSaveAndNext
 
       {loopMode ? (
         <div className="form-actions form-actions-stack">
-          <button type="submit" className="btn btn-primary">Save &amp; add another</button>
+          <button type="submit" className="btn btn-primary" disabled={blockedByDup()}>Save &amp; add another</button>
           <div className="form-actions-row">
             <button type="button" className="btn btn-ghost" onClick={onCancel}>Done</button>
-            <button type="button" className="btn btn-ghost" onClick={saveAndClose}>Save &amp; close</button>
+            <button type="button" className="btn btn-ghost" onClick={saveAndClose} disabled={blockedByDup()}>Save &amp; close</button>
           </div>
         </div>
       ) : (
         <div className="form-actions">
           <button type="button" className="btn btn-ghost" onClick={onCancel}>Cancel</button>
-          <button type="submit" className="btn btn-primary">{editing ? 'Save changes' : 'Add record'}</button>
+          <button type="submit" className="btn btn-primary" disabled={blockedByDup()}>{editing ? 'Save changes' : 'Add record'}</button>
         </div>
       )}
     </form>
