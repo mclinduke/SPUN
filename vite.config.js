@@ -17,7 +17,7 @@ function discogsDevProxy() {
           const path = (req.url || '').replace(/^\/+/, '').split('?')[0]
           if (!/^(database\/search|releases\/\d+)$/.test(path)) { res.statusCode = 403; res.end(JSON.stringify({ error: 'path not allowed' })); return }
           const upstream = await fetch(`https://api.discogs.com${req.url}`, {
-            headers: { 'User-Agent': 'Crate/1.0 +https://mclinduke.com', Authorization: `Discogs token=${token}`, Accept: 'application/json' },
+            headers: { 'User-Agent': 'SPUN/1.0 +https://mclinduke.com', Authorization: `Discogs token=${token}`, Accept: 'application/json' },
           })
           const body = await upstream.text()
           res.statusCode = upstream.status
@@ -41,8 +41,8 @@ export default defineConfig({
       injectRegister: 'auto',
       includeAssets: ['icon.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: 'Crate — Vinyl Collection',
-        short_name: 'Crate',
+        name: 'SPUN — Vinyl Collection',
+        short_name: 'SPUN',
         description: 'Catalog and browse your vinyl record collection.',
         theme_color: '#15140f',
         background_color: '#15140f',

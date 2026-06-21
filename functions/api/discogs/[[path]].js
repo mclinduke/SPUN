@@ -26,7 +26,7 @@ export async function onRequest(context) {
 
   const upstream = await fetch(target, {
     headers: {
-      'User-Agent': 'Crate/1.0 +https://mclinduke.com',
+      'User-Agent': 'SPUN/1.0 +https://mclinduke.com',
       Authorization: `Discogs token=${env.DISCOGS_TOKEN}`,
       Accept: 'application/json',
     },

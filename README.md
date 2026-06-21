@@ -1,4 +1,4 @@
-# Crate — vinyl collection
+# SPUN — vinyl collection
 
 A fast, installable PWA for cataloguing and browsing a vinyl collection. Cover-art-forward
 (Cover Flow / grid / list), works offline, single-user, local-first.

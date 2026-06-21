@@ -204,7 +204,7 @@ export default function App() {
       <header className="app-header">
         <h1 className="brand">
           <Icon name="disc" size={26} />
-          <span>Crate</span>
+          <span>SPUN</span>
         </h1>
         <div className="header-actions">
           <button className="icon-btn" onClick={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))} aria-label="Toggle theme">
