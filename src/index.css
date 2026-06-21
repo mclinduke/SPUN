@@ -322,6 +322,11 @@ button { font-family: inherit; cursor: pointer; }
   outline: 3px solid color-mix(in srgb, var(--accent) 70%, transparent);
   outline-offset: 3px;
 }
+/* Off-window covers: flat, empty, no compositor layer (keeps width for scroll/geometry). */
+.coverflow-item.cf-far { transform-style: flat; transition: none; }
+/* Grid + list: let the browser skip rendering/decoding rows that aren't on screen. */
+.grid-item { content-visibility: auto; contain-intrinsic-size: auto 240px; }
+.list-item { content-visibility: auto; contain-intrinsic-size: auto 64px; }
 
 .cf-nav {
   position: absolute;
@@ -758,3 +763,8 @@ button { font-family: inherit; cursor: pointer; }
 .install-hint > .icon { color: var(--accent); flex: 0 0 auto; }
 .install-hint span { flex: 1; line-height: 1.35; }
 .install-hint-close { background: none; border: none; color: var(--muted); cursor: pointer; flex: 0 0 auto; padding: 2px; display: inline-flex; }
+
+/* error-boundary fallback */
+.crash { min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 14px; text-align: center; padding: 32px; }
+.crash h2 { font-size: 1.3rem; }
+.crash p { color: var(--muted); max-width: 320px; line-height: 1.5; }

@@ -7,6 +7,11 @@ import Icon from './Icon.jsx'
  * rotated/scaled in 3D based on its distance from the visual center, recomputed
  * on every scroll frame (rAF-throttled).
  */
+// Only render real covers (image + 3D layer) within this many items of the active
+// one; everything else is a flat, empty placeholder. Keeps GPU layers ~2*WINDOW+1
+// instead of one-per-record, which is what was crashing the page on mobile.
+const WINDOW = 10
+
 export default function CoverFlowView({ records, onSelect }) {
   const trackRef = useRef(null)
   const itemsRef = useRef([])
@@ -25,13 +30,26 @@ export default function CoverFlowView({ records, onSelect }) {
     if (!track) return
     const center = track.scrollLeft + track.clientWidth / 2
     const g = geom.current
+    // 1) find the centred item (cheap math over cached geometry — no layout reads)
     let nearest = 0
     let nearestDist = Infinity
     for (let i = 0; i < g.length; i++) {
-      const o = g[i]
+      if (!g[i]) continue
+      const dist = Math.abs(g[i].center - center)
+      if (dist < nearestDist) { nearestDist = dist; nearest = i }
+    }
+    // 2) only transform items inside the window; clear the rest so far placeholders
+    //    drop their 3D transform (and thus their compositor layer).
+    for (let i = 0; i < g.length; i++) {
       const el = itemsRef.current[i]
-      if (!o || !el) continue
-      const delta = (o.center - center) / o.width // pure math from cached geometry — no per-frame layout read
+      if (!el) continue
+      if (Math.abs(i - nearest) > WINDOW) {
+        if (el.style.transform) { el.style.transform = ''; el.style.opacity = ''; el.style.zIndex = '' }
+        continue
+      }
+      const o = g[i]
+      if (!o) continue
+      const delta = (o.center - center) / o.width
       const clamped = Math.max(-3, Math.min(3, delta))
       const rotateY = Math.max(-58, Math.min(58, -clamped * 50))
       const scale = Math.max(0.62, 1 - Math.abs(clamped) * 0.16)
@@ -41,8 +59,6 @@ export default function CoverFlowView({ records, onSelect }) {
       el.style.transform = `translateX(${translateX}px) translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`
       el.style.opacity = String(opacity)
       el.style.zIndex = String(100 - Math.round(Math.abs(delta) * 10))
-      const dist = Math.abs(o.center - center)
-      if (dist < nearestDist) { nearestDist = dist; nearest = i }
     }
     setActive(nearest)
   }, [])
@@ -86,6 +102,9 @@ export default function CoverFlowView({ records, onSelect }) {
     }
   }, [apply, measure])
 
+  // When the window shifts, transform the covers that just mounted (no flicker).
+  useLayoutEffect(() => { apply() }, [active, apply])
+
   const current = records[Math.min(active, records.length - 1)] // clamp when the list shrinks under filter
 
   const onItemClick = (i, record) => {
@@ -99,17 +118,22 @@ export default function CoverFlowView({ records, onSelect }) {
         <Icon name="chevronLeft" size={26} />
       </button>
       <div className="coverflow" ref={trackRef} onScroll={onScroll}>
-        {records.map((r, i) => (
+        {records.map((r, i) => {
+          const near = Math.abs(i - active) <= WINDOW
+          return (
           <div
             key={r.id}
             ref={(el) => { itemsRef.current[i] = el }}
-            className={`coverflow-item ${i === active ? 'is-active' : ''}`}
+            className={`coverflow-item ${i === active ? 'is-active' : ''} ${near ? '' : 'cf-far'}`}
           >
+            {near && (
             <button className="cf-cover-btn" onClick={() => onItemClick(i, r)} tabIndex={i === active ? 0 : -1}>
               <Cover record={r} />
             </button>
+            )}
           </div>
-        ))}
+          )
+        })}
       </div>
       <button className="cf-nav cf-next" onClick={() => scrollToIndex(Math.min(records.length - 1, active + 1))} aria-label="Next">
         <Icon name="chevronRight" size={26} />
