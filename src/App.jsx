@@ -86,6 +86,20 @@ export default function App() {
     if (tagFilter && !allTags.includes(tagFilter)) setTagFilter('')
   }, [allTags, tagFilter])
 
+  // Keep an open detail/edit sheet in sync with the collection: drop it if the
+  // record was deleted/cleared, refresh it if it changed (e.g. after import).
+  useEffect(() => {
+    if (selected) {
+      const fresh = records.find((r) => r.id === selected.id)
+      if (!fresh) setSelected(null)
+      else if (fresh !== selected) setSelected(fresh)
+    }
+    if (editing) {
+      const fresh = records.find((r) => r.id === editing.id)
+      if (!fresh) setEditing(null)
+    }
+  }, [records, selected, editing])
+
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase()
     const list = records.filter((r) => {

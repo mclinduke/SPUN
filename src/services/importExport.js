@@ -49,11 +49,18 @@ export async function exportJSON({ includePhotos = true } = {}) {
 
 export async function importJSON(json, { merge = true } = {}) {
   const repo = getRepository()
+  // Validate the shape BEFORE clearing, so a malformed file can never wipe the
+  // collection and then fail half-way through.
+  const raw = json && typeof json === 'object' ? (Array.isArray(json) ? json : json.records) : null
+  const records = Array.isArray(raw) ? raw.filter((r) => r && typeof r === 'object') : []
+  if (!records.length) throw new Error('Unrecognized backup file — no records found.')
+
   if (!merge) await repo.clear()
-  const records = Array.isArray(json) ? json : json.records || []
   await repo.bulkAdd(records)
-  const photos = (json && json.photos) || {}
+
+  const photos = json && json.photos && typeof json.photos === 'object' ? json.photos : {}
   for (const [id, dataURL] of Object.entries(photos)) {
+    if (typeof dataURL !== 'string' || !dataURL.startsWith('data:image/')) continue // only embedded images
     try {
       const blob = await dataURLToBlob(dataURL)
       await repo.setPhoto(id, blob)

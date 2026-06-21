@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Cover from './Cover.jsx'
 import Icon from './Icon.jsx'
 
@@ -15,11 +15,21 @@ function ago(ts) {
 export default function RecordDetail({ record, onEdit, onDelete, onPlay, playCount = 0, lastPlayed, children }) {
   const [confirming, setConfirming] = useState(false)
   const [justSpun, setJustSpun] = useState(false)
+  const [busy, setBusy] = useState(false)
+  const timer = useRef(0)
+  useEffect(() => () => clearTimeout(timer.current), [])
 
   const spin = async () => {
-    await onPlay(record.id)
-    setJustSpun(true)
-    setTimeout(() => setJustSpun(false), 1400)
+    if (busy) return // guard against double-tap double-logging
+    setBusy(true)
+    try {
+      await onPlay(record.id)
+      setJustSpun(true)
+      clearTimeout(timer.current)
+      timer.current = setTimeout(() => setJustSpun(false), 1400)
+    } finally {
+      setBusy(false)
+    }
   }
 
   return (
@@ -34,7 +44,7 @@ export default function RecordDetail({ record, onEdit, onDelete, onPlay, playCou
         {(record.tags || []).map((t) => <span key={t} className="tag tag-soft">{t}</span>)}
       </div>
 
-      <button className={`btn btn-primary spin-btn ${justSpun ? 'spun' : ''}`} onClick={spin}>
+      <button className={`btn btn-primary spin-btn ${justSpun ? 'spun' : ''}`} onClick={spin} disabled={busy}>
         <Icon name={justSpun ? 'check' : 'play'} size={18} /> {justSpun ? 'Logged!' : 'I spun this'}
       </button>
       {playCount > 0 && (

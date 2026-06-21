@@ -13,6 +13,17 @@ import { getRepository } from '../data/repository.js'
  * cache them by id so scrolling the grid doesn't re-read the DB or leak URLs.
  */
 const objectUrlCache = new Map() // id -> objectURL
+const URL_CACHE_CAP = 200 // bound memory: revoke the oldest blob URL past this
+
+function rememberUrl(id, url) {
+  if (!objectUrlCache.has(id) && objectUrlCache.size >= URL_CACHE_CAP) {
+    const oldest = objectUrlCache.keys().next().value
+    const u = objectUrlCache.get(oldest)
+    if (u) URL.revokeObjectURL(u)
+    objectUrlCache.delete(oldest)
+  }
+  objectUrlCache.set(id, url)
+}
 
 export function bustCover(id) {
   const url = objectUrlCache.get(id)
@@ -56,7 +67,7 @@ export function useCoverSrc(record) {
         if (!active) return
         if (blob) {
           const url = URL.createObjectURL(blob)
-          objectUrlCache.set(record.id, url)
+          rememberUrl(record.id, url)
           setSrc(url)
         } else {
           setSrc(record.coverUrl || null)

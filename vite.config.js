@@ -14,6 +14,8 @@ function discogsDevProxy() {
       server.middlewares.use('/api/discogs', async (req, res) => {
         try {
           if (!token) { res.statusCode = 503; res.end(JSON.stringify({ error: 'DISCOGS_TOKEN not set in .dev.vars' })); return }
+          const path = (req.url || '').replace(/^\/+/, '').split('?')[0]
+          if (!/^(database\/search|releases\/\d+)$/.test(path)) { res.statusCode = 403; res.end(JSON.stringify({ error: 'path not allowed' })); return }
           const upstream = await fetch(`https://api.discogs.com${req.url}`, {
             headers: { 'User-Agent': 'Crate/1.0 +https://mclinduke.com', Authorization: `Discogs token=${token}`, Accept: 'application/json' },
           })
@@ -57,8 +59,8 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,svg,png,woff2}'],
         runtimeCaching: [
           {
-            // iTunes cover art — cache so the collection looks complete offline.
-            urlPattern: /^https:\/\/.*\.mzstatic\.com\/.*/i,
+            // Cover art (iTunes + Cover Art Archive/Discogs) — cache so the collection looks complete offline.
+            urlPattern: /^https:\/\/(.*\.mzstatic\.com|coverartarchive\.org|.*\.archive\.org|i\.discogs\.com)\/.*/i,
             handler: 'CacheFirst',
             options: {
               cacheName: 'cover-art',

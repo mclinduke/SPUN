@@ -24,6 +24,9 @@ export default function CollectionValue({ records }) {
     return () => { active = false }
   }, [records])
 
+  // Closing the sheet mid-scan cancels the loop (stops setState + Discogs calls).
+  useEffect(() => () => { cancel.current = true }, [])
+
   const { total, count } = useMemo(() => {
     let total = 0
     for (const p of priced.values()) total += p

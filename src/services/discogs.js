@@ -7,7 +7,12 @@ import { getRepository } from '../data/repository.js'
 export const RARITY_TTL = 6 * 60 * 60 * 1000
 
 async function api(path) {
-  const res = await fetch(`/api/discogs/${path}`)
+  let res
+  try {
+    res = await fetch(`/api/discogs/${path}`)
+  } catch {
+    throw new Error(navigator.onLine ? 'Discogs is unreachable right now' : "You're offline — connect to look up pressing data")
+  }
   if (res.status === 503) throw new Error('Discogs not configured (set DISCOGS_TOKEN)')
   if (res.status === 429) throw new Error('Discogs rate limit — try again shortly')
   if (!res.ok) throw new Error(`Discogs error ${res.status}`)

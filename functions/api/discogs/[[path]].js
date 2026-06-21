@@ -10,6 +10,14 @@ export async function onRequest(context) {
   const search = new URL(request.url).search
   const target = `https://api.discogs.com/${path}${search}`
 
+  // Only the two endpoints the app uses — the token can't be turned into a
+  // general authenticated Discogs proxy by anyone who finds the URL.
+  if (!/^(database\/search|releases\/\d+)$/.test(path)) {
+    return new Response(JSON.stringify({ error: 'path not allowed' }), {
+      status: 403, headers: { 'content-type': 'application/json' },
+    })
+  }
+
   if (!env.DISCOGS_TOKEN) {
     return new Response(JSON.stringify({ error: 'DISCOGS_TOKEN not configured' }), {
       status: 503, headers: { 'content-type': 'application/json' },

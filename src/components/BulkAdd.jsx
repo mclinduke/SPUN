@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { bestMatch } from '../services/metadata.js'
+import { newId } from '../data/repository.js'
 import Icon from './Icon.jsx'
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
@@ -36,7 +37,7 @@ function parseLine(line) {
   else if (rest.length === 2) { [artist, album] = rest }
   else { artist = rest[0]; album = rest[1]; genre = rest.slice(2).join(' - ') }
 
-  return { id: crypto.randomUUID(), artist, album, genre, year, notes, coverUrl: null, line, status: 'manual', include: true }
+  return { id: newId(), artist, album, genre, year, notes, coverUrl: null, line, status: 'manual', include: true }
 }
 
 export default function BulkAdd({ onCommit, onCancel }) {

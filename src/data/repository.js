@@ -15,8 +15,16 @@ import { getDB, STORE_RECORDS, STORE_IMAGES, STORE_PLAYS, STORE_WANTS, STORE_CAC
  * Want:  { id, album, artist, year, genre, notes, coverUrl, createdAt }
  */
 
-function newId() {
+export function newId() {
   return (crypto.randomUUID && crypto.randomUUID()) || `id-${Date.now()}-${Math.round(Math.random() * 1e9)}`
+}
+
+// Only accept image-bearing schemes for <img src> — blocks tracking-pixel / beacon
+// URLs sneaked in via a hand-crafted backup file.
+function validCover(u) {
+  if (typeof u !== 'string') return null
+  const s = u.trim()
+  return /^(https?:|data:image\/|blob:)/i.test(s) ? s : null
 }
 
 function normalize(input) {
@@ -28,7 +36,7 @@ function normalize(input) {
     year: input.year ? Number(input.year) : null,
     genre: (input.genre || '').trim(),
     notes: (input.notes || '').trim(),
-    coverUrl: input.coverUrl || null,
+    coverUrl: validCover(input.coverUrl),
     coverSource: input.coverSource || null,
     hasPhoto: Boolean(input.hasPhoto),
     label: (input.label || '').trim(),
