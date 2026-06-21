@@ -711,6 +711,11 @@ button { font-family: inherit; cursor: pointer; }
 .auth-err { color: var(--danger); font-size: 0.85rem; margin: 12px 0 0; }
 .auth-msg { color: var(--accent-strong); font-size: 0.85rem; margin: 12px 0 0; }
 .auth-card .linkish { margin-top: 16px; display: inline-block; }
+.btn-google { width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px; background: #fff; color: #1f1f1f; border: 1px solid #dadce0; font-weight: 600; }
+.btn-google:hover { background: #f7f8f8; }
+.btn-google svg { flex: 0 0 auto; }
+.auth-or { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: .82rem; margin: 14px 0; }
+.auth-or::before, .auth-or::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
 /* ============ Cover editor ============ */
 .ce-trigger { margin: -2px 0 8px; display: inline-flex; align-items: center; gap: 4px; }
