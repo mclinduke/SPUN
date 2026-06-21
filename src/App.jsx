@@ -10,6 +10,7 @@ import ListView from './components/ListView.jsx'
 import CoverFlowView from './components/CoverFlowView.jsx'
 import RecordForm from './components/RecordForm.jsx'
 import RecordDetail from './components/RecordDetail.jsx'
+import CoverEditor from './components/CoverEditor.jsx'
 import BulkAdd from './components/BulkAdd.jsx'
 import Stats from './components/Stats.jsx'
 import ListeningStats from './components/ListeningStats.jsx'
@@ -60,6 +61,7 @@ export default function App() {
   const [randomOpen, setRandomOpen] = useState(false)
   const [valueOpen, setValueOpen] = useState(false)
   const [wishlistOpen, setWishlistOpen] = useState(false)
+  const [coverEditOpen, setCoverEditOpen] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [addedThisSession, setAddedThisSession] = useState(0)
 
@@ -189,6 +191,16 @@ export default function App() {
     }
   }
 
+  // Per-record cover fixes (from the Change-cover editor). selected reconciles
+  // automatically after each write, so the editor re-renders with the new state.
+  const cover = {
+    setOfficial: async (url) => { try { await update(selected.id, { coverUrl: url, coverSource: 'official' }); bustCover(selected.id) } catch (e) { alert(`Couldn't set cover: ${e.message || e}`) } },
+    pickPhoto: async (file) => { try { await setPhoto(selected.id, file); await update(selected.id, { coverSource: null }); bustCover(selected.id) } catch (e) { alert(`Couldn't set photo: ${e.message || e}`) } },
+    usePhoto: async () => { try { await update(selected.id, { coverSource: null }); bustCover(selected.id) } catch (e) { alert(e.message || e) } },
+    useOfficial: async () => { try { await update(selected.id, { coverSource: 'official' }); bustCover(selected.id) } catch (e) { alert(e.message || e) } },
+    removePhoto: async () => { try { await removePhoto(selected.id); bustCover(selected.id) } catch (e) { alert(e.message || e) } },
+  }
+
   // "Got it!" — move a wishlist record into the owned collection.
   const handlePromoteWant = async (want) => {
     try {
@@ -300,11 +312,25 @@ export default function App() {
             onEdit={openEdit}
             onDelete={handleDelete}
             onPlay={logPlay}
+            onChangeCover={() => setCoverEditOpen(true)}
             playCount={counts.get(selected.id) || 0}
             lastPlayed={lastPlayed.get(selected.id)}
           >
             <PressingInfo record={selected} />
           </RecordDetail>
+        </Sheet>
+      )}
+
+      {coverEditOpen && selected && (
+        <Sheet title="Change cover" onClose={() => setCoverEditOpen(false)}>
+          <CoverEditor
+            record={selected}
+            onSetOfficial={(url) => cover.setOfficial(url)}
+            onPickPhoto={(file) => cover.pickPhoto(file)}
+            onUsePhoto={cover.usePhoto}
+            onUseOfficial={cover.useOfficial}
+            onRemovePhoto={cover.removePhoto}
+          />
         </Sheet>
       )}
 

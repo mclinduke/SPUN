@@ -12,7 +12,7 @@ function ago(ts) {
   return new Date(ts).toLocaleDateString()
 }
 
-export default function RecordDetail({ record, onEdit, onDelete, onPlay, playCount = 0, lastPlayed, children }) {
+export default function RecordDetail({ record, onEdit, onDelete, onPlay, onChangeCover, playCount = 0, lastPlayed, children }) {
   const [confirming, setConfirming] = useState(false)
   const [justSpun, setJustSpun] = useState(false)
   const [busy, setBusy] = useState(false)
@@ -35,6 +35,11 @@ export default function RecordDetail({ record, onEdit, onDelete, onPlay, playCou
   return (
     <div className="detail">
       <Cover record={record} className="detail-cover" />
+      {onChangeCover && (
+        <button className="linkish ce-trigger" onClick={() => onChangeCover(record)}>
+          <Icon name="edit" size={13} /> Change cover
+        </button>
+      )}
       <h3 className="detail-album">{record.album || 'Untitled'}</h3>
       <p className="detail-artist">{record.artist}</p>
       <div className="detail-tags">

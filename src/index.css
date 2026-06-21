@@ -711,3 +711,18 @@ button { font-family: inherit; cursor: pointer; }
 .auth-err { color: var(--danger); font-size: 0.85rem; margin: 12px 0 0; }
 .auth-msg { color: var(--accent-strong); font-size: 0.85rem; margin: 12px 0 0; }
 .auth-card .linkish { margin-top: 16px; display: inline-block; }
+
+/* ============ Cover editor ============ */
+.ce-trigger { margin: -2px 0 8px; display: inline-flex; align-items: center; gap: 4px; }
+.cover-editor { display: flex; flex-direction: column; gap: 16px; }
+.ce-current { display: flex; gap: 14px; align-items: center; }
+.ce-cover { width: 92px; flex: 0 0 92px; }
+.ce-current-meta { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.ce-current-meta strong { font-size: 1rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ce-current-meta small { color: var(--muted); }
+.ce-toggle { display: flex; gap: 6px; margin-top: 8px; }
+.ce-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 10px; max-height: 320px; overflow-y: auto; }
+.ce-option { border: 2px solid transparent; background: var(--surface-2); padding: 0; border-radius: 8px; overflow: hidden; aspect-ratio: 1; cursor: pointer; }
+.ce-option img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.ce-option:hover, .ce-option:focus-visible { border-color: var(--accent); outline: none; }
+.ce-photo { display: flex; gap: 10px; flex-wrap: wrap; }
