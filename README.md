@@ -1,7 +1,7 @@
 # SPUN — vinyl collection
 
 A fast, installable PWA for cataloguing and browsing a vinyl collection. Cover-art-forward
-(Cover Flow / grid / list), works offline, single-user, local-first.
+(Cover Flow / grid / list), works offline, local-first, with optional multi-user cloud accounts.
 
 ## Stack
 - **React 19 + Vite 8**, plain JSX, PWA via `vite-plugin-pwa` (Workbox).
@@ -44,6 +44,26 @@ Pages → Create → connect the repo with build command `npm run build`, output
 
 Without a `DISCOGS_TOKEN` the app runs fine — only pressing/rarity/value degrade gracefully
 (everything else, including MusicBrainz/iTunes cover art, is keyless).
+
+## Multi-user (optional — cloud accounts + sync)
+With the Supabase env vars **unset**, the app stays local-first (IndexedDB per device). Set them and
+it switches to account mode: sign in (Google or email/password) and the collection syncs via
+Supabase, scoped per-user by row-level security (each person's collection is private).
+
+1. Create a free Supabase project. In **SQL Editor**, run [`supabase/schema.sql`](supabase/schema.sql)
+   — creates `records` / `plays` / `wants` with owner-only RLS policies.
+2. Add to `.env` (both are browser-safe, publishable values):
+   ```
+   VITE_SUPABASE_URL=https://<project>.supabase.co
+   VITE_SUPABASE_ANON_KEY=sb_publishable_...
+   ```
+   For Cloudflare, set the same two as Pages env vars (or they bake in at local build time).
+3. **Authentication → URL Configuration:** set **Site URL** to your app URL and add it to
+   **Redirect URLs** (e.g. `https://spun-3zc.pages.dev/**`, `http://localhost:5173/**`).
+4. **Authentication → Providers → Email:** turn **Confirm email** off for instant signups.
+5. **Google sign-in (optional):** create a Google Cloud OAuth *web* client; add the Supabase
+   callback `https://<project>.supabase.co/auth/v1/callback` as an authorized redirect URI and your
+   app origins as JS origins; paste the client ID + secret into Supabase → Providers → Google.
 
 ## Data & backup
 Your collection lives in the browser. **Menu → Export full backup (JSON)** saves everything

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { cloneElement, useEffect, useMemo, useState } from 'react'
 import { supabase, isCloud } from '../data/supabaseClient.js'
 import { createSupabaseRepository } from '../data/supabaseRepository.js'
 import { setRepository } from '../data/repository.js'
@@ -85,13 +85,17 @@ export default function AuthGate({ children }) {
     return () => sub.subscription.unsubscribe()
   }, [cloud])
 
-  // Bind the repository to the signed-in user before the app renders.
+  // Bind the repository to the signed-in user before the app renders; on sign-out,
+  // drop the user-bound client so a stale instance can't serve the next person.
   useMemo(() => {
-    if (cloud && session?.user) setRepository(createSupabaseRepository(supabase, session.user.id))
+    if (!cloud) return
+    if (session?.user) setRepository(createSupabaseRepository(supabase, session.user.id))
+    else setRepository(null) // back to the default repo; nothing reads it while signed out
   }, [cloud, session?.user?.id])
 
   if (!cloud) return children
   if (session === undefined) return <div className="auth-loading">Loading…</div>
   if (!session) return <AuthScreen />
-  return children
+  // Remount the whole app on user change so every hook re-reads the new account.
+  return cloneElement(children, { key: session.user.id })
 }

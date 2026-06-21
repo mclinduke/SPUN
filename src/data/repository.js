@@ -16,7 +16,14 @@ import { getDB, STORE_RECORDS, STORE_IMAGES, STORE_PLAYS, STORE_WANTS, STORE_CAC
  */
 
 export function newId() {
-  return (crypto.randomUUID && crypto.randomUUID()) || `id-${Date.now()}-${Math.round(Math.random() * 1e9)}`
+  if (crypto.randomUUID) return crypto.randomUUID()
+  // RFC-4122 v4 fallback for non-secure contexts (plain-HTTP LAN). getRandomValues
+  // is always available; must be a real UUID so Supabase's uuid columns accept it.
+  const b = crypto.getRandomValues(new Uint8Array(16))
+  b[6] = (b[6] & 0x0f) | 0x40
+  b[8] = (b[8] & 0x3f) | 0x80
+  const h = [...b].map((x) => x.toString(16).padStart(2, '0'))
+  return `${h.slice(0, 4).join('')}-${h.slice(4, 6).join('')}-${h.slice(6, 8).join('')}-${h.slice(8, 10).join('')}-${h.slice(10, 16).join('')}`
 }
 
 // Only accept image-bearing schemes for <img src> — blocks tracking-pixel / beacon

@@ -45,6 +45,24 @@ function recordToRow(rec, userId) {
   }
 }
 
+// Partial update: map ONLY the keys present in the patch to their columns, so an
+// edit like { coverSource: 'official' } never blanks album/artist/etc. (The local
+// IndexedDB repo merges against the existing row; this achieves the same safely.)
+const PATCH_COLS = {
+  album: 'album', artist: 'artist', genre: 'genre', notes: 'notes',
+  label: 'label', catalogNo: 'catalog_no', coverUrl: 'cover_url', coverSource: 'cover_source',
+}
+function patchToRow(patch) {
+  const row = { updated_at: Date.now() }
+  for (const [key, col] of Object.entries(PATCH_COLS)) {
+    if (key in patch) row[col] = patch[key]
+  }
+  if ('year' in patch) row.year = patch.year ? Number(patch.year) : null
+  if ('hasPhoto' in patch) row.has_photo = Boolean(patch.hasPhoto)
+  if ('tags' in patch) row.tags = Array.isArray(patch.tags) ? patch.tags.filter(Boolean) : []
+  return row
+}
+
 const blobToDataURL = (blob) => new Promise((resolve, reject) => {
   const r = new FileReader()
   r.onload = () => resolve(r.result)
@@ -75,9 +93,7 @@ export function createSupabaseRepository(supabase, userId) {
       return data.map(rowToRecord)
     },
     async update(id, patch) {
-      const row = recordToRow({ ...patch, id }, userId)
-      delete row.created_at // never reset creation time on update
-      const data = must(await supabase.from('records').update(row).eq('id', id).select(RECORD_COLS).single())
+      const data = must(await supabase.from('records').update(patchToRow(patch)).eq('id', id).select(RECORD_COLS).single())
       return rowToRecord(data)
     },
     async remove(id) {
