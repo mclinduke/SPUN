@@ -9,7 +9,7 @@ function todayStamp() {
   return new Date().toISOString().slice(0, 10)
 }
 
-export default function SettingsSheet({ count, dark, onToggleDark, onBulkAdd, onImportDiscogs, onShowStats, onShowListening, onShowRandom, onShowValue, onShowWishlist, wantCount = 0, onChanged }) {
+export default function SettingsSheet({ count, dark, onToggleDark, onBulkAdd, onImportDiscogs, onShowStats, onShowListening, onShowRandom, onShowValue, onShowWishlist, onShowTour, wantCount = 0, onChanged }) {
   const fileRef = useRef(null)
   const [busy, setBusy] = useState('')
   const [confirmClear, setConfirmClear] = useState(false)
@@ -91,6 +91,10 @@ export default function SettingsSheet({ count, dark, onToggleDark, onBulkAdd, on
         <Icon name="upload" /> <span><strong>Import (JSON or CSV)</strong><small>Merges into your collection</small></span>
       </button>
       <input ref={fileRef} type="file" accept=".json,.csv,application/json,text/csv" hidden onChange={onImportFile} />
+
+      <button className="menu-item" onClick={onShowTour}>
+        <Icon name="disc" /> <span><strong>How it works</strong><small>Replay the quick tour</small></span>
+      </button>
 
       <div className="menu-section">Appearance</div>
       <button className="menu-item" onClick={onToggleDark}>

@@ -738,3 +738,22 @@ button { font-family: inherit; cursor: pointer; }
 .dg-summary { text-align: center; padding: 8px 0 4px; }
 .dg-summary .big-number { display: block; font-size: 2.6rem; font-weight: 700; color: var(--accent); line-height: 1.1; }
 .dg-summary p { margin: 2px 0; }
+
+/* ============ Onboarding tour ============ */
+.onboarding-backdrop { position: fixed; inset: 0; z-index: 120; display: grid; place-items: center; padding: 20px; background: rgba(0,0,0,.55); backdrop-filter: blur(3px); animation: fade .2s ease; }
+.onboarding-card { position: relative; width: 100%; max-width: 360px; background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 34px 24px 22px; text-align: center; box-shadow: 0 24px 64px rgba(0,0,0,.45); }
+.onboarding-skip { position: absolute; top: 14px; right: 16px; background: none; border: none; color: var(--muted); font-size: .85rem; cursor: pointer; }
+.onboarding-icon { width: 66px; height: 66px; margin: 0 auto 16px; border-radius: 18px; display: grid; place-items: center; background: color-mix(in srgb, var(--accent) 16%, transparent); color: var(--accent); }
+.onboarding-card h2 { margin: 0 0 8px; font-size: 1.35rem; }
+.onboarding-card p { margin: 0 0 22px; color: var(--muted); line-height: 1.5; }
+.onboarding-dots { display: flex; justify-content: center; gap: 7px; margin-bottom: 20px; }
+.onboarding-dots span { width: 7px; height: 7px; border-radius: 50%; background: var(--border); transition: width .2s, background .2s; }
+.onboarding-dots span.on { background: var(--accent); width: 20px; border-radius: 4px; }
+.onboarding-actions { display: flex; gap: 10px; }
+.onboarding-actions .btn { flex: 1; }
+
+/* ============ iOS install hint ============ */
+.install-hint { display: flex; align-items: center; gap: 10px; margin: 0 16px 6px; padding: 10px 12px; background: color-mix(in srgb, var(--accent) 12%, var(--surface)); border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--border)); border-radius: 12px; font-size: .85rem; }
+.install-hint > .icon { color: var(--accent); flex: 0 0 auto; }
+.install-hint span { flex: 1; line-height: 1.35; }
+.install-hint-close { background: none; border: none; color: var(--muted); cursor: pointer; flex: 0 0 auto; padding: 2px; display: inline-flex; }

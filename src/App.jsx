@@ -20,6 +20,8 @@ import CollectionValue from './components/CollectionValue.jsx'
 import Wishlist from './components/Wishlist.jsx'
 import SettingsSheet from './components/SettingsSheet.jsx'
 import DiscogsImport from './components/DiscogsImport.jsx'
+import Onboarding from './components/Onboarding.jsx'
+import InstallHint from './components/InstallHint.jsx'
 
 const VIEWS = [
   { id: 'coverflow', icon: 'coverflow', label: 'Cover Flow' },
@@ -64,6 +66,8 @@ export default function App() {
   const [valueOpen, setValueOpen] = useState(false)
   const [wishlistOpen, setWishlistOpen] = useState(false)
   const [coverEditOpen, setCoverEditOpen] = useState(false)
+  const [showTour, setShowTour] = useState(() => !localStorage.getItem('spun-onboarded'))
+  const closeTour = () => { localStorage.setItem('spun-onboarded', '1'); setShowTour(false) }
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [addedThisSession, setAddedThisSession] = useState(0)
 
@@ -287,6 +291,8 @@ export default function App() {
         )}
       </div>
 
+      <InstallHint />
+
       <main className="content">
         {loading ? (
           <p className="empty-note">Loading your collection…</p>
@@ -416,11 +422,14 @@ export default function App() {
             onShowRandom={() => { setSettingsOpen(false); setRandomOpen(true) }}
             onShowValue={() => { setSettingsOpen(false); setValueOpen(true) }}
             onShowWishlist={() => { setSettingsOpen(false); setWishlistOpen(true) }}
+            onShowTour={() => { setSettingsOpen(false); setShowTour(true) }}
             wantCount={wants.length}
             onChanged={reload}
           />
         </Sheet>
       )}
+
+      {showTour && <Onboarding onClose={closeTour} />}
     </div>
   )
 }
