@@ -8,7 +8,7 @@ function todayStamp() {
   return new Date().toISOString().slice(0, 10)
 }
 
-export default function SettingsSheet({ count, dark, onToggleDark, onBulkAdd, onShowStats, onShowListening, onShowRandom, onShowValue, onChanged }) {
+export default function SettingsSheet({ count, dark, onToggleDark, onBulkAdd, onShowStats, onShowListening, onShowRandom, onShowValue, onShowWishlist, wantCount = 0, onChanged }) {
   const fileRef = useRef(null)
   const [busy, setBusy] = useState('')
   const [confirmClear, setConfirmClear] = useState(false)
@@ -65,6 +65,9 @@ export default function SettingsSheet({ count, dark, onToggleDark, onBulkAdd, on
       </button>
       <button className="menu-item" onClick={onShowListening}>
         <Icon name="headphones" /> <span><strong>Your listening</strong><small>Spins, streaks, most-played</small></span>
+      </button>
+      <button className="menu-item" onClick={onShowWishlist}>
+        <Icon name="heart" /> <span><strong>Wishlist</strong><small>{wantCount ? `${wantCount} record${wantCount === 1 ? '' : 's'} on the hunt` : 'Records you want'}</small></span>
       </button>
       <button className="menu-item" onClick={onShowStats}>
         <Icon name="stats" /> <span><strong>Collection stats</strong><small>{count} records</small></span>

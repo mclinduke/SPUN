@@ -683,3 +683,17 @@ button { font-family: inherit; cursor: pointer; }
 .discogs-link { display: inline-flex; align-items: center; gap: 2px; margin-top: 12px; color: var(--accent-strong); text-decoration: none; font-size: 0.88rem; font-weight: 600; }
 .linkish { border: none; background: none; color: var(--accent-strong); font: inherit; font-weight: 600; cursor: pointer; padding: 0; text-decoration: underline; }
 .value { display: flex; flex-direction: column; gap: 14px; }
+
+/* ============ Crate/tag chips + Wishlist ============ */
+.crate-chips { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+.crate-chips::-webkit-scrollbar { display: none; }
+.crate-chips .chip { flex-shrink: 0; display: inline-flex; align-items: center; gap: 4px; }
+.wishlist { display: flex; flex-direction: column; gap: 14px; }
+.want-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.want-row { display: flex; align-items: center; gap: 12px; }
+.want-thumb { width: 52px; height: 52px; flex: 0 0 52px; box-shadow: none; }
+.want-text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.want-text strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.want-text small { color: var(--muted); }
+.want-actions { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+.want-actions .btn { padding: 7px 11px; font-size: 0.85rem; }

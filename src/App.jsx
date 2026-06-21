@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useRecords } from './hooks/useRecords.js'
 import { usePlays } from './hooks/usePlays.js'
+import { useWants } from './hooks/useWants.js'
 import { bustCover } from './hooks/useCoverSrc.js'
 import Icon from './components/Icon.jsx'
 import Sheet from './components/Sheet.jsx'
@@ -15,6 +16,7 @@ import ListeningStats from './components/ListeningStats.jsx'
 import RandomPicker from './components/RandomPicker.jsx'
 import PressingInfo from './components/PressingInfo.jsx'
 import CollectionValue from './components/CollectionValue.jsx'
+import Wishlist from './components/Wishlist.jsx'
 import SettingsSheet from './components/SettingsSheet.jsx'
 
 const VIEWS = [
@@ -40,11 +42,13 @@ function getInitialTheme() {
 export default function App() {
   const { records, loading, add, bulkAdd, update, remove, setPhoto, removePhoto, reload } = useRecords()
   const { plays, counts, lastPlayed, logPlay } = usePlays()
+  const { wants, addWant, removeWant } = useWants()
 
   const [view, setView] = useState(() => localStorage.getItem('vinyl-view') || 'coverflow')
   const [theme, setTheme] = useState(getInitialTheme)
   const [query, setQuery] = useState('')
   const [genreFilter, setGenreFilter] = useState('')
+  const [tagFilter, setTagFilter] = useState('')
   const [sort, setSort] = useState('recent')
 
   const [selected, setSelected] = useState(null)
@@ -55,6 +59,7 @@ export default function App() {
   const [listeningOpen, setListeningOpen] = useState(false)
   const [randomOpen, setRandomOpen] = useState(false)
   const [valueOpen, setValueOpen] = useState(false)
+  const [wishlistOpen, setWishlistOpen] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [addedThisSession, setAddedThisSession] = useState(0)
 
@@ -76,10 +81,16 @@ export default function App() {
     if (genreFilter && !genres.includes(genreFilter)) setGenreFilter('')
   }, [genres, genreFilter])
 
+  const allTags = useMemo(() => [...new Set(records.flatMap((r) => r.tags || []))].sort(), [records])
+  useEffect(() => {
+    if (tagFilter && !allTags.includes(tagFilter)) setTagFilter('')
+  }, [allTags, tagFilter])
+
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase()
     const list = records.filter((r) => {
       if (genreFilter && r.genre !== genreFilter) return false
+      if (tagFilter && !(r.tags || []).includes(tagFilter)) return false
       if (!q) return true
       return [r.album, r.artist, r.genre, r.notes, r.year]
         .filter(Boolean)
@@ -94,7 +105,7 @@ export default function App() {
       'year-asc': (a, b) => (a.year || 9999) - (b.year || 9999),
     }
     return [...list].sort(by[sort] || by.recent)
-  }, [records, query, genreFilter, sort])
+  }, [records, query, genreFilter, tagFilter, sort])
 
   const openAdd = () => { setEditing(null); setAddedThisSession(0); setFormOpen(true) }
   const openEdit = (rec) => { setSelected(null); setEditing(rec); setFormOpen(true) }
@@ -164,6 +175,16 @@ export default function App() {
     }
   }
 
+  // "Got it!" — move a wishlist record into the owned collection.
+  const handlePromoteWant = async (want) => {
+    try {
+      await add({ album: want.album, artist: want.artist, year: want.year, genre: want.genre, coverUrl: want.coverUrl, coverSource: want.coverUrl ? 'official' : null })
+      await removeWant(want.id)
+    } catch (err) {
+      alert(`Couldn't move that to your collection: ${err.message || err}`)
+    }
+  }
+
   return (
     <div className="app">
       <header className="app-header">
@@ -216,6 +237,16 @@ export default function App() {
             <Icon name="dice" size={20} />
           </button>
         </div>
+        {allTags.length > 0 && (
+          <div className="crate-chips">
+            <button className={`chip ${!tagFilter ? 'on' : ''}`} onClick={() => setTagFilter('')}>All crates</button>
+            {allTags.map((t) => (
+              <button key={t} className={`chip ${tagFilter === t ? 'on' : ''}`} onClick={() => setTagFilter(tagFilter === t ? '' : t)}>
+                <Icon name="tag" size={13} /> {t}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <main className="content">
@@ -308,6 +339,12 @@ export default function App() {
         </Sheet>
       )}
 
+      {wishlistOpen && (
+        <Sheet title={`Wishlist${wants.length ? ` (${wants.length})` : ''}`} onClose={() => setWishlistOpen(false)} wide>
+          <Wishlist wants={wants} onAdd={addWant} onRemove={removeWant} onPromote={handlePromoteWant} />
+        </Sheet>
+      )}
+
       {settingsOpen && (
         <Sheet title="Menu" onClose={() => setSettingsOpen(false)}>
           <SettingsSheet
@@ -319,6 +356,8 @@ export default function App() {
             onShowListening={() => { setSettingsOpen(false); setListeningOpen(true) }}
             onShowRandom={() => { setSettingsOpen(false); setRandomOpen(true) }}
             onShowValue={() => { setSettingsOpen(false); setValueOpen(true) }}
+            onShowWishlist={() => { setSettingsOpen(false); setWishlistOpen(true) }}
+            wantCount={wants.length}
             onChanged={reload}
           />
         </Sheet>
