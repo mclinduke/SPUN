@@ -204,7 +204,7 @@ begin
   if not public.are_friends(auth.uid(), p_owner) then raise exception 'not friends'; end if;
   return query
     select r.id, r.album, r.artist, r.year, r.genre,
-           case when (select share_notes from public.profiles where id = p_owner) then r.notes else '' end,
+           case when (select p.share_notes from public.profiles p where p.id = p_owner) then r.notes else '' end,
            r.cover_url, r.cover_source, false,
            r.label, r.catalog_no, r.tags, r.created_at, r.updated_at, r.pressing
     from public.records r
