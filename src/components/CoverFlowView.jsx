@@ -112,12 +112,30 @@ export default function CoverFlowView({ records, onSelect }) {
     else scrollToIndex(i)
   }
 
+  // Keyboard navigation so off-screen covers are reachable without the mouse.
+  const onKey = (e) => {
+    if (e.key === 'ArrowLeft') { e.preventDefault(); scrollToIndex(Math.max(0, active - 1)) }
+    else if (e.key === 'ArrowRight') { e.preventDefault(); scrollToIndex(Math.min(records.length - 1, active + 1)) }
+    else if (e.key === 'Home') { e.preventDefault(); scrollToIndex(0) }
+    else if (e.key === 'End') { e.preventDefault(); scrollToIndex(records.length - 1) }
+    else if ((e.key === 'Enter' || e.key === ' ') && current) { e.preventDefault(); onSelect(current) }
+  }
+
   return (
     <div className="coverflow-wrap">
       <button className="cf-nav cf-prev" onClick={() => scrollToIndex(Math.max(0, active - 1))} aria-label="Previous">
         <Icon name="chevronLeft" size={26} />
       </button>
-      <div className="coverflow" ref={trackRef} onScroll={onScroll}>
+      <div
+        className="coverflow"
+        ref={trackRef}
+        onScroll={onScroll}
+        onKeyDown={onKey}
+        tabIndex={0}
+        role="group"
+        aria-roledescription="carousel"
+        aria-label={`Cover flow, ${records.length} records. Use arrow keys to browse, Enter to open.`}
+      >
         {records.map((r, i) => {
           const near = Math.abs(i - active) <= WINDOW
           return (
@@ -139,7 +157,7 @@ export default function CoverFlowView({ records, onSelect }) {
         <Icon name="chevronRight" size={26} />
       </button>
       {current && (
-        <div className="cf-caption" key={current.id}>
+        <div className="cf-caption" key={current.id} aria-live="polite">
           <span className="cf-album">{current.album || 'Untitled'}</span>
           <span className="cf-artist">{current.artist}{current.year ? ` · ${current.year}` : ''}</span>
           <button className="btn btn-ghost cf-details" onClick={() => onSelect(current)}>View details</button>
