@@ -162,6 +162,19 @@ export default function App() {
     return [...list].sort(by[sort] || by.recent)
   }, [records, deferredQuery, genreFilter, tagFilter, sort, counts, lastPlayed])
 
+  // Home-screen listening snapshot — emphasizes the spin loop + opens full Wrapped.
+  const homeStats = useMemo(() => {
+    const DAY = 86400000
+    const dayKey = (ts) => new Date(ts).toISOString().slice(0, 10)
+    const days = new Set(plays.map((p) => dayKey(p.playedAt)))
+    let streak = 0
+    let cursor = Date.now()
+    if (!days.has(dayKey(cursor)) && days.has(dayKey(cursor - DAY))) cursor -= DAY
+    while (days.has(dayKey(cursor))) { streak++; cursor -= DAY }
+    const monthCutoff = Date.now() - 30 * DAY
+    return { spins: plays.length, thisMonth: plays.filter((p) => p.playedAt >= monthCutoff).length, streak }
+  }, [plays])
+
   const openAdd = () => { setEditing(null); setAddedThisSession(0); setFormOpen(true) }
   const openEdit = (rec) => { setSelected(null); setEditing(rec); setFormOpen(true) }
 
@@ -337,8 +350,8 @@ export default function App() {
               {SORTS.map((s) => <option key={s.id} value={s.id}>{s.id === sort ? `Sort: ${s.label}` : s.label}</option>)}
             </select>
           </label>
-          <button className="icon-btn dice-btn" onClick={() => setRandomOpen(true)} aria-label="Pick a random record" title="What do I play tonight?">
-            <Icon name="dice" size={20} />
+          <button className="icon-btn dice-btn" onClick={() => setRandomOpen(true)} aria-label="What do I play tonight? Pick a random record" title="What do I play tonight?">
+            <Icon name="dice" size={26} />
           </button>
         </div>
         {allTags.length > 0 && (
@@ -354,6 +367,16 @@ export default function App() {
       </div>
 
       <InstallHint />
+
+      {records.length > 0 && (
+        <button className="home-stats" onClick={() => setListeningOpen(true)} aria-label="Open your listening stats (Wrapped)">
+          <span className="home-stat"><strong>{homeStats.spins}</strong><small>spins</small></span>
+          <span className="home-stat"><strong>{homeStats.thisMonth}</strong><small>this month</small></span>
+          <span className="home-stat"><strong>{homeStats.streak}{homeStats.streak > 0 ? ' 🔥' : ''}</strong><small>day streak</small></span>
+          <span className="home-stat"><strong>{records.length}</strong><small>records</small></span>
+          <Icon name="chevronRight" size={16} />
+        </button>
+      )}
 
       <main className="content">
         {loading ? (

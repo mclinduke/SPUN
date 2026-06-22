@@ -12,11 +12,17 @@ export default function PressingInfo({ record, onIdentify }) {
   const [error, setError] = useState('')
   const [identifying, setIdentifying] = useState(false)
 
+  // Bumped on every record change; an in-flight load() checks it before writing
+  // state so a slow lookup for a previous record can't clobber the current one.
+  const runIdRef = useRef(0)
   const load = useCallback(async (force = false) => {
+    const myRun = runIdRef.current
     setStatus('loading'); setError('')
-    try { setData(await lookupRecord(record, { force })) }
-    catch (e) { setError(e.message || String(e)); setStatus('error'); return }
-    setStatus('idle')
+    let result
+    try { result = await lookupRecord(record, { force }) }
+    catch (e) { if (runIdRef.current === myRun) { setError(e.message || String(e)); setStatus('error') } return }
+    if (runIdRef.current !== myRun) return // navigated to another record mid-flight
+    setData(result); setStatus('idle')
   }, [record])
   const loadRef = useRef(load)
   loadRef.current = load
@@ -25,15 +31,16 @@ export default function PressingInfo({ record, onIdentify }) {
   // lookup and cancel it if the sheet closes first — so flicking through many
   // records doesn't fire 3 Discogs calls each and trip the rate limit.
   useEffect(() => {
-    let active = true
+    runIdRef.current += 1
+    const myRun = runIdRef.current
     let timer = 0
     setData(null); setStatus('idle'); setError('')
     cachedRecord(record.id).then((c) => {
-      if (!active) return
+      if (runIdRef.current !== myRun) return
       if (c) setData(c)
-      else timer = setTimeout(() => { if (active) loadRef.current(false) }, 700)
+      else timer = setTimeout(() => { if (runIdRef.current === myRun) loadRef.current(false) }, 700)
     })
-    return () => { active = false; clearTimeout(timer) }
+    return () => { clearTimeout(timer) }
   }, [record.id])
 
   const stale = data?.found && rarityStale(data.fetchedAt)

@@ -209,6 +209,35 @@ button { font-family: inherit; cursor: pointer; }
   padding-left: 34px;
 }
 
+/* Prominent random-pick button — the "what do I play tonight?" entry point. */
+.dice-btn {
+  width: 50px;
+  height: 50px;
+  flex-shrink: 0;
+  background: var(--accent-strong);
+  color: var(--on-accent);
+  border-radius: 14px;
+}
+.dice-btn:hover { filter: brightness(1.06); }
+
+/* Home listening snapshot — taps through to the full Wrapped. */
+.home-stats {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: auto;
+  margin: 0 16px 6px;
+  padding: 10px 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text);
+}
+.home-stat { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 1px; min-width: 0; }
+.home-stat strong { font-size: 1.1rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.home-stat small { font-size: 0.66rem; color: var(--muted); letter-spacing: 0.02em; }
+.home-stats > .icon { color: var(--muted); flex: 0 0 auto; }
+
 /* ============ Content ============ */
 .content { flex: 1; padding: 8px 0 96px; }
 
