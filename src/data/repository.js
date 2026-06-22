@@ -199,6 +199,12 @@ function createIndexedDbRepository() {
     async removeFriend() { throw new Error('Friends needs a SPUN account — sign in to use it.') },
     async friendRecords() { throw new Error('Friends needs a SPUN account — sign in to use it.') },
     async friendPlays() { throw new Error('Friends needs a SPUN account — sign in to use it.') },
+    async listGroups() { return [] },
+    async createGroup() { throw new Error('Groups need a SPUN account — sign in to use it.') },
+    async joinGroup() { throw new Error('Groups need a SPUN account — sign in to use it.') },
+    async leaveGroup() { throw new Error('Groups need a SPUN account — sign in to use it.') },
+    async groupMembers() { return [] },
+    async groupFeed() { return [] },
   }
 }
 

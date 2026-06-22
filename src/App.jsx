@@ -28,6 +28,7 @@ import CoverFixer from './components/CoverFixer.jsx'
 import Logo from './components/Logo.jsx'
 import Friends from './components/Friends.jsx'
 import FriendCollection from './components/FriendCollection.jsx'
+import Groups from './components/Groups.jsx'
 import Onboarding from './components/Onboarding.jsx'
 import InstallHint from './components/InstallHint.jsx'
 
@@ -85,6 +86,7 @@ export default function App() {
   const closeTour = () => { localStorage.setItem('spun-onboarded', '1'); setShowTour(false) }
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [friendsOpen, setFriendsOpen] = useState(false)
+  const [groupsOpen, setGroupsOpen] = useState(false)
   const [coverFixOpen, setCoverFixOpen] = useState(false)
   const [viewingFriend, setViewingFriend] = useState(null)
   const [shareNotes, setShareNotes] = useState(false)
@@ -531,6 +533,7 @@ export default function App() {
             onShowWishlist={() => { setSettingsOpen(false); setWishlistOpen(true) }}
             onShowCoverFix={() => { setSettingsOpen(false); setCoverFixOpen(true) }}
             onShowFriends={() => { setSettingsOpen(false); friendsApi.reload(); setFriendsOpen(true) }}
+            onShowGroups={() => { setSettingsOpen(false); setGroupsOpen(true) }}
             onShowTour={() => { setSettingsOpen(false); setShowTour(true) }}
             wantCount={wants.length}
             pendingCount={friendsApi.pendingCount}
@@ -550,6 +553,12 @@ export default function App() {
       {friendsOpen && (
         <Sheet title="Friends" onClose={() => setFriendsOpen(false)} wide>
           <Friends {...friendsApi} onViewFriend={(f) => { setFriendsOpen(false); setViewingFriend(f) }} />
+        </Sheet>
+      )}
+
+      {groupsOpen && (
+        <Sheet title="Groups" onClose={() => setGroupsOpen(false)} wide>
+          <Groups onClose={() => setGroupsOpen(false)} />
         </Sheet>
       )}
 

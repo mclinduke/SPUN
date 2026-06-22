@@ -9,7 +9,7 @@ function todayStamp() {
   return new Date().toISOString().slice(0, 10)
 }
 
-export default function SettingsSheet({ count, dark, onToggleDark, onBulkAdd, onScan, onImportDiscogs, onShowStats, onShowListening, onShowRandom, onShowWishlist, onShowCoverFix, onShowFriends, onShowTour, wantCount = 0, pendingCount = 0, shareNotes = false, onToggleShareNotes, onChanged }) {
+export default function SettingsSheet({ count, dark, onToggleDark, onBulkAdd, onScan, onImportDiscogs, onShowStats, onShowListening, onShowRandom, onShowWishlist, onShowCoverFix, onShowFriends, onShowGroups, onShowTour, wantCount = 0, pendingCount = 0, shareNotes = false, onToggleShareNotes, onChanged }) {
   const fileRef = useRef(null)
   const [busy, setBusy] = useState('')
   const [confirmClear, setConfirmClear] = useState(false)
@@ -79,6 +79,11 @@ export default function SettingsSheet({ count, dark, onToggleDark, onBulkAdd, on
       {isCloud() && (
         <button className="menu-item" onClick={onShowFriends}>
           <Icon name="users" /> <span><strong>Friends{pendingCount > 0 && <span className="menu-badge">{pendingCount}</span>}</strong><small>{pendingCount > 0 ? `${pendingCount} request${pendingCount === 1 ? '' : 's'} waiting` : 'Browse each other’s collections'}</small></span>
+        </button>
+      )}
+      {isCloud() && (
+        <button className="menu-item" onClick={onShowGroups}>
+          <Icon name="users" /> <span><strong>Groups</strong><small>See what your friends are spinning</small></span>
         </button>
       )}
 

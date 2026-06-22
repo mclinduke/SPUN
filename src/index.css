@@ -923,6 +923,29 @@ button { font-family: inherit; cursor: pointer; }
 .user-result:hover { border-color: var(--accent); }
 .user-add { display: inline-flex; align-items: center; gap: 4px; color: var(--accent-strong); font-size: .85rem; flex-shrink: 0; }
 
+/* ============ Groups + feed ============ */
+.groups { display: flex; flex-direction: column; gap: 12px; }
+.groups .back { align-self: flex-start; display: inline-flex; align-items: center; gap: 3px; }
+.group-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.group-item { display: flex; align-items: center; gap: 12px; width: 100%; text-align: left; padding: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); }
+.group-item:hover { border-color: var(--accent); }
+.group-item > .icon { color: var(--accent); flex-shrink: 0; }
+.group-meta { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.group-meta strong { font-size: .95rem; }
+.group-meta small { color: var(--muted); font-size: .8rem; }
+.group-head { display: flex; flex-direction: column; gap: 6px; padding: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+.group-head > strong { font-size: 1.1rem; }
+.group-head code { background: var(--bg); padding: 1px 6px; border-radius: 4px; font-size: .85em; letter-spacing: .05em; }
+.group-sub { font-size: .7rem; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 4px 0 0; }
+.feed { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.feed-row { display: flex; align-items: center; gap: 10px; padding: 8px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+.feed-cover { width: 46px; height: 46px; border-radius: 5px; object-fit: cover; flex-shrink: 0; }
+.feed-cover.noart { display: grid; place-items: center; color: var(--muted); }
+.feed-meta { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.feed-meta strong { font-size: .9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.feed-meta small { color: var(--muted); font-size: .8rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.feed-who { color: var(--accent-strong) !important; }
+
 .friend-tabs { align-self: stretch; }
 .friend-tabs button { display: flex; align-items: center; justify-content: center; width: auto; height: 40px; flex: 1; gap: 6px; font-size: .9rem; font-weight: 600; padding: 0 10px; }
 .friend-collection { display: flex; flex-direction: column; gap: 12px; }

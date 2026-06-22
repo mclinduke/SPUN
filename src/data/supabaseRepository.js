@@ -238,5 +238,28 @@ export function createSupabaseRepository(supabase, userId) {
       const data = must(await supabase.rpc('get_friend_plays', { p_owner: ownerId }))
       return (data || []).map((p) => ({ id: p.id, recordId: p.record_id, playedAt: p.played_at }))
     },
+
+    // ---- groups + "what everyone's spinning" feed ----
+    async listGroups() {
+      const data = must(await supabase.rpc('list_my_groups'))
+      return (data || []).map((g) => ({ id: g.id, name: g.name, inviteCode: g.invite_code, memberCount: Number(g.member_count) || 0, isOwner: Boolean(g.is_owner) }))
+    },
+    async createGroup(name) {
+      const g = (must(await supabase.rpc('create_group', { p_name: name })) || [])[0]
+      return g ? { id: g.id, name: g.name, inviteCode: g.invite_code } : null
+    },
+    async joinGroup(code) {
+      const g = (must(await supabase.rpc('join_group', { p_code: code })) || [])[0]
+      return g ? { id: g.id, name: g.name } : null // null = no group with that code
+    },
+    async leaveGroup(groupId) { must(await supabase.rpc('leave_group', { p_gid: groupId })) },
+    async groupMembers(groupId) {
+      const data = must(await supabase.rpc('group_members_list', { p_gid: groupId }))
+      return (data || []).map((m) => ({ id: m.user_id, username: m.username || '', name: m.display_name || m.username || 'Member' }))
+    },
+    async groupFeed(groupId) {
+      const data = must(await supabase.rpc('group_feed', { p_gid: groupId }))
+      return (data || []).map((f) => ({ userId: f.user_id, username: f.username || '', name: f.display_name || f.username || 'Someone', recordId: f.record_id, album: f.album || '', artist: f.artist || '', coverUrl: f.cover_url || null, playedAt: f.played_at }))
+    },
   }
 }
