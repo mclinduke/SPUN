@@ -199,7 +199,7 @@ export function createSupabaseRepository(supabase, userId) {
     },
     async searchUsers(query) {
       const data = must(await supabase.rpc('search_users', { p_query: query }))
-      return (data || []).map((u) => ({ id: u.id, username: u.username, name: u.display_name || u.username }))
+      return (data || []).map((u) => ({ username: u.username })) // handle only — never id/email/name
     },
     async sendFriendRequestByUsername(username) {
       // → 'requested' | 'accepted' | 'already_friends' | 'already_pending' | 'not_found'

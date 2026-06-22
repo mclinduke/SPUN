@@ -23,15 +23,20 @@ begin
   end if;
   update public.profiles set username = u where id = auth.uid();
   return 'ok';
+exception when unique_violation then
+  return 'taken'; -- two people claimed the same handle at once; the index is the real guard
 end; $$;
 
 -- ---------- search users by username prefix ----------
 -- Handles are public-by-design (that's the point of a username). Email is NEVER
 -- returned here. Prefix match, capped at 10, excludes the caller.
+-- Returns ONLY the handle — never the auth id, email, or email-derived name — so
+-- a stranger searching prefixes can't harvest a {handle -> user-id/name} map.
+-- Requests are sent by handle string; the server resolves handle->id internally.
 create or replace function public.search_users(p_query text)
-returns table (id uuid, username text, display_name text)
+returns table (username text)
 language sql stable security definer set search_path = public as $$
-  select p.id, p.username, p.display_name
+  select p.username
   from public.profiles p
   where p.username is not null
     and p.id <> auth.uid()
@@ -86,7 +91,7 @@ language sql stable security definer set search_path = public as $$
     case when f.requester_id = auth.uid() then f.addressee_id else f.requester_id end,
     p.display_name,
     p.username,
-    p.email,
+    case when f.status = 'accepted' then p.email else null end, -- don't disclose a pending target's email
     f.status,
     case
       when f.status = 'accepted' then 'friend'

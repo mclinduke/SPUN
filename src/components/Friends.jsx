@@ -125,9 +125,9 @@ export default function Friends({ accepted, incoming, outgoing, loading, error, 
       {results.length > 0 && (
         <ul className="user-results">
           {results.map((u) => (
-            <li key={u.id}>
+            <li key={u.username}>
               <button type="button" className="user-result" onClick={() => requestByUsername(u.username)} disabled={busy}>
-                <span className="friend-id"><strong>@{u.username}</strong>{u.name && u.name !== u.username && <small>{u.name}</small>}</span>
+                <span className="friend-id"><strong>@{u.username}</strong></span>
                 <span className="user-add"><Icon name="plus" size={16} /> Add</span>
               </button>
             </li>
