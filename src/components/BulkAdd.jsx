@@ -24,11 +24,13 @@ function parseLine(line) {
   if (tail.length > 1) { head = tail[0]; notes = tail.slice(1).join(' ').trim() }
 
   const parts = head.split(/\s+[-–—]\s+/).map((s) => s.trim()).filter(Boolean)
+  // Only treat a TRAILING segment as the year, and never when it's the only part —
+  // so album titles that are/contain a year ("1999", "1971") aren't eaten.
   let year = ''
-  const rest = []
-  for (const p of parts) {
-    if (!year && YEAR_RE.test(p)) year = p
-    else rest.push(p)
+  let rest = parts
+  if (parts.length > 1 && YEAR_RE.test(parts[parts.length - 1])) {
+    year = parts[parts.length - 1]
+    rest = parts.slice(0, -1)
   }
 
   let artist = ''
@@ -49,18 +51,32 @@ function parseLine(line) {
   return { id: newId(), artist, album, genre, year, notes, coverUrl: null, line, status: 'manual', include: true }
 }
 
-export default function BulkAdd({ onCommit, onCancel }) {
+export default function BulkAdd({ onCommit, onCancel, findDuplicate }) {
   const [text, setText] = useState('')
   const [drafts, setDrafts] = useState([])
   const [progress, setProgress] = useState(null) // { done, total }
 
   const lines = () => text.split('\n').map((l) => l.trim()).filter(Boolean)
 
+  // Flag rows already in the collection, or repeated within this paste, and
+  // un-check them by default so a re-import doesn't silently duplicate.
+  const markDupes = (rows) => {
+    const seen = new Set()
+    return rows.map((d) => {
+      const key = `${(d.album || '').trim().toLowerCase()}|${(d.artist || '').trim().toLowerCase()}`
+      const existing = findDuplicate ? findDuplicate(d.album, d.artist) : null
+      const batchDup = key !== '|' && seen.has(key)
+      seen.add(key)
+      const dup = Boolean(existing) || batchDup
+      return { ...d, dup, include: d.include !== false && !dup }
+    })
+  }
+
   // No-API path: parse the pasted text locally and go straight to review.
   const createFromText = () => {
     const ls = lines()
     if (!ls.length) return
-    setDrafts(ls.map(parseLine))
+    setDrafts(markDupes(ls.map(parseLine)))
   }
 
   // Optional API path: look each line up on iTunes for cover art + metadata.
@@ -99,6 +115,7 @@ export default function BulkAdd({ onCommit, onCancel }) {
       setDrafts([...next])
       await sleep(220) // pace iTunes + MusicBrainz politely
     }
+    setDrafts(markDupes(next)) // flag/uncheck dupes once matches have settled
     setProgress(null)
   }
 
@@ -159,7 +176,7 @@ export default function BulkAdd({ onCommit, onCancel }) {
                 <button className={`check ${d.include ? 'on' : ''}`} onClick={() => toggle(i)} aria-label="Include">
                   {d.include && <Icon name="check" size={14} />}
                 </button>
-                {d.coverUrl ? <img className="bulk-thumb" src={d.coverUrl} alt="" /> : <div className="bulk-thumb noart"><Icon name="disc" size={16} /></div>}
+                {d.coverUrl ? <img className="bulk-thumb" src={d.coverUrl} alt="" onError={() => patch(i, 'coverUrl', null)} /> : <div className="bulk-thumb noart"><Icon name="disc" size={16} /></div>}
                 <div className="bulk-fields">
                   <input value={d.album} onChange={(e) => patch(i, 'album', e.target.value)} placeholder="Album" />
                   <input value={d.artist} onChange={(e) => patch(i, 'artist', e.target.value)} placeholder="Artist" />
@@ -169,7 +186,8 @@ export default function BulkAdd({ onCommit, onCancel }) {
                   </div>
                   <input value={d.notes || ''} onChange={(e) => patch(i, 'notes', e.target.value)} placeholder="Notes" />
                 </div>
-                {(d.status === 'notfound' || d.status === 'error') && <span className="badge warn" title="No match — edit manually">no match</span>}
+                {d.dup && <span className="badge warn" title="Already in your collection">already added</span>}
+                {!d.dup && (d.status === 'notfound' || d.status === 'error') && <span className="badge warn" title="No match — edit manually">no match</span>}
               </li>
             ))}
           </ul>

@@ -96,6 +96,8 @@ button { font-family: inherit; cursor: pointer; }
   letter-spacing: -0.02em;
 }
 .brand .icon { color: var(--accent); }
+.brand .logo, .auth-brand .logo { color: var(--accent); }
+.empty-state .logo { color: var(--accent); opacity: 0.85; }
 
 .header-actions { display: flex; gap: 4px; }
 

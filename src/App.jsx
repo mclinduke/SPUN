@@ -24,6 +24,7 @@ import SettingsSheet from './components/SettingsSheet.jsx'
 import DiscogsImport from './components/DiscogsImport.jsx'
 import BarcodeScanner from './components/BarcodeScanner.jsx'
 import TonightCard from './components/TonightCard.jsx'
+import Logo from './components/Logo.jsx'
 import Friends from './components/Friends.jsx'
 import FriendCollection from './components/FriendCollection.jsx'
 import Onboarding from './components/Onboarding.jsx'
@@ -298,7 +299,7 @@ export default function App() {
     <div className="app">
       <header className="app-header">
         <h1 className="brand">
-          <Icon name="disc" size={26} />
+          <Logo size={28} />
           <span>SPUN</span>
         </h1>
         <div className="header-actions">
@@ -386,7 +387,7 @@ export default function App() {
           <p className="empty-note">Loading your collection…</p>
         ) : error ? (
           <div className="empty-state">
-            <Icon name="disc" size={56} />
+            <Logo size={56} />
             <h2>Couldn't load your collection</h2>
             <p>{navigator.onLine ? 'Something went wrong reaching your data.' : "You're offline — reconnect and retry."}</p>
             <div className="empty-cta">
@@ -395,7 +396,7 @@ export default function App() {
           </div>
         ) : records.length === 0 ? (
           <div className="empty-state">
-            <Icon name="disc" size={56} />
+            <Logo size={56} />
             <h2>Your crate is empty</h2>
             <p>Add records one at a time, or paste a whole list to add them in bulk.</p>
             <div className="empty-cta">
@@ -467,7 +468,7 @@ export default function App() {
 
       {bulkOpen && (
         <Sheet title="Bulk add" onClose={() => setBulkOpen(false)} wide>
-          <BulkAdd onCommit={handleBulkCommit} onCancel={() => setBulkOpen(false)} />
+          <BulkAdd onCommit={handleBulkCommit} onCancel={() => setBulkOpen(false)} findDuplicate={findDuplicate} />
         </Sheet>
       )}
 

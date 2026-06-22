@@ -66,7 +66,8 @@ export async function renderWrappedCard({ total = 0, uniq = 0, streak = 0, topRe
   x.fillStyle = 'rgba(255,255,255,0.16)'; roundRect(74, x, H - 110, 220, 56, 28); x.fill()
   x.fillStyle = '#fff'; x.font = `800 30px ${sans}`; x.fillText('SPUN', 116, H - 72)
 
-  return await new Promise((resolve) => c.toBlob(resolve, 'image/png', 0.95))
+  return await new Promise((resolve, reject) =>
+    c.toBlob((b) => (b ? resolve(b) : reject(new Error('Could not render the card'))), 'image/png', 0.95))
 }
 
 function trunc(ctx, str, maxW) {

@@ -4,6 +4,7 @@ import { createSupabaseRepository } from '../data/supabaseRepository.js'
 import { setRepository } from '../data/repository.js'
 import { bustAllCovers } from '../hooks/useCoverSrc.js'
 import Icon from './Icon.jsx'
+import Logo from './Logo.jsx'
 
 function AuthScreen() {
   const [mode, setMode] = useState('signin')
@@ -45,7 +46,7 @@ function AuthScreen() {
   return (
     <div className="auth-screen">
       <div className="auth-card">
-        <div className="auth-brand"><Icon name="disc" size={30} /><span>SPUN</span></div>
+        <div className="auth-brand"><Logo size={32} /><span>SPUN</span></div>
         <p className="auth-tag">Your vinyl, in your pocket.</p>
         <button type="button" className="btn btn-google" onClick={signInGoogle} disabled={busy}>
           <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">

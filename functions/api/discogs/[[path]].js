@@ -33,7 +33,10 @@ export async function onRequest(context) {
   // share across users (the data is public CC0 metadata).
   const immutable = /^(releases\/\d+|masters\/\d+|masters\/\d+\/versions)$/.test(path)
   const cache = caches.default
-  const cacheKey = new Request(`https://discogs-cache/${path}${search}`, { method: 'GET' })
+  // Key on the PATH only (no query string): immutable release/master responses
+  // are identical regardless of query params, so `releases/123?anything` must
+  // not fragment the cache or trigger fresh token-burning fetches.
+  const cacheKey = new Request(`https://discogs-cache/${path}`, { method: 'GET' })
 
   if (immutable) {
     const hit = await cache.match(cacheKey)

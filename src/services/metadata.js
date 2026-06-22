@@ -66,17 +66,13 @@ export async function bestMatch(term, opts = {}) {
  * Discogs enrichment happens later, on-demand, per record.
  */
 export async function bestMatchFree(term, opts = {}) {
-  const [it, mb] = await Promise.all([
-    searchAlbums(term, { ...opts, limit: 1 }).catch(() => []),
-    searchMusicBrainz(term, { ...opts, limit: 1 }).catch(() => []),
-  ])
-  const a = it[0]
-  const b = mb[0]
-  if (!a && !b) return null
-  if (!a) return b
-  if (!b) return a
-  // iTunes wins on cover/genre; MusicBrainz fills label/catalog# (and year if missing)
-  return { ...a, year: a.year || b.year, label: a.label || b.label, catalogNo: a.catalogNo || b.catalogNo }
+  // iTunes first (free, fast, has cover+year+genre). Only fall back to
+  // MusicBrainz when iTunes misses — so a big bulk import doesn't fire MB on
+  // every line and exceed its ~1 req/sec anonymous limit.
+  const it = await searchAlbums(term, { ...opts, limit: 1 }).catch(() => [])
+  if (it[0]) return it[0]
+  const mb = await searchMusicBrainz(term, { ...opts, limit: 1 }).catch(() => [])
+  return mb[0] || null
 }
 
 // ---------- MusicBrainz (pressing-aware: label + catalog number) ----------
