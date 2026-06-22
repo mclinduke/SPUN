@@ -36,7 +36,7 @@ language sql stable security definer set search_path = public as $$
   where p.username is not null
     and p.id <> auth.uid()
     and char_length(trim(p_query)) >= 2
-    and lower(p.username) like lower(trim(p_query)) || '%'
+    and starts_with(lower(p.username), lower(trim(p_query)))  -- literal prefix; no LIKE wildcard injection
   order by p.username
   limit 10;
 $$;
