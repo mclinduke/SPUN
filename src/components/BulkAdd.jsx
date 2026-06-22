@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { bestMatch } from '../services/metadata.js'
+import { bestMatchFree } from '../services/metadata.js'
 import { newId } from '../data/repository.js'
 import Icon from './Icon.jsx'
 
@@ -17,9 +17,10 @@ const YEAR_RE = /^(18|19|20)\d{2}$/
  *   A Live One
  */
 function parseLine(line) {
-  let head = line
+  // Strip a leading list marker ("1. ", "- ", "• ") so dictated/pasted lists parse.
+  let head = line.replace(/^\s*(\d+[.)]|[-*•])\s+/, '')
   let notes = ''
-  const tail = line.split(/\s+[|#]\s+/)
+  const tail = head.split(/\s+[|#]\s+/)
   if (tail.length > 1) { head = tail[0]; notes = tail.slice(1).join(' ').trim() }
 
   const parts = head.split(/\s+[-–—]\s+/).map((s) => s.trim()).filter(Boolean)
@@ -33,9 +34,17 @@ function parseLine(line) {
   let artist = ''
   let album = ''
   let genre = ''
-  if (rest.length <= 1) { album = rest[0] || '' }
-  else if (rest.length === 2) { [artist, album] = rest }
-  else { artist = rest[0]; album = rest[1]; genre = rest.slice(2).join(' - ') }
+  if (rest.length <= 1) {
+    // No dash separator — accept natural "Album by Artist" (common when dictating).
+    const chunk = rest[0] || ''
+    const by = chunk.match(/^(.*\S)\s+by\s+(\S.*)$/i)
+    if (by) { album = by[1].trim(); artist = by[2].trim() }
+    else album = chunk
+  } else if (rest.length === 2) {
+    [artist, album] = rest
+  } else {
+    artist = rest[0]; album = rest[1]; genre = rest.slice(2).join(' - ')
+  }
 
   return { id: newId(), artist, album, genre, year, notes, coverUrl: null, line, status: 'manual', include: true }
 }
@@ -63,17 +72,32 @@ export default function BulkAdd({ onCommit, onCancel }) {
     for (let i = 0; i < ls.length; i++) {
       const line = ls[i]
       const manual = parseLine(line)
+      // Search by the parsed "artist album" when we have it (better hit rate than
+      // the raw line), else the raw line.
+      const term = [manual.artist, manual.album].filter(Boolean).join(' ') || line
       try {
-        const hit = await bestMatch(line)
+        const hit = await bestMatchFree(term)
         next.push(hit
-          ? { ...manual, ...hit, line, status: 'found', include: true }
+          ? {
+              ...manual,
+              // keep what the user typed as authoritative; only FILL gaps from the match
+              artist: manual.artist || hit.artist || '',
+              album: manual.album || hit.album || '',
+              year: manual.year || hit.year || '',
+              genre: manual.genre || hit.genre || '',
+              label: hit.label || '',
+              catalogNo: hit.catalogNo || '',
+              coverUrl: hit.coverUrl || null,
+              status: 'found',
+              include: true,
+            }
           : { ...manual, status: 'notfound' })
       } catch {
         next.push({ ...manual, status: 'error' })
       }
       setProgress({ done: i + 1, total: ls.length })
       setDrafts([...next])
-      await sleep(180) // be polite to the API
+      await sleep(220) // pace iTunes + MusicBrainz politely
     }
     setProgress(null)
   }
@@ -95,27 +119,28 @@ export default function BulkAdd({ onCommit, onCancel }) {
       {drafts.length === 0 ? (
         <>
           <p className="hint">
-            One record per line: <strong>Artist - Album - Year - Genre</strong> (year &amp; genre
-            optional). Add <strong>{' | '}</strong> for notes, e.g. pressing or condition.
+            One record per line — <strong>type or tap your keyboard’s 🎤 to dictate your whole shelf</strong>.
+            We understand <strong>Artist – Album</strong>, <strong>Album by Artist</strong>, or just an album title
+            (year &amp; genre optional). Add <strong>{' | '}</strong> for notes like pressing or condition.
             <br />
-            <strong>Create from text</strong> adds them instantly with no internet. Or
-            <strong> Search covers</strong> to auto-pull art from iTunes where it exists.
+            <strong>Match covers &amp; info</strong> auto-fills art, year, label and genre for each line.
+            <strong> Add as typed</strong> skips the lookup and adds them instantly, offline.
           </p>
           <textarea
             className="bulk-input"
             rows={9}
             value={text}
             onChange={(e) => setText(e.target.value)}
-            placeholder={'Grateful Dead - American Beauty - 1970 - Folk Rock\nBilly Strings - Renewal - 2021 - Bluegrass\nGrateful Dead - Dick\'s Picks Vol. 4 | orange vinyl, near mint\nA Live One'}
+            placeholder={'Grateful Dead - American Beauty - 1970\nRenewal by Billy Strings\nDick\'s Picks Vol. 4 | orange vinyl, near mint\nA Live One'}
           />
           <div className="form-actions form-actions-stack">
-            <button className="btn btn-primary" onClick={createFromText} disabled={!text.trim()}>
-              <Icon name="check" size={18} /> Create from text
+            <button className="btn btn-primary" onClick={runSearch} disabled={!text.trim()}>
+              <Icon name="search" size={18} /> Match covers &amp; info
             </button>
             <div className="form-actions-row">
               <button className="btn btn-ghost" onClick={onCancel}>Cancel</button>
-              <button className="btn btn-ghost" onClick={runSearch} disabled={!text.trim()}>
-                <Icon name="search" size={18} /> Search covers
+              <button className="btn btn-ghost" onClick={createFromText} disabled={!text.trim()}>
+                <Icon name="check" size={18} /> Add as typed
               </button>
             </div>
           </div>

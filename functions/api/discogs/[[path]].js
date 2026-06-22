@@ -26,6 +26,20 @@ export async function onRequest(context) {
     })
   }
 
+  // Releases/masters are IMMUTABLE Discogs metadata — cache them at the edge so
+  // one upstream call serves every user (the single shared token stops being the
+  // bottleneck). Search + collection change, so they stay uncached. The token is
+  // in the Authorization header, never the URL, so cached entries are safe to
+  // share across users (the data is public CC0 metadata).
+  const immutable = /^(releases\/\d+|masters\/\d+|masters\/\d+\/versions)$/.test(path)
+  const cache = caches.default
+  const cacheKey = new Request(`https://discogs-cache/${path}${search}`, { method: 'GET' })
+
+  if (immutable) {
+    const hit = await cache.match(cacheKey)
+    if (hit) return hit
+  }
+
   const upstream = await fetch(target, {
     headers: {
       'User-Agent': 'SPUN/1.0 +https://mclinduke.com',
@@ -34,11 +48,13 @@ export async function onRequest(context) {
     },
   })
   const body = await upstream.text()
-  return new Response(body, {
+  const res = new Response(body, {
     status: upstream.status,
     headers: {
       'content-type': upstream.headers.get('content-type') || 'application/json',
-      'cache-control': 'no-store',
+      'cache-control': immutable && upstream.ok ? 'public, max-age=2592000, immutable' : 'no-store',
     },
   })
+  if (immutable && upstream.ok) context.waitUntil(cache.put(cacheKey, res.clone()))
+  return res
 }

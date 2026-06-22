@@ -59,6 +59,26 @@ export async function bestMatch(term, opts = {}) {
   return results[0] || null
 }
 
+/**
+ * Best match for bulk import, using ONLY the keyless/unthrottled sources
+ * (iTunes for cover+year+genre, MusicBrainz for label+catalog#). Deliberately
+ * avoids Discogs so importing a big list can't blow the shared 60/min token —
+ * Discogs enrichment happens later, on-demand, per record.
+ */
+export async function bestMatchFree(term, opts = {}) {
+  const [it, mb] = await Promise.all([
+    searchAlbums(term, { ...opts, limit: 1 }).catch(() => []),
+    searchMusicBrainz(term, { ...opts, limit: 1 }).catch(() => []),
+  ])
+  const a = it[0]
+  const b = mb[0]
+  if (!a && !b) return null
+  if (!a) return b
+  if (!b) return a
+  // iTunes wins on cover/genre; MusicBrainz fills label/catalog# (and year if missing)
+  return { ...a, year: a.year || b.year, label: a.label || b.label, catalogNo: a.catalogNo || b.catalogNo }
+}
+
 // ---------- MusicBrainz (pressing-aware: label + catalog number) ----------
 // No key; CORS-enabled, so callable from the browser (anonymous UA, ~1 req/sec).
 const MB_RELEASE = 'https://musicbrainz.org/ws/2/release'
