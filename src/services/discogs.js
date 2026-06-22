@@ -8,10 +8,26 @@ export const RARITY_TTL = 6 * 60 * 60 * 1000
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms))
 
+// Optional per-user Discogs token (their own 60/min budget). Stored client-side
+// only (never in our DB); sent as a header the proxy prefers over the shared one.
+const USER_TOKEN_KEY = 'spun-discogs-token'
+export function getUserDiscogsToken() {
+  try { return localStorage.getItem(USER_TOKEN_KEY) || '' } catch { return '' }
+}
+export function setUserDiscogsToken(t) {
+  try {
+    const v = (t || '').trim()
+    if (v) localStorage.setItem(USER_TOKEN_KEY, v); else localStorage.removeItem(USER_TOKEN_KEY)
+  } catch { /* private mode */ }
+}
+
 async function api(path) {
   let res
+  const headers = {}
+  const ut = getUserDiscogsToken()
+  if (ut) headers['x-discogs-token'] = ut
   try {
-    res = await fetch(`/api/discogs/${path}`)
+    res = await fetch(`/api/discogs/${path}`, { headers })
   } catch {
     throw new Error(navigator.onLine ? 'Discogs is unreachable right now' : "You're offline — connect to look up pressing data")
   }

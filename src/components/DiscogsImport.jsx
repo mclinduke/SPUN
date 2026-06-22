@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { fetchDiscogsCollection } from '../services/discogs.js'
+import { fetchDiscogsCollection, getUserDiscogsToken, setUserDiscogsToken } from '../services/discogs.js'
 import Icon from './Icon.jsx'
 
 /** Import a public Discogs collection by username — covers + full metadata.
@@ -10,6 +10,12 @@ export default function DiscogsImport({ onCommit, onCancel, findDuplicate }) {
   const [progress, setProgress] = useState(null)
   const [drafts, setDrafts] = useState([])
   const [error, setError] = useState(null)
+  const [tokenOpen, setTokenOpen] = useState(false)
+  const [tokenInput, setTokenInput] = useState('')
+  const [hasToken, setHasToken] = useState(() => Boolean(getUserDiscogsToken()))
+
+  const saveToken = () => { setUserDiscogsToken(tokenInput); setHasToken(Boolean(tokenInput.trim())); setTokenOpen(false); setTokenInput('') }
+  const clearToken = () => { setUserDiscogsToken(''); setHasToken(false) }
 
   const run = async () => {
     if (!username.trim()) return
@@ -80,6 +86,25 @@ export default function DiscogsImport({ onCommit, onCancel, findDuplicate }) {
         <p className="hint-inline">Your exact username from <strong>discogs.com/user/…</strong> (not your display name or email), and your collection must be set to Public.</p>
       </div>
       {error && <p className="auth-err" role="alert">{error}</p>}
+
+      <div className="dg-token">
+        {hasToken ? (
+          <p className="hint">✓ Using your own Discogs token — imports run on your personal limit. <button className="linkish" onClick={clearToken}>Disconnect</button></p>
+        ) : tokenOpen ? (
+          <div className="field">
+            <label htmlFor="dg-token">Your Discogs token</label>
+            <input id="dg-token" type="text" value={tokenInput} onChange={(e) => setTokenInput(e.target.value)} placeholder="paste token" autoCapitalize="off" autoCorrect="off" spellCheck="false" />
+            <p className="hint-inline">Discogs → Settings → Developers → <strong>Generate new token</strong>, then paste it here. It’s stored only on this device and never leaves it except to Discogs.</p>
+            <div className="form-actions-row">
+              <button className="btn btn-ghost btn-sm" onClick={() => setTokenOpen(false)}>Cancel</button>
+              <button className="btn btn-primary btn-sm" onClick={saveToken} disabled={!tokenInput.trim()}>Save token</button>
+            </div>
+          </div>
+        ) : (
+          <button className="linkish" onClick={() => setTokenOpen(true)}>Hitting rate limits? Connect your own Discogs token →</button>
+        )}
+      </div>
+
       <div className="form-actions">
         <button className="btn btn-ghost" onClick={onCancel}>Cancel</button>
         <button className="btn btn-primary" onClick={run} disabled={!username.trim()}>

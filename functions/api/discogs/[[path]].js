@@ -43,10 +43,16 @@ export async function onRequest(context) {
     if (hit) return hit
   }
 
+  // Prefer the caller's OWN Discogs token (their personal 60/min budget) when
+  // they've connected one — falls back to the shared token. Format-validated so
+  // the header can't inject anything; it's only ever forwarded to Discogs.
+  const userTok = request.headers.get('x-discogs-token')
+  const token = (userTok && /^[A-Za-z0-9]{20,80}$/.test(userTok)) ? userTok : env.DISCOGS_TOKEN
+
   const upstream = await fetch(target, {
     headers: {
       'User-Agent': 'SPUN/1.0 +https://mclinduke.com',
-      Authorization: `Discogs token=${env.DISCOGS_TOKEN}`,
+      Authorization: `Discogs token=${token}`,
       Accept: 'application/json',
     },
   })
