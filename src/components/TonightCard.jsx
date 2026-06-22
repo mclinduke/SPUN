@@ -33,17 +33,33 @@ export default function TonightCard({ records, lastPlayed, onSpin, onOpen }) {
 
   const [current, setCurrent] = useState(null)
   const [spun, setSpun] = useState(false)
+  const today = new Date().toISOString().slice(0, 10)
 
-  // Keep the current record if it still exists; only re-pick when the collection
-  // itself changes (add/delete/import). Logging a spin changes plays, not records,
-  // so the shown card stays put until the user shuffles.
+  // One forgotten record per CALENDAR DAY: persist today's pick so it's stable
+  // across opens, but re-roll automatically tomorrow. (Previously it only changed
+  // when the collection changed, so you'd see the same record every night.)
   useEffect(() => {
-    setCurrent((cur) => (cur && records.some((r) => r.id === cur.id) ? cur : pick(null)))
+    setCurrent(() => {
+      let saved = null
+      try { saved = JSON.parse(localStorage.getItem('spun-tonight') || 'null') } catch { /* private mode */ }
+      if (saved && saved.day === today) {
+        const r = records.find((x) => x.id === saved.id)
+        if (r) return r
+      }
+      const p = pick(null) // new day / first run / saved pick gone → fresh rediscovery
+      try { if (p) localStorage.setItem('spun-tonight', JSON.stringify({ day: today, id: p.id })) } catch { /* ignore */ }
+      return p
+    })
   }, [records]) // eslint-disable-line react-hooks/exhaustive-deps
 
   if (!current) return null
 
-  const shuffle = () => { setSpun(false); setCurrent(pick(current)) }
+  const shuffle = () => {
+    setSpun(false)
+    const p = pick(current)
+    setCurrent(p)
+    try { if (p) localStorage.setItem('spun-tonight', JSON.stringify({ day: today, id: p.id })) } catch { /* ignore */ }
+  }
   const spin = async () => { await onSpin(current.id); setSpun(true) }
 
   return (

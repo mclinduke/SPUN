@@ -17,7 +17,6 @@ import CoverEditor from './components/CoverEditor.jsx'
 import BulkAdd from './components/BulkAdd.jsx'
 import Stats from './components/Stats.jsx'
 import ListeningStats from './components/ListeningStats.jsx'
-import RandomPicker from './components/RandomPicker.jsx'
 import PressingInfo from './components/PressingInfo.jsx'
 import Wishlist from './components/Wishlist.jsx'
 import SettingsSheet from './components/SettingsSheet.jsx'
@@ -79,7 +78,6 @@ export default function App() {
   const [scanOpen, setScanOpen] = useState(false)
   const [statsOpen, setStatsOpen] = useState(false)
   const [listeningOpen, setListeningOpen] = useState(false)
-  const [randomOpen, setRandomOpen] = useState(false)
   const [wishlistOpen, setWishlistOpen] = useState(false)
   const [coverEditOpen, setCoverEditOpen] = useState(false)
   const [showTour, setShowTour] = useState(() => !localStorage.getItem('spun-onboarded'))
@@ -359,9 +357,6 @@ export default function App() {
               {SORTS.map((s) => <option key={s.id} value={s.id}>{s.id === sort ? `Sort: ${s.label}` : s.label}</option>)}
             </select>
           </label>
-          <button className="icon-btn dice-btn" onClick={() => setRandomOpen(true)} aria-label="What do I play tonight? Pick a random record" title="What do I play tonight?">
-            <Icon name="dice" size={26} />
-          </button>
         </div>
         {allTags.length > 0 && (
           <div className="crate-chips">
@@ -375,11 +370,11 @@ export default function App() {
         )}
       </div>
 
-      <InstallHint />
-
       {records.length > 0 && !deferredQuery.trim() && !genreFilter && !tagFilter && (
         <TonightCard records={records} lastPlayed={lastPlayed} onSpin={logPlay} onOpen={setSelected} />
       )}
+
+      <InstallHint />
 
       {records.length > 0 && (
         <button className="home-stats" onClick={() => setListeningOpen(true)} aria-label="Open your listening stats (Wrapped)">
@@ -407,11 +402,12 @@ export default function App() {
           <div className="empty-state">
             <Logo size={56} />
             <h2>Your crate is empty</h2>
-            <p>Add records one at a time, or paste a whole list to add them in bulk.</p>
+            <p>Fastest way in: pull your whole collection from Discogs in one paste — covers and details auto-fill. Or dictate a list, scan a barcode, or add one at a time.</p>
             <div className="empty-cta">
-              <button className="btn btn-primary" onClick={openAdd}><Icon name="plus" size={18} /> Add a record</button>
+              {isCloud() && <button className="btn btn-primary" onClick={() => setDiscogsOpen(true)}><Icon name="download" size={18} /> Import from Discogs</button>}
+              <button className={`btn ${isCloud() ? 'btn-ghost' : 'btn-primary'}`} onClick={() => setBulkOpen(true)}><Icon name="plus" size={18} /> Paste / dictate a list</button>
               <button className="btn btn-ghost" onClick={() => setScanOpen(true)}><Icon name="camera" size={18} /> Scan a barcode</button>
-              <button className="btn btn-ghost" onClick={() => setBulkOpen(true)}>Bulk add</button>
+              <button className="btn btn-ghost" onClick={openAdd}>Add one</button>
             </div>
           </div>
         ) : visible.length === 0 ? (
@@ -505,12 +501,6 @@ export default function App() {
         </Sheet>
       )}
 
-      {randomOpen && (
-        <Sheet title="What do I play tonight?" onClose={() => setRandomOpen(false)}>
-          <RandomPicker records={records} counts={counts} genres={genres} onSelect={(r) => { setRandomOpen(false); setSelected(r) }} />
-        </Sheet>
-      )}
-
 
       {wishlistOpen && (
         <Sheet title={`Wishlist${wants.length ? ` (${wants.length})` : ''}`} onClose={() => setWishlistOpen(false)} wide>
@@ -529,7 +519,6 @@ export default function App() {
             onImportDiscogs={() => { setSettingsOpen(false); setDiscogsOpen(true) }}
             onShowStats={() => { setSettingsOpen(false); setStatsOpen(true) }}
             onShowListening={() => { setSettingsOpen(false); setListeningOpen(true) }}
-            onShowRandom={() => { setSettingsOpen(false); setRandomOpen(true) }}
             onShowWishlist={() => { setSettingsOpen(false); setWishlistOpen(true) }}
             onShowCoverFix={() => { setSettingsOpen(false); setCoverFixOpen(true) }}
             onShowFriends={() => { setSettingsOpen(false); friendsApi.reload(); setFriendsOpen(true) }}

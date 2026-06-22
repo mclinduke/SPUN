@@ -132,7 +132,10 @@ export function createSupabaseRepository(supabase, userId) {
 
     // ---- listening log ----
     async listPlays() {
-      const data = must(await supabase.from('plays').select('id,record_id,played_at'))
+      // Newest first: PostgREST silently caps at 1000 rows, so ordering keeps the
+      // recent plays the streak/most-played/Wrapped depend on if a heavy listener
+      // ever crosses that line.
+      const data = must(await supabase.from('plays').select('id,record_id,played_at').order('played_at', { ascending: false }))
       return data.map((p) => ({ id: p.id, recordId: p.record_id, playedAt: p.played_at }))
     },
     async logPlay(recordId, at) {

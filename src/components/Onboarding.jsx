@@ -2,11 +2,11 @@ import { useState } from 'react'
 import Icon from './Icon.jsx'
 
 const STEPS = [
-  { icon: 'disc', title: 'Welcome to SPUN', text: 'Your record collection — beautiful, browsable, and in your pocket.' },
-  { icon: 'download', title: 'Add your records', text: 'Search to auto-fill cover art and details, paste a whole list at once, or pull your entire collection straight from Discogs.' },
-  { icon: 'coverflow', title: 'Browse your way', text: 'Flip through Cover Flow, scan the grid, or skim the list — and search or filter by genre, decade, and crate.' },
-  { icon: 'headphones', title: 'Log every spin', text: 'Tap “I spun this” when you play a record. SPUN tracks your streaks, most-played, and a Wrapped-style listening recap.' },
-  { icon: 'heart', title: 'Wishlist, rarity & value', text: 'Keep a hunt list, tag records into crates, and see pressing details, rarity, and estimated value from Discogs.' },
+  { icon: 'sparkle', title: 'Welcome to SPUN', text: 'The app that hands you a record you forgot you own — and gets it back on the turntable.' },
+  { icon: 'download', title: 'Add your records', text: 'Pull your whole collection from Discogs in one paste, dictate a list, scan a barcode, or add one at a time — covers and details auto-fill.' },
+  { icon: 'disc', title: 'Play something tonight', text: 'SPUN resurfaces records you haven’t spun in ages. Tap “I spun this” to play one — your streaks and a Wrapped-style recap build from there.' },
+  { icon: 'users', title: 'Share the crate', text: 'Add friends by @username, see what they’re spinning, and post a Wrapped card to the group chat.' },
+  { icon: 'heart', title: 'Make it yours', text: 'Keep a wishlist, tag records into crates, and tap any record for its tracklist, credits, and pressing.' },
 ]
 
 /** First-run welcome tour. Re-openable from the menu. */

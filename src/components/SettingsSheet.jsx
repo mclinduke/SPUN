@@ -9,7 +9,7 @@ function todayStamp() {
   return new Date().toISOString().slice(0, 10)
 }
 
-export default function SettingsSheet({ count, dark, onToggleDark, onBulkAdd, onScan, onImportDiscogs, onShowStats, onShowListening, onShowRandom, onShowWishlist, onShowCoverFix, onShowFriends, onShowGroups, onShowTour, wantCount = 0, pendingCount = 0, shareNotes = false, onToggleShareNotes, onChanged }) {
+export default function SettingsSheet({ count, dark, onToggleDark, onBulkAdd, onScan, onImportDiscogs, onShowStats, onShowListening, onShowWishlist, onShowCoverFix, onShowFriends, onShowGroups, onShowTour, wantCount = 0, pendingCount = 0, shareNotes = false, onToggleShareNotes, onChanged }) {
   const fileRef = useRef(null)
   const [busy, setBusy] = useState('')
   const [confirmClear, setConfirmClear] = useState(false)
@@ -70,9 +70,6 @@ export default function SettingsSheet({ count, dark, onToggleDark, onBulkAdd, on
       </button>
 
       <div className="menu-section">Rediscover</div>
-      <button className="menu-item" onClick={onShowRandom} disabled={!count}>
-        <Icon name="dice" /> <span><strong>What do I play tonight?</strong><small>Random pick, with filters</small></span>
-      </button>
       <button className="menu-item" onClick={onShowListening}>
         <Icon name="headphones" /> <span><strong>Your listening</strong><small>Spins, streaks, most-played</small></span>
       </button>
