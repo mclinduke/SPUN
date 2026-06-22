@@ -228,7 +228,7 @@ export default function RecordForm({ initial, genres = [], onSave, onSaveAndNext
       <div className="field-row">
         <div className="field">
           <label htmlFor={`${uid}-year`}>Year</label>
-          <input id={`${uid}-year`} ref={yearRef} type="number" inputMode="numeric" value={form.year} onChange={set('year')} onKeyDown={onFieldKey(2)} placeholder="1959" />
+          <input id={`${uid}-year`} ref={yearRef} type="text" inputMode="numeric" pattern="[0-9]*" maxLength={4} value={form.year} onChange={set('year')} onKeyDown={onFieldKey(2)} placeholder="1959" />
         </div>
         <div className="field">
           <label htmlFor={`${uid}-genre`}>Genre</label>

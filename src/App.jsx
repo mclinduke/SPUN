@@ -19,7 +19,6 @@ import Stats from './components/Stats.jsx'
 import ListeningStats from './components/ListeningStats.jsx'
 import RandomPicker from './components/RandomPicker.jsx'
 import PressingInfo from './components/PressingInfo.jsx'
-import CollectionValue from './components/CollectionValue.jsx'
 import Wishlist from './components/Wishlist.jsx'
 import SettingsSheet from './components/SettingsSheet.jsx'
 import DiscogsImport from './components/DiscogsImport.jsx'
@@ -77,7 +76,6 @@ export default function App() {
   const [statsOpen, setStatsOpen] = useState(false)
   const [listeningOpen, setListeningOpen] = useState(false)
   const [randomOpen, setRandomOpen] = useState(false)
-  const [valueOpen, setValueOpen] = useState(false)
   const [wishlistOpen, setWishlistOpen] = useState(false)
   const [coverEditOpen, setCoverEditOpen] = useState(false)
   const [showTour, setShowTour] = useState(() => !localStorage.getItem('spun-onboarded'))
@@ -498,11 +496,6 @@ export default function App() {
         </Sheet>
       )}
 
-      {valueOpen && (
-        <Sheet title="Collection value" onClose={() => setValueOpen(false)}>
-          <CollectionValue records={records} />
-        </Sheet>
-      )}
 
       {wishlistOpen && (
         <Sheet title={`Wishlist${wants.length ? ` (${wants.length})` : ''}`} onClose={() => setWishlistOpen(false)} wide>
@@ -522,7 +515,6 @@ export default function App() {
             onShowStats={() => { setSettingsOpen(false); setStatsOpen(true) }}
             onShowListening={() => { setSettingsOpen(false); setListeningOpen(true) }}
             onShowRandom={() => { setSettingsOpen(false); setRandomOpen(true) }}
-            onShowValue={() => { setSettingsOpen(false); setValueOpen(true) }}
             onShowWishlist={() => { setSettingsOpen(false); setWishlistOpen(true) }}
             onShowFriends={() => { setSettingsOpen(false); friendsApi.reload(); setFriendsOpen(true) }}
             onShowTour={() => { setSettingsOpen(false); setShowTour(true) }}

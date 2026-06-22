@@ -9,7 +9,7 @@ function todayStamp() {
   return new Date().toISOString().slice(0, 10)
 }
 
-export default function SettingsSheet({ count, dark, onToggleDark, onBulkAdd, onScan, onImportDiscogs, onShowStats, onShowListening, onShowRandom, onShowValue, onShowWishlist, onShowFriends, onShowTour, wantCount = 0, pendingCount = 0, shareNotes = false, onToggleShareNotes, onChanged }) {
+export default function SettingsSheet({ count, dark, onToggleDark, onBulkAdd, onScan, onImportDiscogs, onShowStats, onShowListening, onShowRandom, onShowWishlist, onShowFriends, onShowTour, wantCount = 0, pendingCount = 0, shareNotes = false, onToggleShareNotes, onChanged }) {
   const fileRef = useRef(null)
   const [busy, setBusy] = useState('')
   const [confirmClear, setConfirmClear] = useState(false)
@@ -58,15 +58,18 @@ export default function SettingsSheet({ count, dark, onToggleDark, onBulkAdd, on
 
   return (
     <div className="settings">
-      <button className="menu-item" onClick={onBulkAdd}>
-        <Icon name="plus" /> <span><strong>Bulk add records</strong><small>Paste or type a whole list at once</small></span>
-      </button>
+      <div className="menu-section">Add records</div>
       <button className="menu-item" onClick={onScan}>
         <Icon name="camera" /> <span><strong>Scan a barcode</strong><small>Point your camera at a record to add it</small></span>
+      </button>
+      <button className="menu-item" onClick={onBulkAdd}>
+        <Icon name="plus" /> <span><strong>Add a list</strong><small>Paste or dictate a whole shelf at once</small></span>
       </button>
       <button className="menu-item" onClick={onImportDiscogs}>
         <Icon name="download" /> <span><strong>Import from Discogs</strong><small>Pull your whole collection by username</small></span>
       </button>
+
+      <div className="menu-section">Rediscover</div>
       <button className="menu-item" onClick={onShowRandom} disabled={!count}>
         <Icon name="dice" /> <span><strong>What do I play tonight?</strong><small>Random pick, with filters</small></span>
       </button>
@@ -78,14 +81,13 @@ export default function SettingsSheet({ count, dark, onToggleDark, onBulkAdd, on
           <Icon name="users" /> <span><strong>Friends{pendingCount > 0 && <span className="menu-badge">{pendingCount}</span>}</strong><small>{pendingCount > 0 ? `${pendingCount} request${pendingCount === 1 ? '' : 's'} waiting` : 'Browse each other’s collections'}</small></span>
         </button>
       )}
+
+      <div className="menu-section">Collection</div>
       <button className="menu-item" onClick={onShowWishlist}>
         <Icon name="heart" /> <span><strong>Wishlist</strong><small>{wantCount ? `${wantCount} record${wantCount === 1 ? '' : 's'} on the hunt` : 'Records you want'}</small></span>
       </button>
       <button className="menu-item" onClick={onShowStats}>
         <Icon name="stats" /> <span><strong>Collection stats</strong><small>{count} records</small></span>
-      </button>
-      <button className="menu-item" onClick={onShowValue} disabled={!count}>
-        <Icon name="sparkle" /> <span><strong>Collection value</strong><small>Rough estimate via Discogs</small></span>
       </button>
 
       <div className="menu-section">Backup &amp; share</div>
