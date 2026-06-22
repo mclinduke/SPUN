@@ -24,6 +24,7 @@ import SettingsSheet from './components/SettingsSheet.jsx'
 import DiscogsImport from './components/DiscogsImport.jsx'
 import BarcodeScanner from './components/BarcodeScanner.jsx'
 import TonightCard from './components/TonightCard.jsx'
+import CoverFixer from './components/CoverFixer.jsx'
 import Logo from './components/Logo.jsx'
 import Friends from './components/Friends.jsx'
 import FriendCollection from './components/FriendCollection.jsx'
@@ -84,6 +85,7 @@ export default function App() {
   const closeTour = () => { localStorage.setItem('spun-onboarded', '1'); setShowTour(false) }
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [friendsOpen, setFriendsOpen] = useState(false)
+  const [coverFixOpen, setCoverFixOpen] = useState(false)
   const [viewingFriend, setViewingFriend] = useState(null)
   const [shareNotes, setShareNotes] = useState(false)
   const [addedThisSession, setAddedThisSession] = useState(0)
@@ -237,6 +239,11 @@ export default function App() {
   const handleIdentifyPressing = async (id, pressing) => {
     try { await update(id, { pressing }) }
     catch (err) { alert(`Couldn't save that pressing: ${err.message || err}`) }
+  }
+
+  const applyFoundCover = async (id, coverUrl) => {
+    try { await update(id, { coverUrl, coverSource: 'official' }); bustCover(id) }
+    catch (err) { alert(`Couldn't set that cover: ${err.message || err}`) }
   }
 
   const handleDelete = async (rec) => {
@@ -522,6 +529,7 @@ export default function App() {
             onShowListening={() => { setSettingsOpen(false); setListeningOpen(true) }}
             onShowRandom={() => { setSettingsOpen(false); setRandomOpen(true) }}
             onShowWishlist={() => { setSettingsOpen(false); setWishlistOpen(true) }}
+            onShowCoverFix={() => { setSettingsOpen(false); setCoverFixOpen(true) }}
             onShowFriends={() => { setSettingsOpen(false); friendsApi.reload(); setFriendsOpen(true) }}
             onShowTour={() => { setSettingsOpen(false); setShowTour(true) }}
             wantCount={wants.length}
@@ -530,6 +538,12 @@ export default function App() {
             onToggleShareNotes={toggleShareNotes}
             onChanged={reloadAll}
           />
+        </Sheet>
+      )}
+
+      {coverFixOpen && (
+        <Sheet title="Find missing covers" onClose={() => setCoverFixOpen(false)} wide>
+          <CoverFixer records={records} onApply={applyFoundCover} onClose={() => setCoverFixOpen(false)} />
         </Sheet>
       )}
 

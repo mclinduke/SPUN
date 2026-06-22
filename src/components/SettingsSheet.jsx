@@ -9,7 +9,7 @@ function todayStamp() {
   return new Date().toISOString().slice(0, 10)
 }
 
-export default function SettingsSheet({ count, dark, onToggleDark, onBulkAdd, onScan, onImportDiscogs, onShowStats, onShowListening, onShowRandom, onShowWishlist, onShowFriends, onShowTour, wantCount = 0, pendingCount = 0, shareNotes = false, onToggleShareNotes, onChanged }) {
+export default function SettingsSheet({ count, dark, onToggleDark, onBulkAdd, onScan, onImportDiscogs, onShowStats, onShowListening, onShowRandom, onShowWishlist, onShowCoverFix, onShowFriends, onShowTour, wantCount = 0, pendingCount = 0, shareNotes = false, onToggleShareNotes, onChanged }) {
   const fileRef = useRef(null)
   const [busy, setBusy] = useState('')
   const [confirmClear, setConfirmClear] = useState(false)
@@ -88,6 +88,9 @@ export default function SettingsSheet({ count, dark, onToggleDark, onBulkAdd, on
       </button>
       <button className="menu-item" onClick={onShowStats}>
         <Icon name="stats" /> <span><strong>Collection stats</strong><small>{count} records</small></span>
+      </button>
+      <button className="menu-item" onClick={onShowCoverFix} disabled={!count}>
+        <Icon name="camera" /> <span><strong>Find missing covers</strong><small>Pull art for records showing a placeholder</small></span>
       </button>
 
       <div className="menu-section">Backup &amp; share</div>

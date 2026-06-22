@@ -224,6 +224,18 @@ button { font-family: inherit; cursor: pointer; }
 
 .wrapped-share { width: 100%; margin: 4px 0 14px; }
 
+/* Cover fixer */
+.cover-fixer { display: flex; flex-direction: column; gap: 12px; }
+.cover-fixer .applyall { width: 100%; }
+.fix-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.fix-row { display: flex; align-items: center; gap: 10px; padding: 8px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+.fix-row .fix-old, .fix-row .fix-old .cover { width: 44px; height: 44px; border-radius: 5px; flex-shrink: 0; }
+.fix-new { width: 44px; height: 44px; border-radius: 5px; object-fit: cover; flex-shrink: 0; }
+.fix-meta { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.fix-meta strong { font-size: .9rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fix-meta small { font-size: .78rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.badge.ok { display: inline-flex; align-items: center; gap: 3px; color: var(--accent-strong); font-size: .8rem; flex-shrink: 0; }
+
 /* "Play something tonight" rediscovery hero. */
 .tonight {
   display: flex;
