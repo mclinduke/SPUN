@@ -99,7 +99,10 @@ export function createSupabaseRepository(supabase, userId) {
     async bulkAdd(records) {
       if (!records.length) return []
       const rows = records.map((r) => recordToRow(r, userId))
-      const data = must(await supabase.from('records').insert(rows).select(RECORD_COLS))
+      // upsert (not insert) so re-importing a backup whose ids already exist
+      // updates those rows instead of failing the whole atomic batch — matches
+      // the local IndexedDB `put` semantics. RLS still scopes it to this user.
+      const data = must(await supabase.from('records').upsert(rows, { onConflict: 'id' }).select(RECORD_COLS))
       return data.map(rowToRecord)
     },
     async update(id, patch) {
