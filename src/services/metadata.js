@@ -97,24 +97,30 @@ const matchKey = (d) => `${(d.album || '').toLowerCase().trim()}::${(d.artist ||
  * server proxy (cloud / dev token); if it's unavailable it just falls back.
  * Results are deduped by album+artist, Discogs first.
  */
+const FILL_FIELDS = ['album', 'artist', 'year', 'genre', 'label', 'catalogNo', 'coverUrl']
+
 export async function searchAll(term, opts = {}) {
   const [discogs, mb, itunes] = await Promise.all([
     searchDiscogs(term, opts).catch(() => []),
     searchMusicBrainz(term, opts).catch(() => []),
     searchAlbums(term, opts).catch(() => []),
   ])
-  const itByKey = new Map(itunes.map((d) => [matchKey(d), d]))
-  const seen = new Set()
-  const merged = []
-  const push = (d) => {
-    const k = matchKey(d)
-    if (seen.has(k)) return
-    seen.add(k)
-    merged.push(d)
+  // Merge the three sources per album+artist so a selected result autofills
+  // EVERY field we can find: Discogs leads (best pressing data + display order),
+  // iTunes fills cover/genre/year, MusicBrainz fills label/catalog#. Each source
+  // only fills fields the earlier ones left empty — no field is ever blank if
+  // any source has it (this is why year was missing before: the top match lacked
+  // it while another source had it).
+  const byKey = new Map()
+  const order = []
+  for (const list of [discogs, itunes, mb]) {
+    for (const d of list) {
+      if (!d.album && !d.artist) continue
+      const k = matchKey(d)
+      if (!byKey.has(k)) { byKey.set(k, { ...d }); order.push(k); continue }
+      const cur = byKey.get(k)
+      for (const f of FILL_FIELDS) { if (!cur[f] && d[f]) cur[f] = d[f] }
+    }
   }
-  // Discogs first (best art), backfilling a missing cover/genre from iTunes.
-  for (const d of discogs) push({ ...d, coverUrl: d.coverUrl || itByKey.get(matchKey(d))?.coverUrl || null, genre: d.genre || itByKey.get(matchKey(d))?.genre || '' })
-  for (const d of mb) push({ ...d, coverUrl: itByKey.get(matchKey(d))?.coverUrl || d.coverUrl, genre: itByKey.get(matchKey(d))?.genre || d.genre })
-  for (const d of itunes) push(d)
-  return merged.slice(0, 12)
+  return order.map((k) => byKey.get(k)).slice(0, 12)
 }

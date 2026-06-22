@@ -16,6 +16,14 @@ export default function DiscogsImport({ onCommit, onCancel, findDuplicate }) {
     setStatus('fetching'); setError(null); setProgress(null)
     try {
       const all = await fetchDiscogsCollection(username, { onProgress: setProgress })
+      if (!all.length) {
+        // Reached Discogs but got nothing — almost always a private collection or
+        // the wrong name. (A private collection often returns an empty list rather
+        // than an error.) Tell the user exactly how to fix it.
+        setError('We reached Discogs but found no records. Two things to check: (1) your collection must be set to Public (Discogs → Settings → Privacy → Collection), and (2) use your exact username from your profile URL discogs.com/user/USERNAME — not your display name or email.')
+        setStatus('error')
+        return
+      }
       setDrafts(all)
       setStatus('review')
     } catch (e) {
@@ -67,6 +75,7 @@ export default function DiscogsImport({ onCommit, onCancel, findDuplicate }) {
           onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); run() } }}
           placeholder="your Discogs username" autoCapitalize="off" autoCorrect="off" spellCheck="false"
         />
+        <p className="hint-inline">Your exact username from <strong>discogs.com/user/…</strong> (not your display name or email), and your collection must be set to Public.</p>
       </div>
       {error && <p className="auth-err" role="alert">{error}</p>}
       <div className="form-actions">
