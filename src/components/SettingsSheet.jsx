@@ -9,7 +9,7 @@ function todayStamp() {
   return new Date().toISOString().slice(0, 10)
 }
 
-export default function SettingsSheet({ count, dark, onToggleDark, onBulkAdd, onImportDiscogs, onShowStats, onShowListening, onShowRandom, onShowValue, onShowWishlist, onShowTour, wantCount = 0, onChanged }) {
+export default function SettingsSheet({ count, dark, onToggleDark, onBulkAdd, onScan, onImportDiscogs, onShowStats, onShowListening, onShowRandom, onShowValue, onShowWishlist, onShowFriends, onShowTour, wantCount = 0, pendingCount = 0, shareNotes = false, onToggleShareNotes, onChanged }) {
   const fileRef = useRef(null)
   const [busy, setBusy] = useState('')
   const [confirmClear, setConfirmClear] = useState(false)
@@ -61,6 +61,9 @@ export default function SettingsSheet({ count, dark, onToggleDark, onBulkAdd, on
       <button className="menu-item" onClick={onBulkAdd}>
         <Icon name="plus" /> <span><strong>Bulk add records</strong><small>Paste or type a whole list at once</small></span>
       </button>
+      <button className="menu-item" onClick={onScan}>
+        <Icon name="camera" /> <span><strong>Scan a barcode</strong><small>Point your camera at a record to add it</small></span>
+      </button>
       <button className="menu-item" onClick={onImportDiscogs}>
         <Icon name="download" /> <span><strong>Import from Discogs</strong><small>Pull your whole collection by username</small></span>
       </button>
@@ -70,6 +73,11 @@ export default function SettingsSheet({ count, dark, onToggleDark, onBulkAdd, on
       <button className="menu-item" onClick={onShowListening}>
         <Icon name="headphones" /> <span><strong>Your listening</strong><small>Spins, streaks, most-played</small></span>
       </button>
+      {isCloud() && (
+        <button className="menu-item" onClick={onShowFriends}>
+          <Icon name="users" /> <span><strong>Friends{pendingCount > 0 && <span className="menu-badge">{pendingCount}</span>}</strong><small>{pendingCount > 0 ? `${pendingCount} request${pendingCount === 1 ? '' : 's'} waiting` : 'Browse each other’s collections'}</small></span>
+        </button>
+      )}
       <button className="menu-item" onClick={onShowWishlist}>
         <Icon name="heart" /> <span><strong>Wishlist</strong><small>{wantCount ? `${wantCount} record${wantCount === 1 ? '' : 's'} on the hunt` : 'Records you want'}</small></span>
       </button>
@@ -104,6 +112,9 @@ export default function SettingsSheet({ count, dark, onToggleDark, onBulkAdd, on
       {isCloud() && (
         <>
           <div className="menu-section">Account</div>
+          <button className="menu-item" onClick={onToggleShareNotes} role="switch" aria-checked={shareNotes}>
+            <Icon name={shareNotes ? 'check' : 'edit'} /> <span><strong>{shareNotes ? 'Notes shared with friends' : 'Notes kept private'}</strong><small>{shareNotes ? 'Friends viewing your records can read your notes' : 'Tap to let friends see your per-record notes'}</small></span>
+          </button>
           <button className="menu-item" onClick={() => supabase.auth.signOut()}>
             <Icon name="upload" /> <span><strong>Sign out</strong><small>Your collection syncs to your account</small></span>
           </button>

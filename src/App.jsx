@@ -2,7 +2,10 @@ import { useCallback, useDeferredValue, useEffect, useMemo, useState } from 'rea
 import { useRecords } from './hooks/useRecords.js'
 import { usePlays } from './hooks/usePlays.js'
 import { useWants } from './hooks/useWants.js'
+import { useFriends } from './hooks/useFriends.js'
 import { bustCover } from './hooks/useCoverSrc.js'
+import { getRepository } from './data/repository.js'
+import { isCloud } from './data/supabaseClient.js'
 import Icon from './components/Icon.jsx'
 import Sheet from './components/Sheet.jsx'
 import GridView from './components/GridView.jsx'
@@ -20,6 +23,9 @@ import CollectionValue from './components/CollectionValue.jsx'
 import Wishlist from './components/Wishlist.jsx'
 import SettingsSheet from './components/SettingsSheet.jsx'
 import DiscogsImport from './components/DiscogsImport.jsx'
+import BarcodeScanner from './components/BarcodeScanner.jsx'
+import Friends from './components/Friends.jsx'
+import FriendCollection from './components/FriendCollection.jsx'
 import Onboarding from './components/Onboarding.jsx'
 import InstallHint from './components/InstallHint.jsx'
 
@@ -49,6 +55,7 @@ export default function App() {
   const { records, loading, error, add, bulkAdd, update, remove, setPhoto, removePhoto, reload } = useRecords()
   const { plays, counts, lastPlayed, logPlay, reload: reloadPlays } = usePlays()
   const { wants, addWant, removeWant, reload: reloadWants } = useWants()
+  const friendsApi = useFriends()
 
   // Reload everything after Clear / Import so plays + wishlist can't show ghosts.
   const reloadAll = useCallback(async () => { await Promise.all([reload(), reloadPlays(), reloadWants()]) }, [reload, reloadPlays, reloadWants])
@@ -66,6 +73,7 @@ export default function App() {
   const [editing, setEditing] = useState(null)
   const [bulkOpen, setBulkOpen] = useState(false)
   const [discogsOpen, setDiscogsOpen] = useState(false)
+  const [scanOpen, setScanOpen] = useState(false)
   const [statsOpen, setStatsOpen] = useState(false)
   const [listeningOpen, setListeningOpen] = useState(false)
   const [randomOpen, setRandomOpen] = useState(false)
@@ -75,7 +83,23 @@ export default function App() {
   const [showTour, setShowTour] = useState(() => !localStorage.getItem('spun-onboarded'))
   const closeTour = () => { localStorage.setItem('spun-onboarded', '1'); setShowTour(false) }
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [friendsOpen, setFriendsOpen] = useState(false)
+  const [viewingFriend, setViewingFriend] = useState(null)
+  const [shareNotes, setShareNotes] = useState(false)
   const [addedThisSession, setAddedThisSession] = useState(0)
+
+  // Load the "share my notes with friends" preference (cloud only).
+  useEffect(() => {
+    if (!isCloud()) return
+    getRepository().myProfile().then((p) => setShareNotes(p.shareNotes)).catch(() => {})
+  }, [])
+
+  const toggleShareNotes = useCallback(async () => {
+    const next = !shareNotes
+    setShareNotes(next) // optimistic
+    try { await getRepository().setShareNotes(next) }
+    catch (err) { setShareNotes(!next); alert(`Couldn't update that setting: ${err.message || err}`) }
+  }, [shareNotes])
 
   useEffect(() => {
     document.documentElement.dataset.theme = theme
@@ -142,12 +166,12 @@ export default function App() {
   const openEdit = (rec) => { setSelected(null); setEditing(rec); setFormOpen(true) }
 
   // Duplicate check for the add flow: same album + artist (case-insensitive).
-  const findDuplicate = (album, artist) => {
+  const findDuplicate = useCallback((album, artist) => {
     const a = (album || '').trim().toLowerCase()
     const ar = (artist || '').trim().toLowerCase()
     if (!a) return null
     return records.find((r) => r.album.toLowerCase() === a && r.artist.toLowerCase() === ar) || null
-  }
+  }, [records])
 
   const handleSave = async (data, pendingPhoto) => {
     try {
@@ -184,6 +208,22 @@ export default function App() {
       alert(`Couldn't save this record: ${err.message || err}`)
       return false
     }
+  }
+
+  const addFromScan = useCallback((draft) => add({
+    album: draft.album,
+    artist: draft.artist,
+    year: draft.year,
+    genre: draft.genre,
+    label: draft.label,
+    catalogNo: draft.catalogNo,
+    coverUrl: draft.coverUrl,
+    coverSource: draft.coverUrl ? 'official' : null,
+  }), [add])
+
+  const handleIdentifyPressing = async (id, pressing) => {
+    try { await update(id, { pressing }) }
+    catch (err) { alert(`Couldn't save that pressing: ${err.message || err}`) }
   }
 
   const handleDelete = async (rec) => {
@@ -334,6 +374,7 @@ export default function App() {
             <p>Add records one at a time, or paste a whole list to add them in bulk.</p>
             <div className="empty-cta">
               <button className="btn btn-primary" onClick={openAdd}><Icon name="plus" size={18} /> Add a record</button>
+              <button className="btn btn-ghost" onClick={() => setScanOpen(true)}><Icon name="camera" size={18} /> Scan a barcode</button>
               <button className="btn btn-ghost" onClick={() => setBulkOpen(true)}>Bulk add</button>
             </div>
           </div>
@@ -365,7 +406,7 @@ export default function App() {
             playCount={counts.get(selected.id) || 0}
             lastPlayed={lastPlayed.get(selected.id)}
           >
-            <PressingInfo record={selected} />
+            <PressingInfo record={selected} onIdentify={(p) => handleIdentifyPressing(selected.id, p)} />
           </RecordDetail>
         </Sheet>
       )}
@@ -410,6 +451,12 @@ export default function App() {
         </Sheet>
       )}
 
+      {scanOpen && (
+        <Sheet title="Scan a barcode" onClose={() => setScanOpen(false)}>
+          <BarcodeScanner onAdd={addFromScan} findDuplicate={findDuplicate} onClose={() => setScanOpen(false)} />
+        </Sheet>
+      )}
+
       {statsOpen && (
         <Sheet title="Collection stats" onClose={() => setStatsOpen(false)}>
           <Stats records={records} />
@@ -447,16 +494,33 @@ export default function App() {
             dark={theme === 'dark'}
             onToggleDark={() => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))}
             onBulkAdd={() => { setSettingsOpen(false); setBulkOpen(true) }}
+            onScan={() => { setSettingsOpen(false); setScanOpen(true) }}
             onImportDiscogs={() => { setSettingsOpen(false); setDiscogsOpen(true) }}
             onShowStats={() => { setSettingsOpen(false); setStatsOpen(true) }}
             onShowListening={() => { setSettingsOpen(false); setListeningOpen(true) }}
             onShowRandom={() => { setSettingsOpen(false); setRandomOpen(true) }}
             onShowValue={() => { setSettingsOpen(false); setValueOpen(true) }}
             onShowWishlist={() => { setSettingsOpen(false); setWishlistOpen(true) }}
+            onShowFriends={() => { setSettingsOpen(false); friendsApi.reload(); setFriendsOpen(true) }}
             onShowTour={() => { setSettingsOpen(false); setShowTour(true) }}
             wantCount={wants.length}
+            pendingCount={friendsApi.pendingCount}
+            shareNotes={shareNotes}
+            onToggleShareNotes={toggleShareNotes}
             onChanged={reloadAll}
           />
+        </Sheet>
+      )}
+
+      {friendsOpen && (
+        <Sheet title="Friends" onClose={() => setFriendsOpen(false)} wide>
+          <Friends {...friendsApi} onViewFriend={(f) => { setFriendsOpen(false); setViewingFriend(f) }} />
+        </Sheet>
+      )}
+
+      {viewingFriend && (
+        <Sheet title={`${viewingFriend.name}’s collection`} onClose={() => setViewingFriend(null)} wide>
+          <FriendCollection friend={viewingFriend} />
         </Sheet>
       )}
 

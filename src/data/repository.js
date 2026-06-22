@@ -49,6 +49,7 @@ function normalize(input) {
     label: (input.label || '').trim(),
     catalogNo: (input.catalogNo || '').trim(),
     tags: Array.isArray(input.tags) ? input.tags.filter(Boolean) : [],
+    pressing: input.pressing ?? null,
     createdAt: input.createdAt || now,
     updatedAt: now,
   }
@@ -181,6 +182,20 @@ function createIndexedDbRepository() {
       const tx = db.transaction(stores, 'readwrite')
       await Promise.all([...stores.map((s) => tx.objectStore(s).clear()), tx.done])
     },
+
+    // ---------- friends ----------
+    // Friends is a cloud-only social feature; there's no server in local mode.
+    // The UI hides it unless signed in, but guard here too so a stray call fails
+    // with a clear message instead of a cryptic "not a function".
+    friendsSupported: false,
+    async myProfile() { return { shareNotes: false, displayName: '', email: '' } },
+    async listFriends() { return [] },
+    async setShareNotes() { throw new Error('Friends needs a SPUN account — sign in to use it.') },
+    async sendFriendRequest() { throw new Error('Friends needs a SPUN account — sign in to use it.') },
+    async respondFriendRequest() { throw new Error('Friends needs a SPUN account — sign in to use it.') },
+    async removeFriend() { throw new Error('Friends needs a SPUN account — sign in to use it.') },
+    async friendRecords() { throw new Error('Friends needs a SPUN account — sign in to use it.') },
+    async friendPlays() { throw new Error('Friends needs a SPUN account — sign in to use it.') },
   }
 }
 

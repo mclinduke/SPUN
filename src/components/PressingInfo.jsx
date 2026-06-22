@@ -1,42 +1,52 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { lookupRecord, cachedRecord, rarityStale, rarityLabel, pressingVerdict } from '../services/discogs.js'
+import PressingIdentify from './PressingIdentify.jsx'
 import Icon from './Icon.jsx'
 
-/** Pressing details + an honest rarity signal from Discogs. Lazy (no network on
- *  open unless the user asks); cached; marketplace numbers hidden once stale. */
-export default function PressingInfo({ record }) {
+/** Tracklist, credits, recording studio, pressing + an honest original-pressing
+ *  read. Auto-loads on open (cached); when onIdentify is provided (owner view),
+ *  the user can pin the exact pressing they own. Read-only for friend views. */
+export default function PressingInfo({ record, onIdentify }) {
   const [data, setData] = useState(null)
   const [status, setStatus] = useState('idle') // idle | loading | error
   const [error, setError] = useState('')
+  const [identifying, setIdentifying] = useState(false)
 
-  useEffect(() => {
-    let active = true
-    setData(null); setStatus('idle'); setError('')
-    cachedRecord(record.id).then((c) => { if (active && c) setData(c) })
-    return () => { active = false }
-  }, [record.id])
-
-  const load = async (force = false) => {
+  const load = useCallback(async (force = false) => {
     setStatus('loading'); setError('')
     try { setData(await lookupRecord(record, { force })) }
     catch (e) { setError(e.message || String(e)); setStatus('error'); return }
     setStatus('idle')
-  }
+  }, [record])
+  const loadRef = useRef(load)
+  loadRef.current = load
+
+  // Show cached data instantly; for an uncached record, debounce the live
+  // lookup and cancel it if the sheet closes first — so flicking through many
+  // records doesn't fire 3 Discogs calls each and trip the rate limit.
+  useEffect(() => {
+    let active = true
+    let timer = 0
+    setData(null); setStatus('idle'); setError('')
+    cachedRecord(record.id).then((c) => {
+      if (!active) return
+      if (c) setData(c)
+      else timer = setTimeout(() => { if (active) loadRef.current(false) }, 700)
+    })
+    return () => { active = false; clearTimeout(timer) }
+  }, [record.id])
 
   const stale = data?.found && rarityStale(data.fetchedAt)
   const label = data?.found ? rarityLabel(data.have, data.want) : null
   const verdict = data?.found ? pressingVerdict(data) : null
   const catno = data?.labels?.[0]?.catno
+  const owned = record.pressing // the pressing the user identified as theirs
+  const canIdentify = typeof onIdentify === 'function' && data?.found && Boolean(data?.masterId)
 
   return (
     <section className="pressing">
       <h4 className="pressing-head"><Icon name="sparkle" size={16} /> Tracklist, credits &amp; pressing</h4>
 
-      {!data && status === 'idle' && (
-        <button className="btn btn-ghost pressing-cta" onClick={() => load(false)}>
-          <Icon name="search" size={16} /> Look up on Discogs
-        </button>
-      )}
       {status === 'loading' && <p className="hint"><span className="spinner" /> Checking Discogs…</p>}
       {status === 'error' && (
         <p className="hint">Couldn’t reach Discogs: {error}. <button className="linkish" onClick={() => load(false)}>Retry</button></p>
@@ -48,6 +58,18 @@ export default function PressingInfo({ record }) {
 
       {data?.found && (
         <>
+          {owned && (
+            <div className="liner-block owned-pressing">
+              <h5>Your pressing</h5>
+              <p className="verdict-line">
+                <span className={`verdict-badge ${owned.isOriginal ? 'is-original' : 'is-reissue'}`}>{owned.isOriginal ? 'Original pressing' : 'Reissue'}</span>
+                {[owned.year, owned.country].filter(Boolean).join(' · ') || 'Pressing saved'}
+                {(owned.label || owned.catalogNo) ? ` — ${[owned.label, owned.catalogNo].filter(Boolean).join(' ')}` : ''}
+              </p>
+              {canIdentify && <button className="linkish" onClick={() => setIdentifying(true)}>Change pressing</button>}
+            </div>
+          )}
+
           <dl className="pressing-grid">
             {data.labels?.length > 0 && (
               <><dt>Label</dt><dd>{data.labels.map((l) => `${l.name}${l.catno ? ` — ${l.catno}` : ''}`).join(' · ')}</dd></>
@@ -77,7 +99,7 @@ export default function PressingInfo({ record }) {
             )}
           </div>
 
-          {verdict && (
+          {!owned && verdict && (
             <div className="liner-block pressing-verdict">
               <h5>Original pressing?</h5>
               {verdict.kind === 'original' && (
@@ -101,6 +123,11 @@ export default function PressingInfo({ record }) {
                   <li><strong>Barcode</strong> — {data.hasBarcode ? 'this pressing has one, so it’s 1980s or later.' : 'none listed, which is consistent with a pre-1980s original.'}</li>
                 </ul>
               </details>
+              {canIdentify && (
+                <button className="btn btn-ghost pressing-cta" onClick={() => setIdentifying(true)}>
+                  <Icon name="search" size={15} /> Identify my exact pressing
+                </button>
+              )}
             </div>
           )}
 
@@ -141,6 +168,16 @@ export default function PressingInfo({ record }) {
             View on Discogs <Icon name="chevronRight" size={14} />
           </a>
         </>
+      )}
+
+      {identifying && (
+        <PressingIdentify
+          masterId={data.masterId}
+          masterYear={data.masterYear}
+          current={owned}
+          onChoose={(p) => { setIdentifying(false); onIdentify?.(p) }}
+          onClose={() => setIdentifying(false)}
+        />
       )}
     </section>
   )

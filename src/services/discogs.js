@@ -53,6 +53,7 @@ export async function lookupRecord(record, { force = false } = {}) {
   const data = {
     found: true,
     discogsId: top.id,
+    masterId: rel.master_id || null,
     url: rel.uri ? `https://www.discogs.com${rel.uri.startsWith('/') ? '' : '/'}${rel.uri}` : `https://www.discogs.com/release/${top.id}`,
     title: rel.title || '',
     year: rel.year || null,
@@ -79,6 +80,69 @@ export async function lookupRecord(record, { force = false } = {}) {
 
 // Discogs appends "(2)" style disambiguators to artist names — strip them.
 const cleanArtist = (name) => (name || '').replace(/\s*\(\d+\)$/, '').trim()
+
+/** Split a Discogs "Artist - Album" release title into {artist, album}. */
+function splitTitle(title) {
+  const t = (title || '').trim()
+  const i = t.indexOf(' - ')
+  if (i === -1) return { artist: '', album: t }
+  return { artist: cleanArtist(t.slice(0, i)), album: t.slice(i + 3).trim() }
+}
+
+/** Map a Discogs search result to a record draft (cover-art + pressing fields). */
+function searchResultToDraft(r) {
+  const { artist, album } = splitTitle(r.title)
+  return {
+    album,
+    artist,
+    year: r.year ? Number(r.year) : null,
+    genre: (r.style || [])[0] || (r.genre || [])[0] || '',
+    label: Array.isArray(r.label) ? (r.label[0] || '') : (r.label || ''),
+    catalogNo: r.catno || '',
+    coverUrl: r.cover_image || r.thumb || null,
+    _source: 'discogs',
+    _sourceId: r.id,
+  }
+}
+
+/** Cover-art + pressing autofill from Discogs (the most pressing-accurate source). */
+export async function searchDiscogs(term, { limit = 8 } = {}) {
+  const q = (term || '').trim()
+  if (!q) return []
+  const params = new URLSearchParams({ q, type: 'release', per_page: String(limit) })
+  let data
+  try { data = await api(`database/search?${params}`) } catch { return [] }
+  return (data.results || []).map(searchResultToDraft).filter((d) => d.album || d.artist)
+}
+
+/** Look up a single release by scanned barcode (UPC/EAN). Returns a draft or null. */
+export async function lookupByBarcode(code) {
+  const bc = String(code || '').replace(/\s+/g, '')
+  if (!bc) return null
+  const params = new URLSearchParams({ barcode: bc, type: 'release', per_page: '5' })
+  const data = await api(`database/search?${params}`)
+  const top = bestResult(data.results || [])
+  if (!top) return null
+  return { ...searchResultToDraft(top), barcode: bc }
+}
+
+/** Every pressing of an album (Discogs master versions), oldest first. */
+export async function getMasterVersions(masterId, { limit = 100 } = {}) {
+  if (!masterId) return []
+  const params = new URLSearchParams({ per_page: String(limit), sort: 'released', sort_order: 'asc' })
+  const data = await api(`masters/${masterId}/versions?${params}`)
+  return (data.versions || []).map((v) => ({
+    id: v.id,
+    year: (typeof v.released === 'string' ? Number(v.released.slice(0, 4)) : v.released) || null,
+    country: v.country || '',
+    label: v.label || '',
+    catalogNo: v.catno || '',
+    format: v.format || '',
+    title: v.title || '',
+    thumb: v.thumb || null,
+    url: v.uri ? `https://www.discogs.com${v.uri.startsWith('/') ? '' : '/'}${v.uri}` : (v.resource_url || ''),
+  })).filter((v) => v.id)
+}
 
 /**
  * Pull a user's PUBLIC Discogs collection (folder 0 = "All") into record drafts.
@@ -153,7 +217,8 @@ export function pressingVerdict({ year, masterYear } = {}) {
 
 /** Honest rarity read from community counts — a signal, never a stored "score". */
 export function rarityLabel(have, want) {
-  if (!have || !want) return null
+  if (have == null || want == null) return null
+  if (have === 0) return want > 0 ? 'Highly sought after' : null // wanted but none owned = the rarest signal
   const ratio = want / have
   if (ratio >= 1.5) return 'Highly sought after'
   if (ratio >= 0.8) return 'In demand'

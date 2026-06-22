@@ -179,7 +179,7 @@ export default function RecordForm({ initial, genres = [], onSave, onSaveAndNext
                     <strong>{r.album}</strong>
                     <small>{r.artist}{r.year ? ` · ${r.year}` : ''}{r.catalogNo ? ` · ${r.catalogNo}` : ''}</small>
                   </span>
-                  <span className={`src-badge ${r._source}`}>{r._source === 'musicbrainz' ? 'MB' : 'iTunes'}</span>
+                  <span className={`src-badge ${r._source}`}>{r._source === 'discogs' ? 'Discogs' : r._source === 'musicbrainz' ? 'MB' : 'iTunes'}</span>
                 </button>
               </li>
             ))}

@@ -12,7 +12,7 @@ function ago(ts) {
   return new Date(ts).toLocaleDateString()
 }
 
-export default function RecordDetail({ record, onEdit, onDelete, onPlay, onChangeCover, playCount = 0, lastPlayed, children }) {
+export default function RecordDetail({ record, onEdit, onDelete, onPlay, onChangeCover, playCount = 0, lastPlayed, readOnly = false, children }) {
   const [confirming, setConfirming] = useState(false)
   const [justSpun, setJustSpun] = useState(false)
   const [busy, setBusy] = useState(false)
@@ -35,7 +35,7 @@ export default function RecordDetail({ record, onEdit, onDelete, onPlay, onChang
   return (
     <div className="detail">
       <Cover record={record} className="detail-cover" />
-      {onChangeCover && (
+      {!readOnly && onChangeCover && (
         <button className="linkish ce-trigger" onClick={() => onChangeCover(record)}>
           <Icon name="edit" size={13} /> Change cover
         </button>
@@ -49,9 +49,11 @@ export default function RecordDetail({ record, onEdit, onDelete, onPlay, onChang
         {(record.tags || []).map((t) => <span key={t} className="tag tag-soft">{t}</span>)}
       </div>
 
-      <button className={`btn btn-primary spin-btn ${justSpun ? 'spun' : ''}`} onClick={spin} disabled={busy}>
-        <Icon name={justSpun ? 'check' : 'play'} size={18} /> {justSpun ? 'Logged!' : 'I spun this'}
-      </button>
+      {!readOnly && (
+        <button className={`btn btn-primary spin-btn ${justSpun ? 'spun' : ''}`} onClick={spin} disabled={busy}>
+          <Icon name={justSpun ? 'check' : 'play'} size={18} /> {justSpun ? 'Logged!' : 'I spun this'}
+        </button>
+      )}
       {playCount > 0 && (
         <p className="play-stat">Played {playCount}×{lastPlayed ? ` · last ${ago(lastPlayed)}` : ''}</p>
       )}
@@ -63,6 +65,7 @@ export default function RecordDetail({ record, onEdit, onDelete, onPlay, onChang
 
       {children /* pressing & rarity panel (Discogs) injected by App */}
 
+      {!readOnly && (
       <div className="detail-actions">
         <button className="btn btn-ghost" onClick={() => onEdit(record)}>
           <Icon name="edit" size={18} /> Edit
@@ -79,6 +82,7 @@ export default function RecordDetail({ record, onEdit, onDelete, onPlay, onChang
           </button>
         )}
       </div>
+      )}
     </div>
   )
 }

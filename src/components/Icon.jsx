@@ -29,6 +29,7 @@ const PATHS = {
   refresh: <><path d="M21 12a9 9 0 1 1-2.64-6.36M21 4v5h-5" /></>,
   sparkle: <><path d="M12 3l2.2 6.3 6.3 2.2-6.3 2.2L12 20l-2.2-6.3L3.5 11.5l6.3-2.2z" /></>,
   flame: <><path d="M12 3c1.2 3.6 5 5 5 9a5 5 0 0 1-10 0c0-2 .8-3.2 2-4.2.2 1.2 1 2.2 2 2.2.2-3 0-5 1-7z" /></>,
+  users: <><circle cx="9" cy="8" r="3.2" /><path d="M3.5 20a5.5 5.5 0 0 1 11 0" /><path d="M15.8 5.2a3.2 3.2 0 0 1 0 6M17 15.1a5.5 5.5 0 0 1 3.5 4.9" /></>,
 }
 
 export default function Icon({ name, size = 22, className = '' }) {

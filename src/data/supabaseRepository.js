@@ -5,7 +5,11 @@ import { newId, validCover } from './repository.js'
 // backed by Supabase + row-level security. Photos ride along as base64 in a
 // `photo` column (kept out of list payloads). The Discogs cache stays device-local.
 
-const RECORD_COLS = 'id,album,artist,year,genre,notes,cover_url,cover_source,has_photo,label,catalog_no,tags,created_at,updated_at'
+const RECORD_COLS = 'id,album,artist,year,genre,notes,cover_url,cover_source,has_photo,label,catalog_no,tags,pressing,created_at,updated_at'
+// Fallback select if the `pressing` column migration hasn't run yet — so a
+// missed migration degrades to "no pressing data" instead of a blank collection.
+const RECORD_COLS_BASE = 'id,album,artist,year,genre,notes,cover_url,cover_source,has_photo,label,catalog_no,tags,created_at,updated_at'
+const missingPressing = (res) => res.error && /pressing/i.test(res.error.message || '')
 
 const rowToRecord = (r) => ({
   id: r.id,
@@ -20,6 +24,7 @@ const rowToRecord = (r) => ({
   label: r.label || '',
   catalogNo: r.catalog_no || '',
   tags: Array.isArray(r.tags) ? r.tags : [],
+  pressing: r.pressing || null,
   createdAt: r.created_at,
   updatedAt: r.updated_at,
 })
@@ -40,6 +45,7 @@ function recordToRow(rec, userId) {
     label: (rec.label || '').trim(),
     catalog_no: (rec.catalogNo || '').trim(),
     tags: Array.isArray(rec.tags) ? rec.tags.filter(Boolean) : [],
+    pressing: rec.pressing ?? null,
     created_at: rec.createdAt || now,
     updated_at: now,
   }
@@ -61,6 +67,7 @@ function patchToRow(patch) {
   if ('hasPhoto' in patch) row.has_photo = Boolean(patch.hasPhoto)
   if ('tags' in patch) row.tags = Array.isArray(patch.tags) ? patch.tags.filter(Boolean) : []
   if ('coverUrl' in patch) row.cover_url = validCover(patch.coverUrl)
+  if ('pressing' in patch) row.pressing = patch.pressing ?? null
   return row
 }
 
@@ -76,12 +83,14 @@ export function createSupabaseRepository(supabase, userId) {
 
   return {
     async list() {
-      const data = must(await supabase.from('records').select(RECORD_COLS).order('created_at', { ascending: true }))
-      return data.map(rowToRecord)
+      let res = await supabase.from('records').select(RECORD_COLS).order('created_at', { ascending: true })
+      if (missingPressing(res)) res = await supabase.from('records').select(RECORD_COLS_BASE).order('created_at', { ascending: true })
+      return must(res).map(rowToRecord)
     },
     async get(id) {
-      const { data } = await supabase.from('records').select(RECORD_COLS).eq('id', id).maybeSingle()
-      return data ? rowToRecord(data) : undefined
+      let res = await supabase.from('records').select(RECORD_COLS).eq('id', id).maybeSingle()
+      if (missingPressing(res)) res = await supabase.from('records').select(RECORD_COLS_BASE).eq('id', id).maybeSingle()
+      return res.data ? rowToRecord(res.data) : undefined
     },
     async add(record) {
       const data = must(await supabase.from('records').insert(recordToRow(record, userId)).select(RECORD_COLS).single())
@@ -164,6 +173,49 @@ export function createSupabaseRepository(supabase, userId) {
       must(await supabase.from('plays').delete().eq('user_id', userId))
       must(await supabase.from('wants').delete().eq('user_id', userId))
       must(await supabase.from('records').delete().eq('user_id', userId))
+    },
+
+    // ---- friends (cloud-only social layer) ----
+    friendsSupported: true,
+    async myProfile() {
+      const { data } = await supabase.from('profiles').select('share_notes,display_name,email').eq('id', userId).maybeSingle()
+      return {
+        shareNotes: Boolean(data?.share_notes),
+        displayName: data?.display_name || '',
+        email: data?.email || '',
+      }
+    },
+    async setShareNotes(value) {
+      must(await supabase.from('profiles').update({ share_notes: Boolean(value) }).eq('id', userId))
+    },
+    async listFriends() {
+      const data = must(await supabase.rpc('list_friends'))
+      return (data || []).map((f) => ({
+        friendshipId: f.friendship_id,
+        otherId: f.other_id,
+        name: f.other_name || (f.other_email || '').split('@')[0] || 'Friend',
+        email: f.other_email || '',
+        status: f.status,
+        direction: f.direction, // 'friend' | 'incoming' | 'outgoing'
+      }))
+    },
+    async sendFriendRequest(email) {
+      // → 'requested' | 'accepted' | 'already_friends' | 'already_pending' | 'not_found'
+      return must(await supabase.rpc('send_friend_request', { p_email: email }))
+    },
+    async respondFriendRequest(friendshipId, accept) {
+      must(await supabase.rpc('respond_friend_request', { p_friendship_id: friendshipId, p_accept: Boolean(accept) }))
+    },
+    async removeFriend(otherId) {
+      must(await supabase.rpc('remove_friend', { p_other_id: otherId }))
+    },
+    async friendRecords(ownerId) {
+      const data = must(await supabase.rpc('get_friend_records', { p_owner: ownerId }))
+      return (data || []).map(rowToRecord)
+    },
+    async friendPlays(ownerId) {
+      const data = must(await supabase.rpc('get_friend_plays', { p_owner: ownerId }))
+      return (data || []).map((p) => ({ id: p.id, recordId: p.record_id, playedAt: p.played_at }))
     },
   }
 }

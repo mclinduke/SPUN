@@ -9,6 +9,8 @@
  * don't change.
  */
 
+import { searchDiscogs } from './discogs.js'
+
 const ENDPOINT = 'https://itunes.apple.com/search'
 
 /** Bump iTunes' 100px thumbnail to a crisp hi-res cover. */
@@ -89,26 +91,30 @@ export async function searchMusicBrainz(term, { limit = 8, signal } = {}) {
 const matchKey = (d) => `${(d.album || '').toLowerCase().trim()}::${(d.artist || '').toLowerCase().trim()}`
 
 /**
- * Combined autofill for the add-record flow. MusicBrainz brings the pressing
- * data (label, catalog number); iTunes contributes reliable cover thumbnails and
- * genre. Results are merged (MB first), deduped by album+artist.
+ * Combined autofill for the add-record flow. Discogs is the primary source —
+ * the most pressing-accurate cover art + label/catalog #. MusicBrainz fills in
+ * any gaps, iTunes backfills cover thumbnails + genre. Discogs needs the
+ * server proxy (cloud / dev token); if it's unavailable it just falls back.
+ * Results are deduped by album+artist, Discogs first.
  */
 export async function searchAll(term, opts = {}) {
-  const [mb, itunes] = await Promise.all([
+  const [discogs, mb, itunes] = await Promise.all([
+    searchDiscogs(term, opts).catch(() => []),
     searchMusicBrainz(term, opts).catch(() => []),
     searchAlbums(term, opts).catch(() => []),
   ])
   const itByKey = new Map(itunes.map((d) => [matchKey(d), d]))
   const seen = new Set()
   const merged = []
-  for (const d of mb) {
+  const push = (d) => {
     const k = matchKey(d)
+    if (seen.has(k)) return
     seen.add(k)
-    const it = itByKey.get(k)
-    merged.push({ ...d, coverUrl: it?.coverUrl || d.coverUrl, genre: it?.genre || d.genre })
+    merged.push(d)
   }
-  for (const d of itunes) {
-    if (!seen.has(matchKey(d))) merged.push(d)
-  }
+  // Discogs first (best art), backfilling a missing cover/genre from iTunes.
+  for (const d of discogs) push({ ...d, coverUrl: d.coverUrl || itByKey.get(matchKey(d))?.coverUrl || null, genre: d.genre || itByKey.get(matchKey(d))?.genre || '' })
+  for (const d of mb) push({ ...d, coverUrl: itByKey.get(matchKey(d))?.coverUrl || d.coverUrl, genre: itByKey.get(matchKey(d))?.genre || d.genre })
+  for (const d of itunes) push(d)
   return merged.slice(0, 12)
 }

@@ -20,6 +20,7 @@ create table if not exists public.records (
   label        text default '',
   catalog_no   text default '',
   tags         text[] default '{}',
+  pressing     jsonb,                -- which exact pressing the owner identified (Discogs)
   created_at   bigint,
   updated_at   bigint
 );

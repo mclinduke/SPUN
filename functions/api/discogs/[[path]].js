@@ -14,7 +14,7 @@ export async function onRequest(context) {
   // a general authenticated Discogs proxy by anyone who finds the URL.
   // (search, a release by id, a master by id for original-year lookup, and a
   // user's public collection folder listing)
-  if (!/^(database\/search|releases\/\d+|masters\/\d+|users\/[^/]+\/collection\/folders\/\d+\/releases)$/.test(path)) {
+  if (!/^(database\/search|releases\/\d+|masters\/\d+|masters\/\d+\/versions|users\/[^/]+\/collection\/folders\/\d+\/releases)$/.test(path)) {
     return new Response(JSON.stringify({ error: 'path not allowed' }), {
       status: 403, headers: { 'content-type': 'application/json' },
     })
