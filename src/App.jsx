@@ -23,6 +23,7 @@ import Wishlist from './components/Wishlist.jsx'
 import SettingsSheet from './components/SettingsSheet.jsx'
 import DiscogsImport from './components/DiscogsImport.jsx'
 import BarcodeScanner from './components/BarcodeScanner.jsx'
+import TonightCard from './components/TonightCard.jsx'
 import Friends from './components/Friends.jsx'
 import FriendCollection from './components/FriendCollection.jsx'
 import Onboarding from './components/Onboarding.jsx'
@@ -365,6 +366,10 @@ export default function App() {
       </div>
 
       <InstallHint />
+
+      {records.length > 0 && !deferredQuery.trim() && !genreFilter && !tagFilter && (
+        <TonightCard records={records} lastPlayed={lastPlayed} onSpin={logPlay} onOpen={setSelected} />
+      )}
 
       {records.length > 0 && (
         <button className="home-stats" onClick={() => setListeningOpen(true)} aria-label="Open your listening stats (Wrapped)">
