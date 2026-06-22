@@ -38,7 +38,9 @@ export default function DiscogsImport({ onCommit, onCancel, findDuplicate }) {
     return (
       <div className="dg-progress" role="status" aria-live="polite">
         <span className="spinner" aria-hidden />
-        <p>Fetching your collection…{progress ? ` page ${progress.page} of ${progress.pages} · ${progress.count} found` : ''}</p>
+        {progress?.waiting
+          ? <p>Discogs is busy — waiting a moment and retrying automatically… ({progress.count} found so far)</p>
+          : <p>Fetching your collection…{progress ? ` page ${progress.page} of ${progress.pages} · ${progress.count} found` : ''}</p>}
       </div>
     )
   }

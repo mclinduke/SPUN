@@ -58,6 +58,10 @@ export async function onRequest(context) {
       'cache-control': immutable && upstream.ok ? 'public, max-age=2592000, immutable' : 'no-store',
     },
   })
+  // Pass Discogs' rate-limit backoff hint through so the client can wait the
+  // right amount and retry instead of failing.
+  const retryAfter = upstream.headers.get('retry-after')
+  if (retryAfter) res.headers.set('retry-after', retryAfter)
   if (immutable && upstream.ok) context.waitUntil(cache.put(cacheKey, res.clone()))
   return res
 }

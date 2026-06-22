@@ -16,7 +16,12 @@ async function api(path) {
     throw new Error(navigator.onLine ? 'Discogs is unreachable right now' : "You're offline — connect to look up pressing data")
   }
   if (res.status === 503) throw new Error('Discogs not configured (set DISCOGS_TOKEN)')
-  if (res.status === 429) throw new Error('Discogs rate limit — try again shortly')
+  if (res.status === 429) {
+    const e = new Error('Discogs rate limit — try again shortly')
+    e.rateLimited = true
+    e.retryAfter = Number(res.headers.get('retry-after')) || 0 // seconds Discogs asked us to wait
+    throw e
+  }
   if (!res.ok) throw new Error(`Discogs error ${res.status}`)
   return res.json()
 }
@@ -161,8 +166,14 @@ export async function fetchDiscogsCollection(username, { onProgress } = {}) {
       try { data = await api(`users/${u}/collection/folders/0/releases?${q}`); break }
       catch (e) {
         if (/40[34]/.test(e.message)) throw new Error(`Couldn't read "${username}". Check the username, and make sure your Discogs collection is set to public (Settings → Privacy).`, { cause: e })
-        // Transient rate-limit: wait and retry the SAME page so we don't lose the import.
-        if (/rate limit/i.test(e.message) && attempt < 4) { await sleep(2000 * (attempt + 1)); continue }
+        // Transient rate-limit: wait (honoring Discogs' Retry-After when given) and
+        // retry the SAME page so a busy shared token doesn't kill the whole import.
+        if (e.rateLimited && attempt < 8) {
+          const waitMs = e.retryAfter ? e.retryAfter * 1000 : Math.min(3000 * (attempt + 1), 20000)
+          onProgress?.({ page, pages, count: drafts.length, waiting: true })
+          await sleep(waitMs)
+          continue
+        }
         throw e
       }
     }
