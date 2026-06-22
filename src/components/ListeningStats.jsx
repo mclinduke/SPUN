@@ -1,5 +1,7 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import Cover from './Cover.jsx'
+import Icon from './Icon.jsx'
+import { renderWrappedCard, shareCard } from '../services/wrappedCard.js'
 
 const DAY = 86400000
 const dayKey = (ts) => new Date(ts).toISOString().slice(0, 10)
@@ -7,6 +9,7 @@ const dayKey = (ts) => new Date(ts).toISOString().slice(0, 10)
 /** Spotify-Wrapped-style view of vinyl listening habits, driven by the play log. */
 export default function ListeningStats({ records, plays, onSelect }) {
   const byId = useMemo(() => new Map(records.map((r) => [r.id, r])), [records])
+  const [sharing, setSharing] = useState(false)
 
   const stats = useMemo(() => {
     if (!plays.length) return null
@@ -56,6 +59,23 @@ export default function ListeningStats({ records, plays, onSelect }) {
     )
   }
 
+  const share = async () => {
+    setSharing(true)
+    try {
+      const blob = await renderWrappedCard({
+        total: stats.total,
+        uniq: stats.uniq,
+        streak: stats.streak,
+        topRecords: stats.topRecords.map(({ rec, n }) => ({ album: rec.album, artist: rec.artist, n })),
+      })
+      await shareCard(blob)
+    } catch (e) {
+      alert(`Couldn't make your card: ${e.message || e}`)
+    } finally {
+      setSharing(false)
+    }
+  }
+
   return (
     <div className="listening">
       <div className="listen-headline">
@@ -63,6 +83,10 @@ export default function ListeningStats({ records, plays, onSelect }) {
         <div><span className="big-number">{stats.uniq}</span><span>records played</span></div>
         <div><span className="big-number">{stats.streak}</span><span>day streak {stats.streak > 0 ? '🔥' : ''}</span></div>
       </div>
+
+      <button className="btn btn-primary wrapped-share" onClick={share} disabled={sharing}>
+        <Icon name="upload" size={16} /> {sharing ? 'Making your card…' : 'Share my Wrapped'}
+      </button>
 
       <div className="stat-block">
         <h4>Spins · last 8 weeks</h4>

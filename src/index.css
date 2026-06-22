@@ -220,6 +220,8 @@ button { font-family: inherit; cursor: pointer; }
 }
 .dice-btn:hover { filter: brightness(1.06); }
 
+.wrapped-share { width: 100%; margin: 4px 0 14px; }
+
 /* "Play something tonight" rediscovery hero. */
 .tonight {
   display: flex;
