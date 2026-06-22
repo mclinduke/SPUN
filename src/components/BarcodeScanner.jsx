@@ -99,10 +99,12 @@ export default function BarcodeScanner({ onAdd, onClose, findDuplicate }) {
           <div className="scanner-reticle" aria-hidden />
         </div>
       )}
-      {error && <p className="hint">{error}</p>}
-      {supported && phase === 'scanning' && <p className="scanner-tip">Point the camera at the barcode on the record’s back cover.</p>}
-      {phase === 'looking' && <p className="scanner-tip"><span className="spinner" /> Looking it up…</p>}
-      {added > 0 && <p className="auth-msg">{added} record{added === 1 ? '' : 's'} added.</p>}
+      <div role="status" aria-live="polite">
+        {error && <p className="hint">{error}</p>}
+        {supported && phase === 'scanning' && <p className="scanner-tip">Point the camera at the barcode on the record’s back cover.</p>}
+        {phase === 'looking' && <p className="scanner-tip"><span className="spinner" /> Looking it up…</p>}
+        {added > 0 && <p className="auth-msg">{added} record{added === 1 ? '' : 's'} added.</p>}
+      </div>
 
       {phase === 'error' && (
         <div className="scanner-result">

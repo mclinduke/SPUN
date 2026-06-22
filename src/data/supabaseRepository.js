@@ -44,7 +44,7 @@ function recordToRow(rec, userId) {
     has_photo: Boolean(rec.hasPhoto),
     label: (rec.label || '').trim(),
     catalog_no: (rec.catalogNo || '').trim(),
-    tags: Array.isArray(rec.tags) ? rec.tags.filter(Boolean) : [],
+    tags: Array.isArray(rec.tags) ? rec.tags.map((t) => (t || '').trim()).filter(Boolean) : [],
     pressing: rec.pressing ?? null,
     created_at: rec.createdAt || now,
     updated_at: now,
@@ -65,7 +65,7 @@ function patchToRow(patch) {
   }
   if ('year' in patch) row.year = patch.year ? Number(patch.year) : null
   if ('hasPhoto' in patch) row.has_photo = Boolean(patch.hasPhoto)
-  if ('tags' in patch) row.tags = Array.isArray(patch.tags) ? patch.tags.filter(Boolean) : []
+  if ('tags' in patch) row.tags = Array.isArray(patch.tags) ? patch.tags.map((t) => (t || '').trim()).filter(Boolean) : []
   if ('coverUrl' in patch) row.cover_url = validCover(patch.coverUrl)
   if ('pressing' in patch) row.pressing = patch.pressing ?? null
   return row

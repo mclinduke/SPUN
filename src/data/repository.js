@@ -48,7 +48,7 @@ function normalize(input) {
     hasPhoto: Boolean(input.hasPhoto),
     label: (input.label || '').trim(),
     catalogNo: (input.catalogNo || '').trim(),
-    tags: Array.isArray(input.tags) ? input.tags.filter(Boolean) : [],
+    tags: Array.isArray(input.tags) ? input.tags.map((t) => (t || '').trim()).filter(Boolean) : [],
     pressing: input.pressing ?? null,
     createdAt: input.createdAt || now,
     updatedAt: now,

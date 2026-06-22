@@ -25,9 +25,10 @@ create index if not exists group_members_user_idx on public.group_members(user_i
 alter table public.groups        enable row level security;
 alter table public.group_members enable row level security;
 -- All access is via the SECURITY DEFINER RPCs below. No permissive policy + a
--- revoke = direct client reads/writes denied two ways.
-revoke insert, update, delete on public.groups        from authenticated, anon;
-revoke insert, update, delete on public.group_members from authenticated, anon;
+-- revoke = direct client reads AND writes denied two ways (the RPCs run as the
+-- table owner, so they're unaffected).
+revoke all on public.groups        from authenticated, anon;
+revoke all on public.group_members from authenticated, anon;
 
 -- ============================ helper ============================
 create or replace function public.in_group(p_uid uuid, p_gid uuid)
@@ -45,7 +46,9 @@ begin
   nm := nullif(trim(p_name), '');
   if nm is null then raise exception 'name required'; end if;
   for i in 1..6 loop
-    code := lower(substr(md5(gen_random_uuid()::text), 1, 6));
+    -- 10 hex chars (~1.1e12 keyspace) so an invite code can't be brute-forced
+    -- to join a group and read its feed.
+    code := lower(substr(md5(gen_random_uuid()::text || gen_random_uuid()::text), 1, 10));
     begin
       insert into public.groups (owner_id, name, invite_code) values (auth.uid(), nm, code) returning groups.id into gid;
       exit;
@@ -72,8 +75,9 @@ create or replace function public.leave_group(p_gid uuid)
 returns void language plpgsql security definer set search_path = public as $$
 begin
   delete from public.group_members where group_id = p_gid and user_id = auth.uid();
-  -- clean up an empty group the caller owned
-  delete from public.groups g where g.id = p_gid and g.owner_id = auth.uid()
+  -- delete the group once it's empty (by whoever removed the last member), so an
+  -- owner leaving a still-populated group can't orphan an un-deletable ghost.
+  delete from public.groups g where g.id = p_gid
     and not exists (select 1 from public.group_members m where m.group_id = p_gid);
 end; $$;
 
