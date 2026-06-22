@@ -181,12 +181,29 @@ export function createSupabaseRepository(supabase, userId) {
     // ---- friends (cloud-only social layer) ----
     friendsSupported: true,
     async myProfile() {
-      const { data } = await supabase.from('profiles').select('share_notes,display_name,email').eq('id', userId).maybeSingle()
-      return {
-        shareNotes: Boolean(data?.share_notes),
-        displayName: data?.display_name || '',
-        email: data?.email || '',
+      let res = await supabase.from('profiles').select('share_notes,display_name,email,username').eq('id', userId).maybeSingle()
+      if (res.error && /username/i.test(res.error.message || '')) {
+        res = await supabase.from('profiles').select('share_notes,display_name,email').eq('id', userId).maybeSingle()
       }
+      const d = res.data
+      return {
+        shareNotes: Boolean(d?.share_notes),
+        displayName: d?.display_name || '',
+        email: d?.email || '',
+        username: d?.username || '',
+      }
+    },
+    async setUsername(username) {
+      // → 'ok' | 'invalid' | 'taken'
+      return must(await supabase.rpc('set_username', { p_username: username }))
+    },
+    async searchUsers(query) {
+      const data = must(await supabase.rpc('search_users', { p_query: query }))
+      return (data || []).map((u) => ({ id: u.id, username: u.username, name: u.display_name || u.username }))
+    },
+    async sendFriendRequestByUsername(username) {
+      // → 'requested' | 'accepted' | 'already_friends' | 'already_pending' | 'not_found'
+      return must(await supabase.rpc('send_friend_request_username', { p_username: username }))
     },
     async setShareNotes(value) {
       must(await supabase.from('profiles').update({ share_notes: Boolean(value) }).eq('id', userId))
@@ -196,7 +213,8 @@ export function createSupabaseRepository(supabase, userId) {
       return (data || []).map((f) => ({
         friendshipId: f.friendship_id,
         otherId: f.other_id,
-        name: f.other_name || (f.other_email || '').split('@')[0] || 'Friend',
+        name: f.other_name || f.other_username || (f.other_email || '').split('@')[0] || 'Friend',
+        username: f.other_username || '',
         email: f.other_email || '',
         status: f.status,
         direction: f.direction, // 'friend' | 'incoming' | 'outgoing'

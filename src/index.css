@@ -874,6 +874,18 @@ button { font-family: inherit; cursor: pointer; }
 .btn-sm { min-height: 36px; padding: 7px 12px; font-size: .85rem; }
 .btn-ghost.danger { color: var(--danger, #c0392b); }
 
+/* username handle + people search */
+.handle-box { padding: 10px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); }
+.handle-current { margin: 0; font-size: .92rem; }
+.handle-row { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+.handle-at { color: var(--muted); font-weight: 700; }
+.handle-row input { flex: 1; min-width: 0; min-height: 40px; padding: 8px 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 999px; color: var(--text); font-size: 1rem; outline: none; }
+.handle-row input:focus { border-color: var(--accent); }
+.user-results { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.user-result { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; text-align: left; padding: 9px 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--text); }
+.user-result:hover { border-color: var(--accent); }
+.user-add { display: inline-flex; align-items: center; gap: 4px; color: var(--accent-strong); font-size: .85rem; flex-shrink: 0; }
+
 .friend-tabs { align-self: stretch; }
 .friend-tabs button { display: flex; align-items: center; justify-content: center; width: auto; height: 40px; flex: 1; gap: 6px; font-size: .9rem; font-weight: 600; padding: 0 10px; }
 .friend-collection { display: flex; flex-direction: column; gap: 12px; }

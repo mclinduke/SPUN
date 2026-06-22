@@ -188,8 +188,11 @@ function createIndexedDbRepository() {
     // The UI hides it unless signed in, but guard here too so a stray call fails
     // with a clear message instead of a cryptic "not a function".
     friendsSupported: false,
-    async myProfile() { return { shareNotes: false, displayName: '', email: '' } },
+    async myProfile() { return { shareNotes: false, displayName: '', email: '', username: '' } },
     async listFriends() { return [] },
+    async setUsername() { throw new Error('Usernames need a SPUN account — sign in to use it.') },
+    async searchUsers() { return [] },
+    async sendFriendRequestByUsername() { throw new Error('Friends needs a SPUN account — sign in to use it.') },
     async setShareNotes() { throw new Error('Friends needs a SPUN account — sign in to use it.') },
     async sendFriendRequest() { throw new Error('Friends needs a SPUN account — sign in to use it.') },
     async respondFriendRequest() { throw new Error('Friends needs a SPUN account — sign in to use it.') },
